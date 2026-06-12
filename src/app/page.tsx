@@ -26,15 +26,22 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Navbar Minimal */}
-      <nav className={styles.navbar}>
-        <div>
-          <Link href="#catalog">Colección</Link>
+      {/* Navbar Centered */}
+      <nav style={{
+        display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center',
+        padding: '20px 40px', borderBottom: '1px solid var(--border-color)',
+        position: 'sticky', top: '35px', background: 'rgba(255,255,255,0.9)', 
+        backdropFilter: 'blur(10px)', zIndex: 50
+      }}>
+        <div style={{display:'flex', gap:'20px', fontSize:'0.85rem', fontWeight:600, textTransform:'uppercase'}}>
+          <Link href="/#hombres">Hombres</Link>
+          <Link href="/#mujeres">Mujeres</Link>
+          <Link href="/#unisex">Unisex</Link>
         </div>
-        <div className={styles.logo}>
-          Cortez
+        <div className={styles.logo} style={{textAlign:'center'}}>
+          <Link href="/">Cortez</Link>
         </div>
-        <div className={styles.cartIcon}>
+        <div style={{justifySelf:'end'}}>
           <Link href="/cart" style={{display: 'flex', alignItems: 'center', gap: '5px'}}>
             <ShoppingBag size={20} strokeWidth={1.5} />
             <span style={{fontSize: '0.8rem'}}>{items.length}</span>
@@ -62,7 +69,7 @@ export default function Home() {
       {/* Catalog Section */}
       <div id="catalog">
         {products.filter(p => p.category === 'HOMBRES').length > 0 && (
-          <section className={styles.catalogSection} style={{paddingTop: '60px'}}>
+          <section id="hombres" className={styles.catalogSection} style={{paddingTop: '60px'}}>
             <div className={styles.sectionHeader}>
               <h2 className={styles.sectionTitle}>Hombres</h2>
             </div>
@@ -91,7 +98,7 @@ export default function Home() {
         )}
 
         {products.filter(p => p.category === 'MUJERES').length > 0 && (
-          <section className={styles.catalogSection} style={{paddingTop: '60px'}}>
+          <section id="mujeres" className={styles.catalogSection} style={{paddingTop: '60px'}}>
             <div className={styles.sectionHeader}>
               <h2 className={styles.sectionTitle}>Mujeres</h2>
             </div>
@@ -120,7 +127,7 @@ export default function Home() {
         )}
 
         {products.filter(p => p.category === 'UNISEX' || !p.category).length > 0 && (
-          <section className={styles.catalogSection} style={{paddingTop: '60px'}}>
+          <section id="unisex" className={styles.catalogSection} style={{paddingTop: '60px'}}>
             <div className={styles.sectionHeader}>
               <h2 className={styles.sectionTitle}>Unisex</h2>
             </div>
