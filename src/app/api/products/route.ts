@@ -30,7 +30,8 @@ export async function POST(request: Request) {
         description: data.description,
         price: Number(data.price),
         stock: Number(data.stock),
-        image: data.image
+        image: data.image,
+        images: data.images || "[]"
       }
     });
     return NextResponse.json({ success: true, product });
