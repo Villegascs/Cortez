@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  price       Float
+  image       String   // Primary image URL
+  images      String   // JSON string of an array of extra image URLs
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  orderItems  OrderItem[]
+}
+
+model Order {
+  id                  Int      @id @default(autoincrement())
+  firstName           String
+  lastName            String
+  documentType        String   // V, E, P, etc.
+  documentNumber      String
+  
+  paymentMethod       String   // PAGO_MOVIL, ZELLE, BINANCE
+  paymentBank         String?
+  paymentPhone        String?
+  paymentDestDocument String?
+  paymentReference    String
+  paymentScreenshot   String?  // URL to uploaded image
+  
+  totalUsd            Float
+  totalBs             Float
+  status              String   @default("PENDING") // PENDING, ACCEPTED, REJECTED
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  items               OrderItem[]
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  productId Int
+  quantity  Int
+  price     Float    // Price at the time of purchase
+
+  order     Order    @relation(fields: [orderId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+}
+
+model Settings {
+  id        Int      @id @default(1)
+  usdtRate  Float    @default(0.0)
+  updatedAt DateTime @updatedAt
+}

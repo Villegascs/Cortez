@@ -1,0 +1,140 @@
+.container {
+  padding: 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.title {
+  font-size: 2.5rem;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.settingsPanel {
+  background: var(--surface-color);
+  padding: 20px;
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.ordersGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.orderCard {
+  background: #fff;
+  border: 1px solid var(--border-color);
+  padding: 20px;
+}
+
+.orderHeader {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.orderId {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.status {
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.status.PENDING {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status.ACCEPTED {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status.REJECTED {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.orderSection {
+  margin-bottom: 15px;
+}
+
+.sectionTitle {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.clientInfo {
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.paymentInfo {
+  font-size: 0.95rem;
+  background: var(--surface-color);
+  padding: 15px;
+}
+
+.screenshotLink {
+  color: var(--text-primary);
+  display: inline-block;
+  margin-top: 10px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.acceptBtn {
+  flex: 1;
+  background: var(--success-color);
+  color: #fff;
+  border: none;
+  padding: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+}
+
+.rejectBtn {
+  flex: 1;
+  background: transparent;
+  color: var(--error-color);
+  border: 1px solid var(--error-color);
+  padding: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+}

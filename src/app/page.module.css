@@ -1,0 +1,200 @@
+/* Top Promo Bar */
+.topBar {
+  background-color: #000;
+  color: #fff;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 8px 0;
+  text-align: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.topBarText {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* Navbar */
+.navbar {
+  position: absolute;
+  top: 35px; /* below topbar */
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  z-index: 100;
+  background: transparent;
+  color: #fff;
+  transition: all 0.3s ease;
+}
+
+.navbar a {
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  font-weight: 500;
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.cartIcon {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Hero Section */
+.hero {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background: #000;
+}
+
+.heroImage {
+  object-fit: cover;
+  opacity: 0.8;
+}
+
+.heroContent {
+  position: absolute;
+  bottom: 80px;
+  left: 40px;
+  color: #fff;
+  z-index: 10;
+}
+
+.heroTitle {
+  font-size: 4rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  max-width: 800px;
+  line-height: 1;
+}
+
+.heroLink {
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid #fff;
+  padding-bottom: 2px;
+  display: inline-block;
+  transition: opacity 0.3s;
+}
+
+.heroLink:hover {
+  opacity: 0.7;
+}
+
+/* Catalog Section */
+.catalogSection {
+  padding: 80px 40px;
+  background-color: #fff;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 40px;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 992px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .navbar {
+    padding: 15px 20px;
+  }
+  .heroContent {
+    left: 20px;
+    bottom: 60px;
+  }
+  .heroTitle {
+    font-size: 2.5rem;
+  }
+  .catalogSection {
+    padding: 40px 20px;
+  }
+}
+
+.card {
+  cursor: pointer;
+}
+
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/5;
+  background-color: #f6f6f6;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.cardImage {
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.card:hover .cardImage {
+  transform: scale(1.03);
+}
+
+.cardInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.cardTopRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.cardTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cardPrice {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.cardColor {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
