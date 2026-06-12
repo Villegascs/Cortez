@@ -10,6 +10,7 @@ export default function AdminPanel() {
   const [products, setProducts] = useState<any[]>([]);
   const [usdtRate, setUsdtRate] = useState<number>(40.5);
   const [loading, setLoading] = useState(true);
+  const [productToDelete, setProductToDelete] = useState<number | null>(null);
 
   // New product form
   const [newProductName, setNewProductName] = useState("");
@@ -170,12 +171,18 @@ export default function AdminPanel() {
   };
 
   const handleDeleteProduct = async (id: number) => {
-    if(!confirm("¿Seguro que deseas eliminar este producto?")) return;
+    setProductToDelete(id);
+  };
+
+  const confirmDeleteProduct = async () => {
+    if (productToDelete === null) return;
     try {
-      await fetch(`/api/products/${id}`, { method: 'DELETE' });
+      await fetch(`/api/products/${productToDelete}`, { method: 'DELETE' });
       fetchData();
     } catch (error) {
       alert("Error eliminando producto");
+    } finally {
+      setProductToDelete(null);
     }
   };
 
@@ -396,6 +403,65 @@ export default function AdminPanel() {
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {productToDelete !== null && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, width: '100vw', height: '100vh',
+          background: 'rgba(0,0,0,0.5)',
+          backdropFilter: 'blur(5px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999
+        }}>
+          <div style={{
+            background: '#fff',
+            padding: '30px',
+            borderRadius: '12px',
+            boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+            textAlign: 'center',
+            maxWidth: '400px',
+            width: '90%'
+          }}>
+            <Trash2 size={40} color="red" style={{ marginBottom: '15px' }} />
+            <h3 style={{ fontSize: '1.2rem', marginBottom: '10px' }}>¿Eliminar Producto?</h3>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '25px', fontSize: '0.95rem' }}>
+              Esta acción no se puede deshacer. El producto será borrado permanentemente de la base de datos.
+            </p>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+              <button 
+                onClick={() => setProductToDelete(null)}
+                style={{
+                  padding: '10px 20px',
+                  background: '#eee',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={confirmDeleteProduct}
+                style={{
+                  padding: '10px 20px',
+                  background: 'red',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                Sí, Eliminar
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
