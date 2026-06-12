@@ -34,7 +34,7 @@ function HomeContent() {
       {/* Hero Section */}
       <section className={styles.hero}>
         <Image 
-          src="/images/lente_1_1781241251041.png" 
+          src="/portada.png" 
           alt="Cortez Hero" 
           fill 
           priority
