@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server';
 
+export async function GET() {
+  return NextResponse.json({ key: process.env.IMGBB_API_KEY });
+}
+
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();

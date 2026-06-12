@@ -27,27 +27,7 @@ export async function POST(request: Request) {
     const itemsRaw = formData.get('items') as string;
     const items = JSON.parse(itemsRaw);
     
-    let paymentScreenshotPath = null;
-    const screenshotFile = formData.get('screenshot') as File | null;
-    
-    if (screenshotFile && screenshotFile.size > 0) {
-      const buffer = Buffer.from(await screenshotFile.arrayBuffer());
-      const base64Image = buffer.toString('base64');
-      const imgbbFormData = new FormData();
-      imgbbFormData.append('image', base64Image);
-      
-      const apiKey = process.env.IMGBB_API_KEY;
-      if (apiKey) {
-        const uploadRes = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
-          method: 'POST',
-          body: imgbbFormData,
-        });
-        const uploadData = await uploadRes.json();
-        if (uploadData.success) {
-          paymentScreenshotPath = uploadData.data.url;
-        }
-      }
-    }
+    const paymentScreenshotPath = formData.get('screenshotUrl') as string | null;
     
     // Check if the user passed valid products
     const order = await prisma.order.create({

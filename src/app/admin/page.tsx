@@ -80,28 +80,34 @@ export default function AdminPanel() {
     
     setUploadingFiles(true);
     try {
+      // Get API Key from server
+      const keyRes = await fetch('/api/upload');
+      const keyData = await keyRes.json();
+      if (!keyData.key) throw new Error("API Key de ImgBB no encontrada en Vercel.");
+      const apiKey = keyData.key;
+
+      const uploadToImgBB = async (file: File) => {
+        const fd = new FormData();
+        fd.append("image", file);
+        const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, { method: 'POST', body: fd });
+        const data = await res.json();
+        if (!res.ok || !data.success) throw new Error(data.error?.message || "Error de ImgBB");
+        return data.data.url;
+      };
+
       // 1. Upload main image
-      const mainFormData = new FormData();
-      mainFormData.append("image", mainImageFile);
-      const resMain = await fetch('/api/upload', { method: 'POST', body: mainFormData });
-      let mainData;
-      try { mainData = await resMain.json(); } catch(e) { throw new Error("Error en el servidor al subir la imagen principal"); }
-      if (!resMain.ok) throw new Error(mainData.error || "Error de API subiendo imagen principal");
+      const mainImageUrl = await uploadToImgBB(mainImageFile);
 
       // 2. Upload extra images
       const extraUrls: string[] = [];
       if (extraFiles) {
         for (let i = 0; i < extraFiles.length; i++) {
-          const extraFormData = new FormData();
-          extraFormData.append("image", extraFiles[i]);
-          const resExtra = await fetch('/api/upload', { method: 'POST', body: extraFormData });
-          const extraData = await resExtra.json();
-          if (resExtra.ok) extraUrls.push(extraData.url);
+          extraUrls.push(await uploadToImgBB(extraFiles[i]));
         }
       }
 
       // 3. Create product
-      await fetch('/api/products', {
+      const productRes = await fetch('/api/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -110,10 +116,11 @@ export default function AdminPanel() {
           price: newProductPrice,
           stock: newProductStock,
           description: newProductDesc,
-          image: mainData.url,
+          image: mainImageUrl,
           images: JSON.stringify(extraUrls)
         })
       });
+      if (!productRes.ok) throw new Error("Error guardando el producto en la base de datos.");
 
       setNewProductName(""); setNewProductColor(""); setNewProductPrice("");
       setNewProductStock(""); setNewProductDesc(""); setMainImageFile(null); setExtraFiles(null);

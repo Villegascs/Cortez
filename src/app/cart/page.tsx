@@ -72,8 +72,27 @@ export default function CartPage() {
       formData.append("paymentPhone", paymentPhone);
     }
 
+    let screenshotUrl = "";
     if (paymentFile) {
-      formData.append("screenshot", paymentFile);
+      try {
+        const keyRes = await fetch('/api/upload');
+        const keyData = await keyRes.json();
+        if (keyData.key) {
+          const fd = new FormData();
+          fd.append("image", paymentFile);
+          const uploadRes = await fetch(`https://api.imgbb.com/1/upload?key=${keyData.key}`, { method: 'POST', body: fd });
+          const uploadData = await uploadRes.json();
+          if (uploadRes.ok && uploadData.success) {
+            screenshotUrl = uploadData.data.url;
+          }
+        }
+      } catch (e) {
+        console.error("Error subiendo captura", e);
+      }
+    }
+
+    if (screenshotUrl) {
+      formData.append("screenshotUrl", screenshotUrl);
     }
     
     formData.append("items", JSON.stringify(items));
