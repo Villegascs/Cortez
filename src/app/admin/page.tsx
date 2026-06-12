@@ -12,6 +12,12 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [productToDelete, setProductToDelete] = useState<number | null>(null);
 
+  // Login state
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loginUser, setLoginUser] = useState("");
+  const [loginPass, setLoginPass] = useState("");
+  const [loginError, setLoginError] = useState(false);
+
   // New product form
   const [newProductName, setNewProductName] = useState("");
   const [newProductColor, setNewProductColor] = useState("");
@@ -43,8 +49,26 @@ export default function AdminPanel() {
   };
 
   useEffect(() => {
-    fetchData();
+    if (localStorage.getItem("admin_logged_in") === "true") {
+      setIsLoggedIn(true);
+      fetchData();
+    } else {
+      setLoading(false);
+    }
   }, []);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (loginUser === "CactusDude" && loginPass === "Teammora00cortez") {
+      setIsLoggedIn(true);
+      setLoginError(false);
+      localStorage.setItem("admin_logged_in", "true");
+      setLoading(true);
+      fetchData();
+    } else {
+      setLoginError(true);
+    }
+  };
 
   const handleUpdateRate = async () => {
     try {
@@ -213,6 +237,49 @@ export default function AdminPanel() {
   };
 
   if (loading) return <div>Cargando panel...</div>;
+
+  if (!isLoggedIn) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', background: '#f8f9fa' }}>
+        <div style={{ width: '380px', background: '#fff', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: '1px solid #eaeaea', overflow: 'hidden' }}>
+          <div style={{ padding: '24px', borderBottom: '1px solid #eaeaea' }}>
+            <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 600 }}>Iniciar Sesión</h2>
+            <p style={{ margin: '8px 0 0 0', fontSize: '0.875rem', color: '#666' }}>Ingresa tus credenciales para administrar Cortez.</p>
+          </div>
+          <form onSubmit={handleLogin}>
+            <div style={{ padding: '24px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, marginBottom: '8px' }}>Usuario</label>
+                  <input 
+                    type="text" 
+                    value={loginUser}
+                    onChange={(e) => setLoginUser(e.target.value)}
+                    style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #eaeaea', outline: 'none' }} 
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, marginBottom: '8px' }}>Contraseña</label>
+                  <input 
+                    type="password" 
+                    value={loginPass}
+                    onChange={(e) => setLoginPass(e.target.value)}
+                    style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #eaeaea', outline: 'none' }} 
+                  />
+                </div>
+                {loginError && <div style={{ color: 'red', fontSize: '0.8rem', fontWeight: 600 }}>Usuario o contraseña incorrectos.</div>}
+              </div>
+            </div>
+            <div style={{ padding: '16px 24px', background: '#fafafa', borderTop: '1px solid #eaeaea', display: 'flex', justifyContent: 'flex-end' }}>
+              <button type="submit" style={{ padding: '10px 16px', background: '#000', color: '#fff', borderRadius: '6px', border: 'none', fontWeight: 500, cursor: 'pointer' }}>
+                Entrar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
