@@ -75,19 +75,41 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
           backdropFilter: 'blur(10px)', 
         }}
       >
+        <style>{`
+          .brutal-link {
+            position: relative;
+            display: inline-block;
+            padding-bottom: 2px;
+            overflow: hidden;
+          }
+          .brutal-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #000;
+            transform: translateX(-101%);
+            transition: transform 0.3s cubic-bezier(0.86, 0, 0.07, 1);
+          }
+          .brutal-link:hover::after {
+            transform: translateX(0);
+          }
+        `}</style>
         <div style={{display:'flex', gap:'20px', fontSize:'0.85rem', fontWeight:600, textTransform:'uppercase'}}>
-          <Link href="/?category=HOMBRES">Hombres</Link>
-          <Link href="/?category=MUJERES">Mujeres</Link>
-          <Link href="/?category=UNISEX">Unisex</Link>
+          <Link href="/?category=HOMBRES" className="brutal-link">Hombres</Link>
+          <Link href="/?category=MUJERES" className="brutal-link">Mujeres</Link>
+          <Link href="/?category=UNISEX" className="brutal-link">Unisex</Link>
         </div>
         
         <div style={{textAlign:'center', fontSize: '1.5rem', fontWeight: '800', letterSpacing: '-1px'}}>
-          <Link href="/" style={{color: 'var(--foreground)'}}>Cortez</Link>
+          <Link href="/" style={{color: '#000'}}>Cortez</Link>
         </div>
         
         <div style={{justifySelf:'end'}}>
           {!isSuccessPage && (
-            <Link href="/cart" style={{display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--foreground)'}}>
+            <Link href="/cart" style={{display: 'flex', alignItems: 'center', gap: '5px', color: '#000'}}>
               <ShoppingBag size={20} strokeWidth={1.5} />
               <span style={{fontSize: '0.8rem', fontWeight: 600}}>{items.length}</span>
             </Link>

@@ -7,6 +7,7 @@ import { useCartStore } from "@/store/cart";
 import styles from "./page.module.css";
 import { Trash2, ShoppingBag, ChevronDown, MessageCircle } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import Combobox from "@/components/Combobox";
 
 const VENEZUELAN_BANKS = [
   "Banesco",
@@ -54,6 +55,11 @@ export default function CartPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (shippingMethod === "DELIVERY_VALENCIA" && !shippingZone) return alert("Selecciona una zona de delivery");
+    if (shippingMethod === "ENVIOS_NACIONALES" && !shippingAgency) return alert("Selecciona una agencia de envío");
+    if (paymentMethod === "PAGO_MOVIL" && !paymentBank) return alert("Selecciona tu banco de origen");
+
     setLoading(true);
 
     const formData = new FormData();
@@ -297,39 +303,55 @@ export default function CartPage() {
 
               <div className={styles.formGroup}>
                 <label>Método de Entrega</label>
-                <select className="input-field" value={shippingMethod} onChange={e => setShippingMethod(e.target.value)}>
-                  <option value="PICKUP">Pick Up (Retiro en oficina)</option>
-                  <option value="DELIVERY_VALENCIA">Delivery (Valencia)</option>
-                  <option value="ENVIOS_NACIONALES">Envío Nacional (MRW/Zoom/Tealca)</option>
-                </select>
+                <Combobox
+                  value={shippingMethod}
+                  onChange={setShippingMethod}
+                  options={[
+                    { value: "PICKUP", label: "Pick Up (Retiro en oficina)" },
+                    { value: "DELIVERY_VALENCIA", label: "Delivery (Valencia)" },
+                    { value: "ENVIOS_NACIONALES", label: "Envío Nacional (MRW/Zoom/Tealca)" }
+                  ]}
+                  placeholder="Selecciona método"
+                  searchPlaceholder="Buscar método..."
+                />
               </div>
 
               {shippingMethod === "DELIVERY_VALENCIA" && (
                 <div className={styles.formGroup}>
                   <label>Zona de Delivery (Valencia)</label>
-                  <select required className="input-field" value={shippingZone} onChange={e => setShippingZone(e.target.value)}>
-                    <option value="">Selecciona una zona</option>
-                    <option value="El Bosque">El Bosque</option>
-                    <option value="Naguanagua">Naguanagua</option>
-                    <option value="La Viña">La Viña</option>
-                    <option value="El Viñedo">El Viñedo</option>
-                    <option value="Prebo">Prebo</option>
-                    <option value="San Diego">San Diego</option>
-                    <option value="Centro">Centro</option>
-                  </select>
+                  <Combobox
+                    value={shippingZone}
+                    onChange={setShippingZone}
+                    options={[
+                      { value: "El Bosque", label: "El Bosque" },
+                      { value: "Naguanagua", label: "Naguanagua" },
+                      { value: "La Viña", label: "La Viña" },
+                      { value: "El Viñedo", label: "El Viñedo" },
+                      { value: "Prebo", label: "Prebo" },
+                      { value: "San Diego", label: "San Diego" },
+                      { value: "Centro", label: "Centro" }
+                    ]}
+                    placeholder="Selecciona una zona"
+                    searchPlaceholder="Buscar zona..."
+                  />
                 </div>
               )}
 
               {shippingMethod === "ENVIOS_NACIONALES" && (
                 <div className={styles.formGroup}>
                   <label>Agencia de Envío</label>
-                  <select required className="input-field" value={shippingAgency} onChange={e => setShippingAgency(e.target.value)}>
-                    <option value="">Selecciona una agencia</option>
-                    <option value="MRW">MRW</option>
-                    <option value="Zoom">Zoom</option>
-                    <option value="Tealca">Tealca</option>
-                    <option value="Domesa">Domesa</option>
-                  </select>
+                  <Combobox
+                    value={shippingAgency}
+                    onChange={setShippingAgency}
+                    options={[
+                      { value: "MRW", label: "MRW" },
+                      { value: "Zoom", label: "Zoom" },
+                      { value: "Tealca", label: "Tealca" },
+                      { value: "Domesa", label: "Domesa" }
+                    ]}
+                    placeholder="Selecciona una agencia"
+                    searchPlaceholder="Buscar agencia..."
+                  />
                 </div>
               )}
 
@@ -337,21 +359,30 @@ export default function CartPage() {
               
               <div className={styles.formGroup}>
                 <label>Método de Pago</label>
-                <select className="input-field" value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)}>
-                  <option value="PAGO_MOVIL">Pago Móvil</option>
-                  <option value="ZELLE">Zelle</option>
-                  <option value="BINANCE">Binance Pay</option>
-                </select>
+                <Combobox
+                  value={paymentMethod}
+                  onChange={setPaymentMethod}
+                  options={[
+                    { value: "PAGO_MOVIL", label: "Pago Móvil" },
+                    { value: "ZELLE", label: "Zelle" },
+                    { value: "BINANCE", label: "Binance Pay" }
+                  ]}
+                  placeholder="Selecciona método de pago"
+                  searchPlaceholder="Buscar método..."
+                />
               </div>
 
               {paymentMethod === "PAGO_MOVIL" && (
                 <>
                   <div className={styles.formGroup}>
                     <label>Banco Origen</label>
-                    <select required className="input-field" value={paymentBank} onChange={e => setPaymentBank(e.target.value)}>
-                      <option value="">Selecciona un banco</option>
-                      {VENEZUELAN_BANKS.map(b => <option key={b} value={b}>{b}</option>)}
-                    </select>
+                    <Combobox
+                      value={paymentBank}
+                      onChange={setPaymentBank}
+                      options={VENEZUELAN_BANKS.map(b => ({ value: b, label: b }))}
+                      placeholder="Selecciona un banco"
+                      searchPlaceholder="Buscar banco..."
+                    />
                   </div>
                   <div className={styles.formGroup}>
                     <label>Teléfono Origen</label>
