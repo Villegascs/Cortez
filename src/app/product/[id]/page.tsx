@@ -42,8 +42,6 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
   const isSoldOut = product.stock <= 0;
 
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
   const handleAddToCart = () => {
     if (isSoldOut) return;
     addItem({
