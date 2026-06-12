@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useCartStore } from "@/store/cart";
 import styles from "./page.module.css";
 import { Trash2, ShoppingBag } from "lucide-react";
+import Navbar from "@/components/Navbar";
 
 const VENEZUELAN_BANKS = [
   "Banesco",
@@ -58,27 +59,19 @@ export default function CartPage() {
     formData.append("lastName", lastName);
     formData.append("documentType", docType);
     formData.append("documentNumber", docNumber);
-    setClientItems(items);
-    fetch('/api/settings').then(res=>res.json()).then(data => {
-      if(data.settings) setUsdtRate(data.settings.usdtRate);
-    });
-  }, [items]);
-
-  const handleNextStep = () => {
-    if (step === 1 && clientItems.length > 0) setStep(2);
-    else if (step === 2) {
-      if(!firstName || !lastName || !docNumber) return alert("Llena tus datos personales");
-      if(shippingMethod === "DELIVERY_VALENCIA" && !shippingZone) return alert("Selecciona la zona de delivery");
-      if(shippingMethod === "ENVIOS_NACIONALES" && !shippingAgency) return alert("Selecciona la agencia de envíos");
-      setStep(3);
+    formData.append("paymentMethod", paymentMethod);
+    formData.append("paymentReference", paymentRef);
+    formData.append("totalUsd", totalUsd.toString());
+    formData.append("totalBs", totalBs.toString());
+    
+    formData.append("shippingMethod", shippingMethod);
+    if (shippingMethod === "DELIVERY_VALENCIA") formData.append("shippingZone", shippingZone);
+    if (shippingMethod === "ENVIOS_NACIONALES") formData.append("shippingAgency", shippingAgency);
+    
+    if (paymentMethod === "PAGO_MOVIL") {
+      formData.append("paymentBank", paymentBank);
+      formData.append("paymentPhone", paymentPhone);
     }
-  };
-
-  const handleSubmitOrder = async () => {
-    if(!paymentRef && paymentMethod !== "ZELLE") return alert("Ingresa el número de referencia");
-    if(paymentMethod === "ZELLE" && !paymentFile) return alert("Sube el comprobante de Zelle");
-
-    setSubmitting(true);
 
     let screenshotUrl = "";
     if (paymentFile) {
@@ -88,43 +81,40 @@ export default function CartPage() {
         if (keyData.key) {
           const fd = new FormData();
           fd.append("image", paymentFile);
-          const uploadRes = await fetch(`https://api.imgbb.com/1/upload?key=${keyData.key}`, {
-            method: 'POST',
-            body: fd
-          });
+          const uploadRes = await fetch(`https://api.imgbb.com/1/upload?key=${keyData.key}`, { method: 'POST', body: fd });
           const uploadData = await uploadRes.json();
-          if (uploadData.data && uploadData.data.url) {
+          if (uploadRes.ok && uploadData.success) {
             screenshotUrl = uploadData.data.url;
           }
         }
-      } catch (error) {
-        console.error("Error subiendo pago:", error);
+      } catch (e) {
+        console.error("Error subiendo captura", e);
       }
     }
 
-    const payload = {
-      firstName, lastName, documentType: docType, documentNumber: docNumber,
-      paymentMethod, paymentBank, paymentPhone, paymentDestDocument: paymentDestDoc,
-      paymentReference: paymentRef,
-      paymentScreenshot: screenshotUrl,
-      shippingMethod, shippingZone, shippingAgency,
-      items: clientItems,
-      totalUsd: getTotal(),
-      totalBs: getTotal() * usdtRate
-    };
-
-    const res = await fetch('/api/checkout', {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(payload)
-    });
-    
-    setSubmitting(false);
-    if(res.ok) {
-      setSuccess(true);
-      clearCart();
-    } else {
-      alert("Error procesando orden");
+    if (screenshotUrl) {
+      formData.append("screenshotUrl", screenshotUrl);
     }
+    
+    formData.append("items", JSON.stringify(items));
+
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (res.ok) {
+        setSuccess(true);
+        clearCart();
+      } else {
+        alert("Hubo un error al procesar el pago");
+      }
+    } catch (error) {
+      alert("Error de conexión");
+    }
+
+    setLoading(false);
   };
 
   if (success) {
@@ -134,8 +124,10 @@ export default function CartPage() {
         <div style={{ paddingTop: '75px' }}>
           <div className={styles.successMessage}>
             <h2>¡Pedido Completado!</h2>
-            <p>Gracias por tu compra. Te contactaremos pronto para confirmar el envío.</p>
-            <Link href="/" className="btn-primary">Volver a la tienda</Link>
+            <p>Hemos recibido tu pedido y el comprobante de pago.</p>
+            <p>Pronto nos pondremos en contacto contigo.</p>
+            <br/>
+            <Link href="/" className="btn-primary">Volver al inicio</Link>
           </div>
         </div>
       </div>
@@ -144,7 +136,6 @@ export default function CartPage() {
 
   return (
     <div className={styles.container}>
-      {/* Top Bar */}
       <div className={styles.topBar}>
         ENVÍOS GRATIS A PARTIR DE $100 — PAGO MÓVIL, ZELLE Y BINANCE DISPONIBLES
       </div>
@@ -307,13 +298,13 @@ export default function CartPage() {
                 }} />
               </div>
 
-              <button type="submit" className="btn-primary" style={{width: '100%', marginTop: '20px'}} disabled={submitting}>
-                {submitting ? "PROCESANDO..." : "PROCEDER AL PAGO"}
+              <button type="submit" className="btn-primary" style={{width: '100%', marginTop: '20px'}} disabled={loading}>
+                {loading ? "PROCESANDO..." : "PROCEDER AL PAGO"}
               </button>
             </form>
           </div>
         )}
-        </div>
+      </div>
       </div>
     </div>
   );
