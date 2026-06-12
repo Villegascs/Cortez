@@ -24,7 +24,7 @@ export default function AdminPanel() {
       const [resOrders, resSettings, resProducts] = await Promise.all([
         fetch('/api/admin/orders'),
         fetch('/api/settings'),
-        fetch('/api/products')
+        fetch('/api/products?all=true')
       ]);
       const dataOrders = await resOrders.json();
       const dataSettings = await resSettings.json();
@@ -70,9 +70,36 @@ export default function AdminPanel() {
     }
   };
 
+  const [mainImageFile, setMainImageFile] = useState<File | null>(null);
+  const [extraFiles, setExtraFiles] = useState<FileList | null>(null);
+  const [uploadingFiles, setUploadingFiles] = useState(false);
+
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!mainImageFile) return alert("Debes subir una imagen principal");
+    
+    setUploadingFiles(true);
     try {
+      // 1. Upload main image
+      const mainFormData = new FormData();
+      mainFormData.append("image", mainImageFile);
+      const resMain = await fetch('/api/upload', { method: 'POST', body: mainFormData });
+      const mainData = await resMain.json();
+      if (!resMain.ok) throw new Error("Error subiendo imagen principal");
+
+      // 2. Upload extra images
+      const extraUrls: string[] = [];
+      if (extraFiles) {
+        for (let i = 0; i < extraFiles.length; i++) {
+          const extraFormData = new FormData();
+          extraFormData.append("image", extraFiles[i]);
+          const resExtra = await fetch('/api/upload', { method: 'POST', body: extraFormData });
+          const extraData = await resExtra.json();
+          if (resExtra.ok) extraUrls.push(extraData.url);
+        }
+      }
+
+      // 3. Create product
       await fetch('/api/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -82,14 +109,18 @@ export default function AdminPanel() {
           price: newProductPrice,
           stock: newProductStock,
           description: newProductDesc,
-          image: newProductImage
+          image: mainData.url,
+          images: JSON.stringify(extraUrls)
         })
       });
+
       setNewProductName(""); setNewProductColor(""); setNewProductPrice("");
-      setNewProductStock(""); setNewProductDesc(""); setNewProductImage("");
+      setNewProductStock(""); setNewProductDesc(""); setMainImageFile(null); setExtraFiles(null);
       fetchData();
     } catch (error) {
       alert("Error añadiendo producto");
+    } finally {
+      setUploadingFiles(false);
     }
   };
 
@@ -113,6 +144,19 @@ export default function AdminPanel() {
       fetchData();
     } catch (error) {
       alert("Error actualizando stock");
+    }
+  };
+
+  const handleToggleVisibility = async (id: number, currentVisible: boolean) => {
+    try {
+      await fetch(`/api/products/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isVisible: !currentVisible })
+      });
+      fetchData();
+    } catch (error) {
+      alert("Error cambiando visibilidad");
     }
   };
 
@@ -156,8 +200,20 @@ export default function AdminPanel() {
             <input required type="number" placeholder="Precio ($)" className="input-field" value={newProductPrice} onChange={e=>setNewProductPrice(e.target.value)} />
             <input required type="number" placeholder="Stock" className="input-field" value={newProductStock} onChange={e=>setNewProductStock(e.target.value)} />
             <textarea required placeholder="Descripción" className="input-field" value={newProductDesc} onChange={e=>setNewProductDesc(e.target.value)} />
-            <input required placeholder="URL de la imagen (/images/...)" className="input-field" value={newProductImage} onChange={e=>setNewProductImage(e.target.value)} />
-            <button type="submit" className="btn-primary" style={{marginTop:'10px'}}><Plus size={18}/> Agregar</button>
+            
+            <div style={{marginTop: '10px'}}>
+              <label style={{fontSize: '0.85rem', color: 'var(--text-secondary)'}}>Imagen Principal (Obligatoria)</label>
+              <input required type="file" accept="image/*" className="input-field" style={{padding:'5px'}} onChange={e=>setMainImageFile(e.target.files?.[0] || null)} />
+            </div>
+
+            <div style={{marginTop: '5px'}}>
+              <label style={{fontSize: '0.85rem', color: 'var(--text-secondary)'}}>Galería (Imágenes Extra)</label>
+              <input type="file" accept="image/*" multiple className="input-field" style={{padding:'5px'}} onChange={e=>setExtraFiles(e.target.files)} />
+            </div>
+
+            <button type="submit" className="btn-primary" style={{marginTop:'10px'}} disabled={uploadingFiles}>
+              {uploadingFiles ? "SUBIENDO..." : <><Plus size={18}/> Agregar</>}
+            </button>
           </form>
         </div>
 
@@ -174,9 +230,9 @@ export default function AdminPanel() {
             </thead>
             <tbody>
               {products.map(p => (
-                <tr key={p.id} style={{ borderBottom: '1px solid #ddd' }}>
+                <tr key={p.id} style={{ borderBottom: '1px solid #ddd', opacity: p.isVisible ? 1 : 0.5 }}>
                   <td style={{ padding: '15px 10px' }}>
-                    <strong>{p.name}</strong><br/>
+                    <strong>{p.name}</strong> {!p.isVisible && <span style={{color:'red', fontSize:'0.7rem', marginLeft:'5px'}}>(OCULTO)</span>}<br/>
                     <span style={{ fontSize: '0.85rem', color: '#666' }}>{p.color}</span>
                   </td>
                   <td style={{ padding: '15px 10px' }}>${p.price}</td>
@@ -189,7 +245,10 @@ export default function AdminPanel() {
                       onChange={(e) => handleUpdateStock(p.id, Number(e.target.value))}
                     />
                   </td>
-                  <td style={{ padding: '15px 10px' }}>
+                  <td style={{ padding: '15px 10px', display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <button onClick={() => handleToggleVisibility(p.id, p.isVisible)} style={{ color: p.isVisible ? '#000' : '#888', cursor: 'pointer' }} title={p.isVisible ? "Ocultar Lente" : "Mostrar Lente"}>
+                      {p.isVisible ? <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg> : <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>}
+                    </button>
                     <button onClick={() => handleDeleteProduct(p.id)} style={{ color: 'red', cursor: 'pointer' }}><Trash2 size={20}/></button>
                   </td>
                 </tr>

@@ -17,6 +17,7 @@ model Product {
   description String
   price       Float
   stock       Int      @default(0)
+  isVisible   Boolean  @default(true)
   image       String   // Primary image URL
   images      String   @default("[]") // JSON string of an array of extra image URLs
   createdAt   DateTime @default(now())
@@ -39,6 +40,10 @@ model Order {
   paymentReference    String
   paymentScreenshot   String?  // URL to uploaded image
   
+  shippingMethod      String   @default("PICKUP") // PICKUP, DELIVERY_VALENCIA, ENVIOS_NACIONALES
+  shippingZone        String?  // For Valencia Delivery (e.g. El Bosque)
+  shippingAgency      String?  // For Envios Nacionales (e.g. MRW)
+
   totalUsd            Float
   totalBs             Float
   status              String   @default("PENDING") // PENDING, ACCEPTED, REJECTED

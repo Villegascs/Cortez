@@ -10,7 +10,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const product = await prisma.product.update({
       where: { id: Number(resolvedParams.id) },
       data: {
-        stock: data.stock !== undefined ? Number(data.stock) : undefined
+        stock: data.stock !== undefined ? Number(data.stock) : undefined,
+        isVisible: data.isVisible !== undefined ? Boolean(data.isVisible) : undefined
       }
     });
     return NextResponse.json({ success: true, product });

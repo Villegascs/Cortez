@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { writeFile } from 'fs/promises';
-import path from 'path';
 
 const prisma = new PrismaClient();
 
@@ -20,6 +18,10 @@ export async function POST(request: Request) {
     const paymentDestDocument = formData.get('paymentDestDocument') as string | null;
     const paymentReference = formData.get('paymentReference') as string;
     
+    const shippingMethod = formData.get('shippingMethod') as string || 'PICKUP';
+    const shippingZone = formData.get('shippingZone') as string | null;
+    const shippingAgency = formData.get('shippingAgency') as string | null;
+
     const totalUsd = Number(formData.get('totalUsd'));
     const totalBs = Number(formData.get('totalBs'));
     const itemsRaw = formData.get('items') as string;
@@ -30,10 +32,21 @@ export async function POST(request: Request) {
     
     if (screenshotFile && screenshotFile.size > 0) {
       const buffer = Buffer.from(await screenshotFile.arrayBuffer());
-      const filename = `${Date.now()}_${screenshotFile.name.replaceAll(' ', '_')}`;
-      const filepath = path.join(process.cwd(), 'public/uploads', filename);
-      await writeFile(filepath, buffer);
-      paymentScreenshotPath = `/uploads/${filename}`;
+      const base64Image = buffer.toString('base64');
+      const imgbbFormData = new FormData();
+      imgbbFormData.append('image', base64Image);
+      
+      const apiKey = process.env.IMGBB_API_KEY;
+      if (apiKey) {
+        const uploadRes = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+          method: 'POST',
+          body: imgbbFormData,
+        });
+        const uploadData = await uploadRes.json();
+        if (uploadData.success) {
+          paymentScreenshotPath = uploadData.data.url;
+        }
+      }
     }
     
     // Check if the user passed valid products
@@ -49,6 +62,9 @@ export async function POST(request: Request) {
         paymentDestDocument,
         paymentReference,
         paymentScreenshot: paymentScreenshotPath,
+        shippingMethod,
+        shippingZone,
+        shippingAgency,
         totalUsd,
         totalBs,
         items: {

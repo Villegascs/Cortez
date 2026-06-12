@@ -32,6 +32,10 @@ export default function CartPage() {
   const [paymentRef, setPaymentRef] = useState("");
   const [paymentFile, setPaymentFile] = useState<File | null>(null);
 
+  const [shippingMethod, setShippingMethod] = useState("PICKUP");
+  const [shippingZone, setShippingZone] = useState("");
+  const [shippingAgency, setShippingAgency] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -58,6 +62,10 @@ export default function CartPage() {
     formData.append("paymentReference", paymentRef);
     formData.append("totalUsd", totalUsd.toString());
     formData.append("totalBs", totalBs.toString());
+    
+    formData.append("shippingMethod", shippingMethod);
+    if (shippingMethod === "DELIVERY_VALENCIA") formData.append("shippingZone", shippingZone);
+    if (shippingMethod === "ENVIOS_NACIONALES") formData.append("shippingAgency", shippingAgency);
     
     if (paymentMethod === "PAGO_MOVIL") {
       formData.append("paymentBank", paymentBank);
@@ -199,6 +207,44 @@ export default function CartPage() {
                   <input required type="text" className="input-field" value={docNumber} onChange={e => setDocNumber(e.target.value)} />
                 </div>
               </div>
+
+              <div className={styles.formGroup}>
+                <label>Método de Entrega</label>
+                <select className="input-field" value={shippingMethod} onChange={e => setShippingMethod(e.target.value)}>
+                  <option value="PICKUP">Pick Up (Retiro en oficina)</option>
+                  <option value="DELIVERY_VALENCIA">Delivery (Valencia)</option>
+                  <option value="ENVIOS_NACIONALES">Envío Nacional (MRW/Zoom/Tealca)</option>
+                </select>
+              </div>
+
+              {shippingMethod === "DELIVERY_VALENCIA" && (
+                <div className={styles.formGroup}>
+                  <label>Zona de Delivery (Valencia)</label>
+                  <select required className="input-field" value={shippingZone} onChange={e => setShippingZone(e.target.value)}>
+                    <option value="">Selecciona una zona</option>
+                    <option value="El Bosque">El Bosque</option>
+                    <option value="Naguanagua">Naguanagua</option>
+                    <option value="La Viña">La Viña</option>
+                    <option value="El Viñedo">El Viñedo</option>
+                    <option value="Prebo">Prebo</option>
+                    <option value="San Diego">San Diego</option>
+                    <option value="Centro">Centro</option>
+                  </select>
+                </div>
+              )}
+
+              {shippingMethod === "ENVIOS_NACIONALES" && (
+                <div className={styles.formGroup}>
+                  <label>Agencia de Envío</label>
+                  <select required className="input-field" value={shippingAgency} onChange={e => setShippingAgency(e.target.value)}>
+                    <option value="">Selecciona una agencia</option>
+                    <option value="MRW">MRW</option>
+                    <option value="Zoom">Zoom</option>
+                    <option value="Tealca">Tealca</option>
+                    <option value="Domesa">Domesa</option>
+                  </select>
+                </div>
+              )}
 
               <h3 style={{textTransform:'uppercase', fontSize: '1rem', marginBottom: '15px', marginTop: '30px'}}>Pago</h3>
               

@@ -50,7 +50,6 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
       image: product.image,
     });
     setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
   };
 
   return (
@@ -127,10 +126,42 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
             style={isSoldOut ? { background: '#ccc', cursor: 'not-allowed', color: '#666' } : {}}
             disabled={isSoldOut}
           >
-            {isSoldOut ? "AGOTADO" : added ? "AÑADIDO A LA CESTA" : "AÑADIR A LA CESTA"}
+            {isSoldOut ? "AGOTADO" : "AÑADIR A LA CESTA"}
           </button>
         </div>
       </div>
+
+      {added && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+          background: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex',
+          alignItems: 'center', justifyContent: 'center'
+        }}>
+          <div style={{
+            background: '#fff', padding: '40px', maxWidth: '400px', width: '90%',
+            textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '20px',
+            animation: 'fadeIn 0.3s ease'
+          }}>
+            <h2 style={{textTransform:'uppercase', fontSize:'1.2rem', margin:0}}>Añadido a la Cesta</h2>
+            <p style={{margin:0, color:'var(--text-secondary)'}}>
+              Has añadido <strong>{product.name} - {product.color}</strong> exitosamente.
+            </p>
+            <div style={{display:'flex', gap:'10px', flexDirection:'column', marginTop:'10px'}}>
+              <Link href="/cart" className="btn-primary">Ver la Cesta y Pagar</Link>
+              <button 
+                onClick={() => setAdded(false)} 
+                style={{
+                  background:'transparent', border:'1px solid var(--border-color)',
+                  padding:'15px', cursor:'pointer', fontWeight:600, textTransform:'uppercase',
+                  letterSpacing:'1px', fontSize:'0.8rem'
+                }}
+              >
+                Seguir Comprando
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
