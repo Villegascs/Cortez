@@ -72,11 +72,41 @@ export default function AdminPanel() {
 
   const [mainImageFile, setMainImageFile] = useState<File | null>(null);
   const [extraFiles, setExtraFiles] = useState<FileList | null>(null);
+  const [mainImagePreview, setMainImagePreview] = useState("");
+  const [extraPreviews, setExtraPreviews] = useState<string[]>([]);
+
   const [uploadingFiles, setUploadingFiles] = useState(false);
+  const [editId, setEditId] = useState<number | null>(null);
+  const [existingMainImage, setExistingMainImage] = useState("");
+  const [existingExtraImages, setExistingExtraImages] = useState<string[]>([]);
+
+  const handleEdit = (p: any) => {
+    setEditId(p.id);
+    setNewProductName(p.name);
+    setNewProductColor(p.color);
+    setNewProductPrice(p.price.toString());
+    setNewProductStock(p.stock.toString());
+    setNewProductDesc(p.description);
+    setExistingMainImage(p.image);
+    setExistingExtraImages(JSON.parse(p.images || "[]"));
+    setMainImageFile(null);
+    setExtraFiles(null);
+    setMainImagePreview("");
+    setExtraPreviews([]);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCancelEdit = () => {
+    setEditId(null);
+    setNewProductName(""); setNewProductColor(""); setNewProductPrice("");
+    setNewProductStock(""); setNewProductDesc(""); setMainImageFile(null); setExtraFiles(null);
+    setMainImagePreview(""); setExtraPreviews([]);
+    setExistingMainImage(""); setExistingExtraImages([]);
+  };
 
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!mainImageFile) return alert("Debes subir una imagen principal");
+    if (!editId && !mainImageFile) return alert("Debes subir una imagen principal");
     
     setUploadingFiles(true);
     try {
@@ -96,19 +126,22 @@ export default function AdminPanel() {
       };
 
       // 1. Upload main image
-      const mainImageUrl = await uploadToImgBB(mainImageFile);
+      let mainImageUrl = existingMainImage;
+      if (mainImageFile) {
+        mainImageUrl = await uploadToImgBB(mainImageFile);
+      }
 
       // 2. Upload extra images
-      const extraUrls: string[] = [];
+      const extraUrls: string[] = [...existingExtraImages];
       if (extraFiles) {
         for (let i = 0; i < extraFiles.length; i++) {
           extraUrls.push(await uploadToImgBB(extraFiles[i]));
         }
       }
 
-      // 3. Create product
-      const productRes = await fetch('/api/products', {
-        method: 'POST',
+      // 3. Create or update product
+      const productRes = await fetch(editId ? `/api/products/${editId}` : '/api/products', {
+        method: editId ? 'PATCH' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: newProductName,
@@ -122,8 +155,7 @@ export default function AdminPanel() {
       });
       if (!productRes.ok) throw new Error("Error guardando el producto en la base de datos.");
 
-      setNewProductName(""); setNewProductColor(""); setNewProductPrice("");
-      setNewProductStock(""); setNewProductDesc(""); setMainImageFile(null); setExtraFiles(null);
+      handleCancelEdit();
       fetchData();
     } catch (error: any) {
       console.error(error);
@@ -200,9 +232,9 @@ export default function AdminPanel() {
       <h2 style={{ marginBottom: '20px', textTransform:'uppercase', fontSize: '1.5rem' }}>Inventario de Productos</h2>
       <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '40px', marginBottom: '60px' }}>
         
-        {/* ADD PRODUCT */}
+        {/* ADD / EDIT PRODUCT */}
         <div style={{ background: 'var(--surface-color)', padding: '20px', height: 'fit-content' }}>
-          <h3 style={{ marginBottom: '15px', textTransform:'uppercase', fontSize: '1rem' }}>Añadir Lente</h3>
+          <h3 style={{ marginBottom: '15px', textTransform:'uppercase', fontSize: '1rem' }}>{editId ? "Editar Lente" : "Añadir Lente"}</h3>
           <form onSubmit={handleAddProduct} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <input required placeholder="Nombre (ej. cortez aviator)" className="input-field" value={newProductName} onChange={e=>setNewProductName(e.target.value)} />
             <input required placeholder="Color (ej. Gold & Dark)" className="input-field" value={newProductColor} onChange={e=>setNewProductColor(e.target.value)} />
@@ -211,18 +243,48 @@ export default function AdminPanel() {
             <textarea required placeholder="Descripción" className="input-field" value={newProductDesc} onChange={e=>setNewProductDesc(e.target.value)} />
             
             <div style={{marginTop: '10px'}}>
-              <label style={{fontSize: '0.85rem', color: 'var(--text-secondary)'}}>Imagen Principal (Obligatoria)</label>
-              <input required type="file" accept="image/*" className="input-field" style={{padding:'5px'}} onChange={e=>setMainImageFile(e.target.files?.[0] || null)} />
+              <label style={{fontSize: '0.85rem', color: 'var(--text-secondary)'}}>Imagen Principal {!editId && "(Obligatoria)"}</label>
+              {existingMainImage && !mainImagePreview && <div style={{marginBottom: '5px'}}><img src={existingMainImage} width={50} height={50} style={{objectFit:'cover'}} /></div>}
+              {mainImagePreview && <div style={{marginBottom: '5px'}}><img src={mainImagePreview} width={50} height={50} style={{objectFit:'cover'}} /></div>}
+              <input required={!editId} type="file" accept="image/*" className="input-field" style={{padding:'5px'}} onChange={e=>{
+                const file = e.target.files?.[0];
+                if(file){
+                  setMainImageFile(file);
+                  setMainImagePreview(URL.createObjectURL(file));
+                }
+              }} />
             </div>
 
             <div style={{marginTop: '5px'}}>
               <label style={{fontSize: '0.85rem', color: 'var(--text-secondary)'}}>Galería (Imágenes Extra)</label>
-              <input type="file" accept="image/*" multiple className="input-field" style={{padding:'5px'}} onChange={e=>setExtraFiles(e.target.files)} />
+              {existingExtraImages.length > 0 && extraPreviews.length === 0 && (
+                <div style={{display:'flex', gap:'5px', marginBottom:'5px', flexWrap:'wrap'}}>
+                  {existingExtraImages.map((url, i) => <img key={i} src={url} width={40} height={40} style={{objectFit:'cover'}} />)}
+                  <span style={{fontSize:'0.7rem', color:'red', cursor:'pointer'}} onClick={() => setExistingExtraImages([])}>[Borrar Todas]</span>
+                </div>
+              )}
+              {extraPreviews.length > 0 && (
+                <div style={{display:'flex', gap:'5px', marginBottom:'5px', flexWrap:'wrap'}}>
+                  {extraPreviews.map((url, i) => <img key={i} src={url} width={40} height={40} style={{objectFit:'cover'}} />)}
+                </div>
+              )}
+              <input type="file" accept="image/*" multiple className="input-field" style={{padding:'5px'}} onChange={e=>{
+                const files = e.target.files;
+                if(files){
+                  setExtraFiles(files);
+                  setExtraPreviews(Array.from(files).map(f => URL.createObjectURL(f)));
+                }
+              }} />
             </div>
 
             <button type="submit" className="btn-primary" style={{marginTop:'10px'}} disabled={uploadingFiles}>
-              {uploadingFiles ? "SUBIENDO..." : <><Plus size={18}/> Agregar</>}
+              {uploadingFiles ? "GUARDANDO..." : <><Save size={18}/> {editId ? "Guardar Cambios" : "Agregar"}</>}
             </button>
+            {editId && (
+              <button type="button" className="btn-secondary" onClick={handleCancelEdit}>
+                Cancelar
+              </button>
+            )}
           </form>
         </div>
 
@@ -255,10 +317,13 @@ export default function AdminPanel() {
                     />
                   </td>
                   <td style={{ padding: '15px 10px', display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <button onClick={() => handleEdit(p)} style={{ color: '#000', cursor: 'pointer' }} title="Editar Lente">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                    </button>
                     <button onClick={() => handleToggleVisibility(p.id, p.isVisible)} style={{ color: p.isVisible ? '#000' : '#888', cursor: 'pointer' }} title={p.isVisible ? "Ocultar Lente" : "Mostrar Lente"}>
                       {p.isVisible ? <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg> : <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>}
                     </button>
-                    <button onClick={() => handleDeleteProduct(p.id)} style={{ color: 'red', cursor: 'pointer' }}><Trash2 size={20}/></button>
+                    <button onClick={() => handleDeleteProduct(p.id)} style={{ color: 'red', cursor: 'pointer' }} title="Eliminar Lente"><Trash2 size={20}/></button>
                   </td>
                 </tr>
               ))}

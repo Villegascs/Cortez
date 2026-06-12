@@ -41,6 +41,8 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
   const isSoldOut = product.stock <= 0;
 
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
   const handleAddToCart = () => {
     if (isSoldOut) return;
     addItem({
@@ -51,6 +53,9 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
     });
     setAdded(true);
   };
+
+  const extraImages = product.images ? JSON.parse(product.images) : [];
+  const allImages = [product.image, ...extraImages];
 
   return (
     <div className={styles.container}>
@@ -77,14 +82,53 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
       <div className={styles.productWrapper}>
         <div className={styles.imageSection}>
-          <div className={styles.imageContainer}>
+          <div className={styles.imageContainer} style={{ position: 'relative' }}>
             <Image 
-              src={product.image} 
-              alt={product.name} 
+              src={allImages[currentImageIndex]} 
+              alt={`${product.name} - ${currentImageIndex + 1}`} 
               fill 
               sizes="(max-width: 992px) 100vw, 50vw"
               className={styles.mainImage}
             />
+            
+            {allImages.length > 1 && (
+              <>
+                <button 
+                  onClick={() => setCurrentImageIndex((prev: number) => (prev > 0 ? prev - 1 : allImages.length - 1))}
+                  style={{
+                    position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)',
+                    background: 'rgba(255,255,255,0.8)', border: 'none', borderRadius: '50%',
+                    width: '40px', height: '40px', cursor: 'pointer', zIndex: 5,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <button 
+                  onClick={() => setCurrentImageIndex((prev: number) => (prev < allImages.length - 1 ? prev + 1 : 0))}
+                  style={{
+                    position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)',
+                    background: 'rgba(255,255,255,0.8)', border: 'none', borderRadius: '50%',
+                    width: '40px', height: '40px', cursor: 'pointer', zIndex: 5,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+                <div style={{
+                  position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
+                  display: 'flex', gap: '8px', zIndex: 5
+                }}>
+                  {allImages.map((_: any, idx: number) => (
+                    <div key={idx} onClick={() => setCurrentImageIndex(idx)} style={{
+                      width: '8px', height: '8px', borderRadius: '50%', cursor: 'pointer',
+                      background: idx === currentImageIndex ? '#000' : 'rgba(0,0,0,0.3)'
+                    }} />
+                  ))}
+                </div>
+              </>
+            )}
+
             {isSoldOut && (
               <div style={{
                 position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', 

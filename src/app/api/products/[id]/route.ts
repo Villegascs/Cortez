@@ -10,8 +10,14 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const product = await prisma.product.update({
       where: { id: Number(resolvedParams.id) },
       data: {
+        name: data.name !== undefined ? data.name : undefined,
+        color: data.color !== undefined ? data.color : undefined,
+        description: data.description !== undefined ? data.description : undefined,
+        price: data.price !== undefined ? Number(data.price) : undefined,
         stock: data.stock !== undefined ? Number(data.stock) : undefined,
-        isVisible: data.isVisible !== undefined ? Boolean(data.isVisible) : undefined
+        isVisible: data.isVisible !== undefined ? Boolean(data.isVisible) : undefined,
+        image: data.image !== undefined ? data.image : undefined,
+        images: data.images !== undefined ? data.images : undefined
       }
     });
     return NextResponse.json({ success: true, product });
