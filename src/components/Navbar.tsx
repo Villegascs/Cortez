@@ -116,7 +116,7 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
           
           <div style={{textAlign:'center'}}>
             <Link href="/" style={{display: 'inline-block'}}>
-              <Image src="/logo.png" alt="Cortez" width={120} height={30} style={{ filter: 'invert(1)', objectFit: 'contain' }} priority />
+              <Image src="/logo.png" alt="Cortez" width={180} height={40} style={{ filter: 'invert(1)', objectFit: 'contain', transform: 'scale(2.5)' }} priority />
             </Link>
           </div>
           
@@ -146,7 +146,9 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
           padding: '20px'
         }}>
           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px'}}>
-            <Image src="/logo.png" alt="Cortez" width={120} height={30} style={{ filter: 'invert(1)', objectFit: 'contain' }} />
+            <div style={{ paddingLeft: '20px' }}>
+              <Image src="/logo.png" alt="Cortez" width={140} height={35} style={{ filter: 'invert(1)', objectFit: 'contain', transform: 'scale(2)' }} />
+            </div>
             <button onClick={() => setIsMenuOpen(false)} style={{padding: '5px'}}>
               <X size={28} color="#000" />
             </button>
