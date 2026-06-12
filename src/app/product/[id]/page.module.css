@@ -64,6 +64,8 @@
 @media (max-width: 992px) {
   .productWrapper {
     grid-template-columns: 1fr;
+    gap: 30px;
+    padding: 20px;
   }
 }
 
