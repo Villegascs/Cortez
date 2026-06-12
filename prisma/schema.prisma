@@ -6,17 +6,19 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model Product {
   id          Int      @id @default(autoincrement())
   name        String
+  color       String   @default("")
   description String
   price       Float
+  stock       Int      @default(0)
   image       String   // Primary image URL
-  images      String   // JSON string of an array of extra image URLs
+  images      String   @default("[]") // JSON string of an array of extra image URLs
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   

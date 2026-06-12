@@ -1,35 +1,22 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./page.module.css";
-
-// Dummy data for initial UI
-const products = [
-  {
-    id: 1,
-    name: "cortez aviator",
-    color: "Gold & Dark",
-    price: 120,
-    image: "/images/lente_1_1781241251041.png",
-  },
-  {
-    id: 2,
-    name: "cortez wayfarer",
-    color: "Matte Black",
-    price: 150,
-    image: "/images/lente_2_1781241268932.png",
-  },
-  {
-    id: 3,
-    name: "cortez vintage",
-    color: "Tortoise",
-    price: 110,
-    image: "/images/lente_3_1781241285563.png",
-  },
-];
+import { ShoppingBag } from "lucide-react";
+import { useCartStore } from "@/store/cart";
 
 export default function Home() {
+  const [products, setProducts] = useState<any[]>([]);
+  const { items } = useCartStore();
+
+  useEffect(() => {
+    fetch('/api/products').then(res => res.json()).then(data => {
+      if(data.products) setProducts(data.products);
+    }).catch(e => console.error(e));
+  }, []);
+
   return (
     <div>
       {/* Top Bar */}
@@ -48,7 +35,10 @@ export default function Home() {
           Cortez
         </div>
         <div className={styles.cartIcon}>
-          <Link href="/cart">Carrito</Link>
+          <Link href="/cart" style={{display: 'flex', alignItems: 'center', gap: '5px'}}>
+            <ShoppingBag size={20} strokeWidth={1.5} />
+            <span style={{fontSize: '0.8rem'}}>{items.length}</span>
+          </Link>
         </div>
       </nav>
 
@@ -88,6 +78,17 @@ export default function Home() {
                     sizes="(max-width: 768px) 100vw, 33vw"
                     className={styles.cardImage}
                   />
+                  {product.stock <= 0 && (
+                    <div style={{
+                      position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', 
+                      background: 'rgba(255,255,255,0.7)', display: 'flex', 
+                      alignItems: 'center', justifyContent: 'center',
+                      fontWeight: 700, letterSpacing: '2px', fontSize: '1.2rem', color: '#000',
+                      zIndex: 10
+                    }}>
+                      SOLD OUT
+                    </div>
+                  )}
                 </div>
                 <div className={styles.cardInfo}>
                   <div className={styles.cardTopRow}>

@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCartStore } from "@/store/cart";
 import styles from "./page.module.css";
-import { Trash2 } from "lucide-react";
+import { Trash2, ShoppingBag } from "lucide-react";
 
 const VENEZUELAN_BANKS = [
   "Banesco",
@@ -115,7 +115,12 @@ export default function CartPage() {
       <nav className={styles.navbar}>
         <div><Link href="/">Colección</Link></div>
         <div className={styles.logo}><Link href="/">Cortez</Link></div>
-        <div className={styles.cartIcon}>Cesta ({items.length})</div>
+        <div className={styles.cartIcon}>
+          <Link href="/cart" style={{display: 'flex', alignItems: 'center', gap: '5px'}}>
+            <ShoppingBag size={20} strokeWidth={1.5} />
+            <span style={{fontSize: '0.8rem'}}>{items.length}</span>
+          </Link>
+        </div>
       </nav>
 
       <div className={styles.cartWrapper}>

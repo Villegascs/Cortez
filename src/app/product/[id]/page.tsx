@@ -1,44 +1,34 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCartStore } from "@/store/cart";
 import styles from "./page.module.css";
-import { ShieldCheck, Truck, RotateCcw } from "lucide-react";
-
-const products = [
-  {
-    id: 1,
-    name: "cortez aviator",
-    color: "Gold & Dark",
-    price: 120,
-    image: "/images/lente_1_1781241251041.png",
-    description: "Diseño clásico y atemporal. Montura metálica ligera y lentes polarizadas para máxima protección."
-  },
-  {
-    id: 2,
-    name: "cortez wayfarer",
-    color: "Matte Black",
-    price: 150,
-    image: "/images/lente_2_1781241268932.png",
-    description: "El icono reinventado. Acabado mate sofisticado con la más alta tecnología en protección UV."
-  },
-  {
-    id: 3,
-    name: "cortez vintage",
-    color: "Tortoise",
-    price: 110,
-    image: "/images/lente_3_1781241285563.png",
-    description: "Estilo retro con toques modernos. Patrón tortoise exclusivo hecho a mano."
-  },
-];
+import { ShieldCheck, Truck, RotateCcw, ShoppingBag } from "lucide-react";
 
 export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
-  const product = products.find((p) => p.id === Number(resolvedParams.id));
-  const addItem = useCartStore((state) => state.addItem);
+  const [product, setProduct] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  
+  const { items, addItem } = useCartStore();
   const [added, setAdded] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/products').then(res => res.json()).then(data => {
+      if(data.products) {
+        const found = data.products.find((p: any) => p.id === Number(resolvedParams.id));
+        setProduct(found);
+      }
+      setLoading(false);
+    }).catch(e => {
+      console.error(e);
+      setLoading(false);
+    });
+  }, [resolvedParams.id]);
+
+  if (loading) return <div style={{padding:'40px', textAlign:'center'}}>Cargando producto...</div>;
 
   if (!product) {
     return (
@@ -49,7 +39,10 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
     );
   }
 
+  const isSoldOut = product.stock <= 0;
+
   const handleAddToCart = () => {
+    if (isSoldOut) return;
     addItem({
       id: product.id,
       name: `${product.name} - ${product.color}`,
@@ -77,7 +70,10 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
           <Link href="/">Cortez</Link>
         </div>
         <div className={styles.cartIcon}>
-          <Link href="/cart">Carrito</Link>
+          <Link href="/cart" style={{display: 'flex', alignItems: 'center', gap: '5px'}}>
+            <ShoppingBag size={20} strokeWidth={1.5} />
+            <span style={{fontSize: '0.8rem'}}>{items.length}</span>
+          </Link>
         </div>
       </nav>
 
@@ -91,6 +87,17 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
               sizes="(max-width: 992px) 100vw, 50vw"
               className={styles.mainImage}
             />
+            {isSoldOut && (
+              <div style={{
+                position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', 
+                background: 'rgba(255,255,255,0.7)', display: 'flex', 
+                alignItems: 'center', justifyContent: 'center',
+                fontWeight: 700, letterSpacing: '2px', fontSize: '1.2rem', color: '#000',
+                zIndex: 10
+              }}>
+                SOLD OUT
+              </div>
+            )}
           </div>
         </div>
 
@@ -118,8 +125,10 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
           <button 
             className={`btn-primary ${styles.addToCartBtn}`} 
             onClick={handleAddToCart}
+            style={isSoldOut ? { background: '#ccc', cursor: 'not-allowed', color: '#666' } : {}}
+            disabled={isSoldOut}
           >
-            {added ? "AÑADIDO A LA CESTA" : "AÑADIR A LA CESTA"}
+            {isSoldOut ? "AGOTADO" : added ? "AÑADIDO A LA CESTA" : "AÑADIR A LA CESTA"}
           </button>
         </div>
       </div>

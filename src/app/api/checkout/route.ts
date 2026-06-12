@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     const items = JSON.parse(itemsRaw);
     
     let paymentScreenshotPath = null;
-    const screenshotFile = formData.get('paymentScreenshot') as File | null;
+    const screenshotFile = formData.get('screenshot') as File | null;
     
     if (screenshotFile && screenshotFile.size > 0) {
       const buffer = Buffer.from(await screenshotFile.arrayBuffer());
@@ -60,6 +60,14 @@ export async function POST(request: Request) {
         }
       }
     });
+
+    // Deduct stock
+    for (const item of items) {
+      await prisma.product.update({
+        where: { id: item.id },
+        data: { stock: { decrement: item.quantity } }
+      });
+    }
 
     return NextResponse.json({ success: true, orderId: order.id });
   } catch (error) {

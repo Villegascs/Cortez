@@ -3,37 +3,45 @@
 import { useState, useEffect } from "react";
 import styles from "./page.module.css";
 import Link from "next/link";
-import { ArrowLeft, Save, ExternalLink } from "lucide-react";
+import { ArrowLeft, Save, ExternalLink, Plus, Trash2 } from "lucide-react";
 
 export default function AdminPanel() {
   const [orders, setOrders] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
   const [usdtRate, setUsdtRate] = useState<number>(40.5);
   const [loading, setLoading] = useState(true);
 
-  const fetchOrders = async () => {
-    try {
-      const res = await fetch('/api/admin/orders');
-      const data = await res.json();
-      if (data.orders) setOrders(data.orders);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // New product form
+  const [newProductName, setNewProductName] = useState("");
+  const [newProductColor, setNewProductColor] = useState("");
+  const [newProductPrice, setNewProductPrice] = useState("");
+  const [newProductStock, setNewProductStock] = useState("");
+  const [newProductDesc, setNewProductDesc] = useState("");
+  const [newProductImage, setNewProductImage] = useState("");
 
-  const fetchSettings = async () => {
+  const fetchData = async () => {
     try {
-      const res = await fetch('/api/settings');
-      const data = await res.json();
-      if (data.rate) setUsdtRate(data.rate);
+      const [resOrders, resSettings, resProducts] = await Promise.all([
+        fetch('/api/admin/orders'),
+        fetch('/api/settings'),
+        fetch('/api/products')
+      ]);
+      const dataOrders = await resOrders.json();
+      const dataSettings = await resSettings.json();
+      const dataProducts = await resProducts.json();
+
+      if (dataOrders.orders) setOrders(dataOrders.orders);
+      if (dataSettings.rate) setUsdtRate(dataSettings.rate);
+      if (dataProducts.products) setProducts(dataProducts.products);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchOrders();
-    fetchSettings();
-    setLoading(false);
+    fetchData();
   }, []);
 
   const handleUpdateRate = async () => {
@@ -56,9 +64,55 @@ export default function AdminPanel() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderId, status })
       });
-      fetchOrders(); // refresh
+      fetchData(); // refresh
     } catch (error) {
       alert("Error actualizando pedido");
+    }
+  };
+
+  const handleAddProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newProductName,
+          color: newProductColor,
+          price: newProductPrice,
+          stock: newProductStock,
+          description: newProductDesc,
+          image: newProductImage
+        })
+      });
+      setNewProductName(""); setNewProductColor(""); setNewProductPrice("");
+      setNewProductStock(""); setNewProductDesc(""); setNewProductImage("");
+      fetchData();
+    } catch (error) {
+      alert("Error añadiendo producto");
+    }
+  };
+
+  const handleDeleteProduct = async (id: number) => {
+    if(!confirm("¿Seguro que deseas eliminar este producto?")) return;
+    try {
+      await fetch(`/api/products/${id}`, { method: 'DELETE' });
+      fetchData();
+    } catch (error) {
+      alert("Error eliminando producto");
+    }
+  };
+
+  const handleUpdateStock = async (id: number, stock: number) => {
+    try {
+      await fetch(`/api/products/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ stock })
+      });
+      fetchData();
+    } catch (error) {
+      alert("Error actualizando stock");
     }
   };
 
@@ -78,22 +132,74 @@ export default function AdminPanel() {
           <div>
             <div className={styles.sectionTitle}>Tasa USDT (Bs)</div>
             <input 
-              type="number" 
-              step="0.01" 
-              className="input-field" 
-              value={usdtRate} 
-              onChange={(e) => setUsdtRate(Number(e.target.value))} 
-              style={{ width: '120px' }}
+              type="number" step="0.01" className="input-field" 
+              value={usdtRate} onChange={(e) => setUsdtRate(Number(e.target.value))} 
+              style={{ width: '120px', padding: '10px' }}
             />
           </div>
-          <button className="btn-primary" onClick={handleUpdateRate} style={{ marginTop: '20px' }}>
+          <button className="btn-primary" onClick={handleUpdateRate} style={{ marginTop: '20px', padding: '12px' }}>
             <Save size={20} />
           </button>
         </div>
       </div>
 
-      <h2 style={{ marginBottom: '20px' }}>Pedidos Recientes</h2>
-      
+      {/* PRODUCT INVENTORY SECTION */}
+      <h2 style={{ marginBottom: '20px', textTransform:'uppercase', fontSize: '1.5rem' }}>Inventario de Productos</h2>
+      <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '40px', marginBottom: '60px' }}>
+        
+        {/* ADD PRODUCT */}
+        <div style={{ background: 'var(--surface-color)', padding: '20px', height: 'fit-content' }}>
+          <h3 style={{ marginBottom: '15px', textTransform:'uppercase', fontSize: '1rem' }}>Añadir Lente</h3>
+          <form onSubmit={handleAddProduct} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <input required placeholder="Nombre (ej. cortez aviator)" className="input-field" value={newProductName} onChange={e=>setNewProductName(e.target.value)} />
+            <input required placeholder="Color (ej. Gold & Dark)" className="input-field" value={newProductColor} onChange={e=>setNewProductColor(e.target.value)} />
+            <input required type="number" placeholder="Precio ($)" className="input-field" value={newProductPrice} onChange={e=>setNewProductPrice(e.target.value)} />
+            <input required type="number" placeholder="Stock" className="input-field" value={newProductStock} onChange={e=>setNewProductStock(e.target.value)} />
+            <textarea required placeholder="Descripción" className="input-field" value={newProductDesc} onChange={e=>setNewProductDesc(e.target.value)} />
+            <input required placeholder="URL de la imagen (/images/...)" className="input-field" value={newProductImage} onChange={e=>setNewProductImage(e.target.value)} />
+            <button type="submit" className="btn-primary" style={{marginTop:'10px'}}><Plus size={18}/> Agregar</button>
+          </form>
+        </div>
+
+        {/* LIST PRODUCTS */}
+        <div>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+            <thead>
+              <tr style={{ borderBottom: '2px solid #000' }}>
+                <th style={{ padding: '10px' }}>Producto</th>
+                <th style={{ padding: '10px' }}>Precio</th>
+                <th style={{ padding: '10px' }}>Stock</th>
+                <th style={{ padding: '10px' }}>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {products.map(p => (
+                <tr key={p.id} style={{ borderBottom: '1px solid #ddd' }}>
+                  <td style={{ padding: '15px 10px' }}>
+                    <strong>{p.name}</strong><br/>
+                    <span style={{ fontSize: '0.85rem', color: '#666' }}>{p.color}</span>
+                  </td>
+                  <td style={{ padding: '15px 10px' }}>${p.price}</td>
+                  <td style={{ padding: '15px 10px' }}>
+                    <input 
+                      type="number" 
+                      value={p.stock} 
+                      className="input-field" 
+                      style={{ width: '70px', padding: '5px' }}
+                      onChange={(e) => handleUpdateStock(p.id, Number(e.target.value))}
+                    />
+                  </td>
+                  <td style={{ padding: '15px 10px' }}>
+                    <button onClick={() => handleDeleteProduct(p.id)} style={{ color: 'red', cursor: 'pointer' }}><Trash2 size={20}/></button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <h2 style={{ marginBottom: '20px', textTransform:'uppercase', fontSize: '1.5rem' }}>Pedidos Recientes</h2>
       {orders.length === 0 ? (
         <p>No hay pedidos registrados.</p>
       ) : (
@@ -111,7 +217,7 @@ export default function AdminPanel() {
                 <div className={styles.sectionTitle}>Cliente</div>
                 <div className={styles.clientInfo}>
                   {order.firstName} {order.lastName} <br/>
-                  <span style={{color: 'var(--text-secondary)'}}>{order.documentType}-{order.documentNumber}</span>
+                  <span style={{color: 'var(--text-secondary)', fontSize: '0.9rem'}}>{order.documentType}-{order.documentNumber}</span>
                 </div>
               </div>
 
@@ -127,7 +233,7 @@ export default function AdminPanel() {
                     </>
                   )}
                   <strong>Ref:</strong> {order.paymentReference}
-                  
+                  <br/>
                   {order.paymentScreenshot && (
                     <a href={order.paymentScreenshot} target="_blank" rel="noreferrer" className={styles.screenshotLink}>
                       <ExternalLink size={16} /> Ver Captura
@@ -141,7 +247,7 @@ export default function AdminPanel() {
                   <button className={styles.acceptBtn} onClick={() => handleUpdateOrderStatus(order.id, 'ACCEPTED')}>
                     Aceptar
                   </button>
-                  <button className={styles.rejectBtn} onClick={() => handleUpdateOrderStatus(order.id, 'RECHAZADO')}>
+                  <button className={styles.rejectBtn} onClick={() => handleUpdateOrderStatus(order.id, 'REJECTED')}>
                     Rechazar
                   </button>
                 </div>
