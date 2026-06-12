@@ -84,8 +84,9 @@ export default function AdminPanel() {
       const mainFormData = new FormData();
       mainFormData.append("image", mainImageFile);
       const resMain = await fetch('/api/upload', { method: 'POST', body: mainFormData });
-      const mainData = await resMain.json();
-      if (!resMain.ok) throw new Error("Error subiendo imagen principal");
+      let mainData;
+      try { mainData = await resMain.json(); } catch(e) { throw new Error("Error en el servidor al subir la imagen principal"); }
+      if (!resMain.ok) throw new Error(mainData.error || "Error de API subiendo imagen principal");
 
       // 2. Upload extra images
       const extraUrls: string[] = [];
@@ -117,8 +118,9 @@ export default function AdminPanel() {
       setNewProductName(""); setNewProductColor(""); setNewProductPrice("");
       setNewProductStock(""); setNewProductDesc(""); setMainImageFile(null); setExtraFiles(null);
       fetchData();
-    } catch (error) {
-      alert("Error añadiendo producto");
+    } catch (error: any) {
+      console.error(error);
+      alert(`Error añadiendo producto: ${error.message || error}`);
     } finally {
       setUploadingFiles(false);
     }
