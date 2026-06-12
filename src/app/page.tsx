@@ -20,16 +20,9 @@ export default function Home() {
 
   return (
     <div>
-      {/* Top Bar */}
-      <div className={styles.topBar}>
-        <div className={styles.topBarText}>
-          ENVÍOS GRATIS A PARTIR DE $100 — PAGO MÓVIL, ZELLE Y BINANCE DISPONIBLES
-        </div>
-      </div>
-
       <Navbar />
 
-      <div style={{ paddingTop: '75px' }}>
+      <div style={{ paddingTop: '100px' }}>
 
       {/* Hero Section */}
       <section className={styles.hero}>

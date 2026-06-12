@@ -136,13 +136,9 @@ export default function CartPage() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.topBar}>
-        ENVÍOS GRATIS A PARTIR DE $100 — PAGO MÓVIL, ZELLE Y BINANCE DISPONIBLES
-      </div>
-
       <Navbar />
 
-      <div style={{ paddingTop: '75px' }}>
+      <div style={{ paddingTop: '100px' }}>
 
       <div className={styles.cartWrapper}>
         <div>

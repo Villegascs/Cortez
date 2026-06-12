@@ -60,14 +60,9 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
   return (
     <div className={styles.container}>
-      {/* Top Bar */}
-      <div className={styles.topBar}>
-        ENVÍOS GRATIS A PARTIR DE $100 — PAGO MÓVIL, ZELLE Y BINANCE DISPONIBLES
-      </div>
-
       <Navbar />
 
-      <div style={{ paddingTop: '75px' }}>
+      <div style={{ paddingTop: '100px' }}>
 
       <div className={styles.productWrapper}>
         <div className={styles.imageSection}>

@@ -42,40 +42,58 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
   }, { scope: navRef });
 
   return (
-    <nav 
+    <header 
       ref={navRef}
       style={{
-        display: 'grid', 
-        gridTemplateColumns: '1fr auto 1fr', 
-        alignItems: 'center',
-        padding: '20px 40px', 
-        borderBottom: '1px solid var(--border-color)',
         position: 'fixed', 
-        top: '35px', // Below the top bar
+        top: 0,
+        left: 0,
         width: '100%',
-        background: 'rgba(255,255,255,0.9)', 
-        backdropFilter: 'blur(10px)', 
         zIndex: 50,
       }}
     >
-      <div style={{display:'flex', gap:'20px', fontSize:'0.85rem', fontWeight:600, textTransform:'uppercase'}}>
-        <Link href="/#hombres">Hombres</Link>
-        <Link href="/#mujeres">Mujeres</Link>
-        <Link href="/#unisex">Unisex</Link>
+      <div style={{
+        background: '#000',
+        color: '#fff',
+        textAlign: 'center',
+        padding: '8px 20px',
+        fontSize: '0.75rem',
+        fontWeight: 600,
+        letterSpacing: '1px'
+      }}>
+        ENVÍOS GRATIS A PARTIR DE $100 — PAGO MÓVIL, ZELLE Y BINANCE DISPONIBLES
       </div>
       
-      <div style={{textAlign:'center', fontSize: '1.5rem', fontWeight: '800', letterSpacing: '-1px'}}>
-        <Link href="/" style={{color: 'var(--foreground)'}}>Cortez</Link>
-      </div>
-      
-      <div style={{justifySelf:'end'}}>
-        {!isSuccessPage && (
-          <Link href="/cart" style={{display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--foreground)'}}>
-            <ShoppingBag size={20} strokeWidth={1.5} />
-            <span style={{fontSize: '0.8rem', fontWeight: 600}}>{items.length}</span>
-          </Link>
-        )}
-      </div>
-    </nav>
+      <nav 
+        style={{
+          display: 'grid', 
+          gridTemplateColumns: '1fr auto 1fr', 
+          alignItems: 'center',
+          padding: '20px 40px', 
+          borderBottom: '1px solid var(--border-color)',
+          background: 'rgba(255,255,255,0.9)', 
+          backdropFilter: 'blur(10px)', 
+        }}
+      >
+        <div style={{display:'flex', gap:'20px', fontSize:'0.85rem', fontWeight:600, textTransform:'uppercase'}}>
+          <Link href="/#hombres">Hombres</Link>
+          <Link href="/#mujeres">Mujeres</Link>
+          <Link href="/#unisex">Unisex</Link>
+        </div>
+        
+        <div style={{textAlign:'center', fontSize: '1.5rem', fontWeight: '800', letterSpacing: '-1px'}}>
+          <Link href="/" style={{color: 'var(--foreground)'}}>Cortez</Link>
+        </div>
+        
+        <div style={{justifySelf:'end'}}>
+          {!isSuccessPage && (
+            <Link href="/cart" style={{display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--foreground)'}}>
+              <ShoppingBag size={20} strokeWidth={1.5} />
+              <span style={{fontSize: '0.8rem', fontWeight: 600}}>{items.length}</span>
+            </Link>
+          )}
+        </div>
+      </nav>
+    </header>
   );
 }
