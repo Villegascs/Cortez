@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCartStore } from "@/store/cart";
 import styles from "./page.module.css";
-import { Trash2, ShoppingBag } from "lucide-react";
+import { Trash2, ShoppingBag, ChevronDown, MessageCircle } from "lucide-react";
 import Navbar from "@/components/Navbar";
 
 const VENEZUELAN_BANKS = [
@@ -39,6 +39,8 @@ export default function CartPage() {
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [orderDetails, setOrderDetails] = useState<any>(null);
+  const [isOrderOpen, setIsOrderOpen] = useState(false);
 
   useEffect(() => {
     // Fetch live rate
@@ -106,6 +108,12 @@ export default function CartPage() {
 
       if (res.ok) {
         setSuccess(true);
+        setOrderDetails({
+          items: [...items],
+          total: totalUsd,
+          customerName: `${firstName} ${lastName}`,
+          shippingMethod: shippingMethod
+        });
         clearCart();
       } else {
         alert("Hubo un error al procesar el pago");
@@ -117,17 +125,83 @@ export default function CartPage() {
     setLoading(false);
   };
 
+  const generateWhatsAppLink = () => {
+    if (!orderDetails) return "#";
+    
+    const itemsText = orderDetails.items.map((i: any) => `${i.quantity}x ${i.name}`).join(", ");
+    const text = `¡Hola Cortez! Acabo de realizar un pedido.\n\n*Cliente:* ${orderDetails.customerName}\n*Pedido:* ${itemsText}\n*Total:* $${orderDetails.total}\n*Método de entrega:* ${orderDetails.shippingMethod}\n\nAdjunto comprobante de pago en la web.`;
+    
+    return `https://wa.me/584247283924?text=${encodeURIComponent(text)}`;
+  };
+
   if (success) {
     return (
       <div className={styles.container}>
         <Navbar isSuccessPage={true} />
-        <div style={{ paddingTop: '75px' }}>
-          <div className={styles.successMessage}>
-            <h2>¡Pedido Completado!</h2>
-            <p>Hemos recibido tu pedido y el comprobante de pago.</p>
-            <p>Pronto nos pondremos en contacto contigo.</p>
-            <br/>
-            <Link href="/" className="btn-primary">Volver al inicio</Link>
+        <div style={{ paddingTop: '75px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div className={styles.successMessage} style={{ width: '100%', maxWidth: '500px', margin: '0 auto', textAlign: 'center' }}>
+            <h2 style={{ marginBottom: '15px' }}>¡Pedido Completado!</h2>
+            <p style={{ color: 'var(--text-secondary)' }}>Hemos recibido tu pedido y el comprobante de pago.</p>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '25px' }}>Pronto nos pondremos en contacto contigo.</p>
+            
+            {/* WhatsApp Button */}
+            <a 
+              href={generateWhatsAppLink()} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                background: '#25D366', color: '#fff', padding: '14px 20px', borderRadius: '8px',
+                textDecoration: 'none', fontWeight: 600, marginBottom: '30px',
+                boxShadow: '0 4px 12px rgba(37, 211, 102, 0.3)'
+              }}
+            >
+              <MessageCircle size={22} />
+              Notificar Pago por WhatsApp
+            </a>
+
+            {/* Collapsible Order Summary */}
+            {orderDetails && (
+              <div style={{ border: '1px solid #e2e8f0', borderRadius: '8px', background: '#fff', textAlign: 'left', marginBottom: '30px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+                <div 
+                  onClick={() => setIsOrderOpen(!isOrderOpen)}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', cursor: 'pointer', background: '#fafafa', borderRadius: '8px 8px 0 0' }}
+                >
+                  <span style={{ fontWeight: 600, fontSize: '0.95rem' }}>Resumen de Orden</span>
+                  <ChevronDown size={20} style={{ color: '#64748b', transform: isOrderOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                </div>
+                {isOrderOpen && (
+                  <div style={{ padding: '20px', borderTop: '1px solid #e2e8f0' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+                      <span style={{ color: '#64748b', fontSize: '0.9rem' }}>Estatus</span>
+                      <span style={{ background: '#fef3c7', color: '#d97706', padding: '2px 10px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>Pendiente</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+                      <span style={{ color: '#64748b', fontSize: '0.9rem' }}>Cliente</span>
+                      <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{orderDetails.customerName}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+                      <span style={{ color: '#64748b', fontSize: '0.9rem' }}>Entrega</span>
+                      <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{orderDetails.shippingMethod}</span>
+                    </div>
+                    <div style={{ paddingTop: '15px', borderTop: '1px dashed #e2e8f0' }}>
+                      {orderDetails.items.map((i: any, idx: number) => (
+                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '0.9rem' }}>
+                          <span style={{ color: '#334155' }}>{i.quantity}x {i.name}</span>
+                          <span style={{ fontWeight: 500 }}>${i.price * i.quantity}</span>
+                        </div>
+                      ))}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '15px', fontWeight: 700, fontSize: '1.1rem', color: '#0f172a' }}>
+                        <span>Total</span>
+                        <span>${orderDetails.total}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <Link href="/" className="btn-primary" style={{ width: '100%', display: 'block', textAlign: 'center', padding: '14px' }}>Volver a la tienda</Link>
           </div>
         </div>
       </div>

@@ -66,38 +66,55 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
       <div className={styles.productWrapper}>
         <div className={styles.imageSection}>
-          <div className={styles.imageContainer} style={{ position: 'relative' }}>
-            <Image 
-              src={allImages[currentImageIndex]} 
-              alt={`${product.name} - ${currentImageIndex + 1}`} 
-              fill 
-              sizes="(max-width: 992px) 100vw, 50vw"
-              className={styles.mainImage}
-            />
+          <div style={{ position: 'relative', width: '100%', maxWidth: '600px' }}>
+            <div className={styles.imageContainer} style={{ position: 'relative', overflow: 'hidden', borderRadius: '8px', border: '1px solid #eaeaea' }}>
+              <div style={{
+                display: 'flex',
+                width: '100%', height: '100%',
+                transition: 'transform 0.4s cubic-bezier(0.33, 1, 0.68, 1)',
+                transform: `translateX(-${currentImageIndex * 100}%)`
+              }}>
+                {allImages.map((img: string, idx: number) => (
+                  <div key={idx} style={{ flex: '0 0 100%', height: '100%', position: 'relative' }}>
+                    <Image 
+                      src={img} 
+                      alt={`${product.name} - ${idx + 1}`} 
+                      fill 
+                      sizes="(max-width: 992px) 100vw, 50vw"
+                      className={styles.mainImage}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
             
             {allImages.length > 1 && (
               <>
                 <button 
                   onClick={() => setCurrentImageIndex((prev: number) => (prev > 0 ? prev - 1 : allImages.length - 1))}
                   style={{
-                    position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)',
-                    background: 'rgba(255,255,255,0.8)', border: 'none', borderRadius: '50%',
-                    width: '40px', height: '40px', cursor: 'pointer', zIndex: 5,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    position: 'absolute', left: '-16px', top: '50%', transform: 'translateY(-50%)',
+                    background: '#fff', border: '1px solid #e2e8f0', borderRadius: '50%',
+                    width: '32px', height: '32px', cursor: 'pointer', zIndex: 10,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)',
+                    color: '#0f172a'
                   }}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                 </button>
                 <button 
                   onClick={() => setCurrentImageIndex((prev: number) => (prev < allImages.length - 1 ? prev + 1 : 0))}
                   style={{
-                    position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)',
-                    background: 'rgba(255,255,255,0.8)', border: 'none', borderRadius: '50%',
-                    width: '40px', height: '40px', cursor: 'pointer', zIndex: 5,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    position: 'absolute', right: '-16px', top: '50%', transform: 'translateY(-50%)',
+                    background: '#fff', border: '1px solid #e2e8f0', borderRadius: '50%',
+                    width: '32px', height: '32px', cursor: 'pointer', zIndex: 10,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)',
+                    color: '#0f172a'
                   }}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                 </button>
                 <div style={{
                   position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
@@ -106,7 +123,8 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                   {allImages.map((_: any, idx: number) => (
                     <div key={idx} onClick={() => setCurrentImageIndex(idx)} style={{
                       width: '8px', height: '8px', borderRadius: '50%', cursor: 'pointer',
-                      background: idx === currentImageIndex ? '#000' : 'rgba(0,0,0,0.3)'
+                      background: idx === currentImageIndex ? '#0f172a' : 'rgba(15,23,42,0.3)',
+                      transition: 'background 0.3s ease'
                     }} />
                   ))}
                 </div>

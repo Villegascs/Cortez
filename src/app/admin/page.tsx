@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import styles from "./page.module.css";
 import Link from "next/link";
-import { ArrowLeft, Save, ExternalLink, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, Save, ExternalLink, Plus, Trash2, LogOut, ChevronsUpDown, Check, Search } from "lucide-react";
 
 export default function AdminPanel() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -17,6 +17,7 @@ export default function AdminPanel() {
   const [loginUser, setLoginUser] = useState("");
   const [loginPass, setLoginPass] = useState("");
   const [loginError, setLoginError] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   // New product form
   const [newProductName, setNewProductName] = useState("");
@@ -25,6 +26,9 @@ export default function AdminPanel() {
   const [newProductStock, setNewProductStock] = useState("");
   const [newProductDesc, setNewProductDesc] = useState("");
   const [newProductCategory, setNewProductCategory] = useState("UNISEX");
+  const [categoryOpen, setCategoryOpen] = useState(false);
+  const [categorySearch, setCategorySearch] = useState("");
+  const CATEGORIES = ["UNISEX", "HOMBRES", "MUJERES"];
   const [newProductImage, setNewProductImage] = useState("");
 
   const fetchData = async () => {
@@ -68,6 +72,14 @@ export default function AdminPanel() {
     } else {
       setLoginError(true);
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("admin_logged_in");
+    setIsLoggedIn(false);
+    setShowLogoutModal(false);
+    setLoginUser("");
+    setLoginPass("");
   };
 
   const handleUpdateRate = async () => {
@@ -300,8 +312,15 @@ export default function AdminPanel() {
               style={{ width: '120px', padding: '10px' }}
             />
           </div>
-          <button className="btn-primary" onClick={handleUpdateRate} style={{ marginTop: '20px', padding: '12px' }}>
+          <button className="btn-primary" onClick={handleUpdateRate} style={{ marginTop: '20px', padding: '12px' }} title="Guardar Tasa">
             <Save size={20} />
+          </button>
+          <button 
+            onClick={() => setShowLogoutModal(true)} 
+            style={{ marginTop: '20px', padding: '12px', background: '#fee2e2', color: '#ef4444', border: 'none', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            title="Cerrar Sesión"
+          >
+            <LogOut size={20} />
           </button>
         </div>
       </div>
@@ -318,11 +337,59 @@ export default function AdminPanel() {
             <input required placeholder="Color (ej. Gold & Dark)" className="input-field" value={newProductColor} onChange={e=>setNewProductColor(e.target.value)} />
             <input required type="number" placeholder="Precio ($)" className="input-field" value={newProductPrice} onChange={e=>setNewProductPrice(e.target.value)} />
             <input required type="number" placeholder="Stock" className="input-field" value={newProductStock} onChange={e=>setNewProductStock(e.target.value)} />
-            <select className="input-field" value={newProductCategory} onChange={e=>setNewProductCategory(e.target.value)}>
-              <option value="UNISEX">Unisex</option>
-              <option value="HOMBRES">Hombres</option>
-              <option value="MUJERES">Mujeres</option>
-            </select>
+            <div style={{ position: 'relative' }}>
+              <button
+                type="button"
+                onClick={() => setCategoryOpen(!categoryOpen)}
+                className="input-field"
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  width: '100%', cursor: 'pointer', textAlign: 'left',
+                  background: '#fff'
+                }}
+              >
+                {newProductCategory ? newProductCategory : "Seleccionar categoría..."}
+                <ChevronsUpDown size={16} opacity={0.5} />
+              </button>
+              {categoryOpen && (
+                <div style={{
+                  position: 'absolute', top: '100%', left: 0, width: '100%', marginTop: '4px',
+                  background: '#fff', border: '1px solid #e2e8f0', borderRadius: '6px',
+                  boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)',
+                  zIndex: 50, overflow: 'hidden'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', padding: '8px 12px', borderBottom: '1px solid #e2e8f0' }}>
+                    <Search size={16} opacity={0.5} style={{ marginRight: '8px' }} />
+                    <input 
+                      placeholder="Buscar categoría..." 
+                      value={categorySearch}
+                      onChange={(e) => setCategorySearch(e.target.value)}
+                      style={{ border: 'none', outline: 'none', width: '100%', fontSize: '0.875rem' }}
+                    />
+                  </div>
+                  <div style={{ padding: '4px', maxHeight: '150px', overflowY: 'auto' }}>
+                    {CATEGORIES.filter(c => c.toLowerCase().includes(categorySearch.toLowerCase())).length === 0 ? (
+                      <div style={{ padding: '6px 8px', fontSize: '0.875rem', color: '#64748b', textAlign: 'center' }}>No se encontró categoría.</div>
+                    ) : (
+                      CATEGORIES.filter(c => c.toLowerCase().includes(categorySearch.toLowerCase())).map(cat => (
+                        <div 
+                          key={cat}
+                          onClick={() => { setNewProductCategory(cat); setCategoryOpen(false); setCategorySearch(""); }}
+                          style={{
+                            display: 'flex', alignItems: 'center', padding: '6px 8px',
+                            borderRadius: '4px', cursor: 'pointer', fontSize: '0.875rem',
+                            background: newProductCategory === cat ? '#f1f5f9' : 'transparent'
+                          }}
+                        >
+                          <Check size={16} style={{ marginRight: '8px', opacity: newProductCategory === cat ? 1 : 0 }} />
+                          {cat}
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
             <textarea required placeholder="Descripción" className="input-field" value={newProductDesc} onChange={e=>setNewProductDesc(e.target.value)} />
             
             <div style={{marginTop: '10px'}}>
@@ -526,6 +593,65 @@ export default function AdminPanel() {
                 }}
               >
                 Sí, Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, width: '100vw', height: '100vh',
+          background: 'rgba(0,0,0,0.5)',
+          backdropFilter: 'blur(5px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999
+        }}>
+          <div style={{
+            background: '#fff',
+            padding: '30px',
+            borderRadius: '12px',
+            boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+            textAlign: 'center',
+            maxWidth: '400px',
+            width: '90%'
+          }}>
+            <LogOut size={40} color="#000" style={{ marginBottom: '15px' }} />
+            <h3 style={{ fontSize: '1.2rem', marginBottom: '10px' }}>¿Cerrar Sesión?</h3>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '25px', fontSize: '0.95rem' }}>
+              Tendrás que volver a ingresar tus credenciales para administrar la tienda.
+            </p>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+              <button 
+                onClick={() => setShowLogoutModal(false)}
+                style={{
+                  padding: '10px 20px',
+                  background: '#eee',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={handleLogout}
+                style={{
+                  padding: '10px 20px',
+                  background: '#000',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                Sí, Salir
               </button>
             </div>
           </div>
