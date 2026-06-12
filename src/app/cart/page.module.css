@@ -161,16 +161,16 @@
 }
 
 .formGroup {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .formGroup label {
   display: block;
   margin-bottom: 8px;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  font-weight: 600;
-  letter-spacing: 0.5px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #0f172a;
+  line-height: 1;
 }
 
 .documentGroup {
