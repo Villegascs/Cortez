@@ -60,48 +60,94 @@ export default function Home() {
       </section>
 
       {/* Catalog Section */}
-      <section id="catalog" className={styles.catalogSection}>
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Novedades</h2>
-          <Link href="#catalog" className="btn-text">Ver todos</Link>
-        </div>
-        
-        <div className={styles.grid}>
-          {products.map((product) => (
-            <Link href={`/product/${product.id}`} key={product.id}>
-              <div className={styles.card}>
-                <div className={styles.imageWrapper}>
-                  <Image 
-                    src={product.image} 
-                    alt={product.name} 
-                    fill 
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    className={styles.cardImage}
-                  />
-                  {product.stock <= 0 && (
-                    <div style={{
-                      position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', 
-                      background: 'rgba(255,255,255,0.7)', display: 'flex', 
-                      alignItems: 'center', justifyContent: 'center',
-                      fontWeight: 700, letterSpacing: '2px', fontSize: '1.2rem', color: '#000',
-                      zIndex: 10
-                    }}>
-                      SOLD OUT
+      <div id="catalog">
+        {products.filter(p => p.category === 'HOMBRES').length > 0 && (
+          <section className={styles.catalogSection} style={{paddingTop: '60px'}}>
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>Hombres</h2>
+            </div>
+            <div className={styles.grid}>
+              {products.filter(p => p.category === 'HOMBRES').map((product) => (
+                <Link href={`/product/${product.id}`} key={product.id}>
+                  <div className={styles.card}>
+                    <div className={styles.imageWrapper}>
+                      <Image src={product.image} alt={product.name} fill sizes="(max-width: 768px) 100vw, 33vw" className={styles.cardImage} />
+                      {product.stock <= 0 && (
+                        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, letterSpacing: '2px', fontSize: '1.2rem', color: '#000', zIndex: 10 }}>SOLD OUT</div>
+                      )}
                     </div>
-                  )}
-                </div>
-                <div className={styles.cardInfo}>
-                  <div className={styles.cardTopRow}>
-                    <span className={styles.cardTitle}>{product.name}</span>
-                    <span className={styles.cardPrice}>${product.price}</span>
+                    <div className={styles.cardInfo}>
+                      <div className={styles.cardTopRow}>
+                        <span className={styles.cardTitle}>{product.name}</span>
+                        <span className={styles.cardPrice}>${product.price}</span>
+                      </div>
+                      <span className={`${styles.cardColor} serif-italic`}>{product.color}</span>
+                    </div>
                   </div>
-                  <span className={`${styles.cardColor} serif-italic`}>{product.color}</span>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {products.filter(p => p.category === 'MUJERES').length > 0 && (
+          <section className={styles.catalogSection} style={{paddingTop: '60px'}}>
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>Mujeres</h2>
+            </div>
+            <div className={styles.grid}>
+              {products.filter(p => p.category === 'MUJERES').map((product) => (
+                <Link href={`/product/${product.id}`} key={product.id}>
+                  <div className={styles.card}>
+                    <div className={styles.imageWrapper}>
+                      <Image src={product.image} alt={product.name} fill sizes="(max-width: 768px) 100vw, 33vw" className={styles.cardImage} />
+                      {product.stock <= 0 && (
+                        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, letterSpacing: '2px', fontSize: '1.2rem', color: '#000', zIndex: 10 }}>SOLD OUT</div>
+                      )}
+                    </div>
+                    <div className={styles.cardInfo}>
+                      <div className={styles.cardTopRow}>
+                        <span className={styles.cardTitle}>{product.name}</span>
+                        <span className={styles.cardPrice}>${product.price}</span>
+                      </div>
+                      <span className={`${styles.cardColor} serif-italic`}>{product.color}</span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {products.filter(p => p.category === 'UNISEX' || !p.category).length > 0 && (
+          <section className={styles.catalogSection} style={{paddingTop: '60px'}}>
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>Unisex</h2>
+            </div>
+            <div className={styles.grid}>
+              {products.filter(p => p.category === 'UNISEX' || !p.category).map((product) => (
+                <Link href={`/product/${product.id}`} key={product.id}>
+                  <div className={styles.card}>
+                    <div className={styles.imageWrapper}>
+                      <Image src={product.image} alt={product.name} fill sizes="(max-width: 768px) 100vw, 33vw" className={styles.cardImage} />
+                      {product.stock <= 0 && (
+                        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, letterSpacing: '2px', fontSize: '1.2rem', color: '#000', zIndex: 10 }}>SOLD OUT</div>
+                      )}
+                    </div>
+                    <div className={styles.cardInfo}>
+                      <div className={styles.cardTopRow}>
+                        <span className={styles.cardTitle}>{product.name}</span>
+                        <span className={styles.cardPrice}>${product.price}</span>
+                      </div>
+                      <span className={`${styles.cardColor} serif-italic`}>{product.color}</span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
     </div>
   );
 }

@@ -31,7 +31,8 @@ export async function POST(request: Request) {
         price: Number(data.price),
         stock: Number(data.stock),
         image: data.image,
-        images: data.images || "[]"
+        images: data.images || "[]",
+        category: data.category || 'UNISEX'
       }
     });
     return NextResponse.json({ success: true, product });

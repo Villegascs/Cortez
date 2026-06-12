@@ -20,6 +20,7 @@ model Product {
   isVisible   Boolean  @default(true)
   image       String   // Primary image URL
   images      String   @default("[]") // JSON string of an array of extra image URLs
+  category    String   @default("UNISEX") // HOMBRES, MUJERES, UNISEX
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   

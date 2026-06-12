@@ -17,6 +17,7 @@ export default function AdminPanel() {
   const [newProductPrice, setNewProductPrice] = useState("");
   const [newProductStock, setNewProductStock] = useState("");
   const [newProductDesc, setNewProductDesc] = useState("");
+  const [newProductCategory, setNewProductCategory] = useState("UNISEX");
   const [newProductImage, setNewProductImage] = useState("");
 
   const fetchData = async () => {
@@ -87,6 +88,7 @@ export default function AdminPanel() {
     setNewProductPrice(p.price.toString());
     setNewProductStock(p.stock.toString());
     setNewProductDesc(p.description);
+    setNewProductCategory(p.category || "UNISEX");
     setExistingMainImage(p.image);
     setExistingExtraImages(JSON.parse(p.images || "[]"));
     setMainImageFile(null);
@@ -99,7 +101,8 @@ export default function AdminPanel() {
   const handleCancelEdit = () => {
     setEditId(null);
     setNewProductName(""); setNewProductColor(""); setNewProductPrice("");
-    setNewProductStock(""); setNewProductDesc(""); setMainImageFile(null); setExtraFiles(null);
+    setNewProductStock(""); setNewProductDesc(""); setNewProductCategory("UNISEX"); 
+    setMainImageFile(null); setExtraFiles(null);
     setMainImagePreview(""); setExtraPreviews([]);
     setExistingMainImage(""); setExistingExtraImages([]);
   };
@@ -149,6 +152,7 @@ export default function AdminPanel() {
           price: newProductPrice,
           stock: newProductStock,
           description: newProductDesc,
+          category: newProductCategory,
           image: mainImageUrl,
           images: JSON.stringify(extraUrls)
         })
@@ -240,6 +244,11 @@ export default function AdminPanel() {
             <input required placeholder="Color (ej. Gold & Dark)" className="input-field" value={newProductColor} onChange={e=>setNewProductColor(e.target.value)} />
             <input required type="number" placeholder="Precio ($)" className="input-field" value={newProductPrice} onChange={e=>setNewProductPrice(e.target.value)} />
             <input required type="number" placeholder="Stock" className="input-field" value={newProductStock} onChange={e=>setNewProductStock(e.target.value)} />
+            <select className="input-field" value={newProductCategory} onChange={e=>setNewProductCategory(e.target.value)}>
+              <option value="UNISEX">Unisex</option>
+              <option value="HOMBRES">Hombres</option>
+              <option value="MUJERES">Mujeres</option>
+            </select>
             <textarea required placeholder="Descripción" className="input-field" value={newProductDesc} onChange={e=>setNewProductDesc(e.target.value)} />
             
             <div style={{marginTop: '10px'}}>
@@ -304,7 +313,7 @@ export default function AdminPanel() {
                 <tr key={p.id} style={{ borderBottom: '1px solid #ddd', opacity: p.isVisible ? 1 : 0.5 }}>
                   <td style={{ padding: '15px 10px' }}>
                     <strong>{p.name}</strong> {!p.isVisible && <span style={{color:'red', fontSize:'0.7rem', marginLeft:'5px'}}>(OCULTO)</span>}<br/>
-                    <span style={{ fontSize: '0.85rem', color: '#666' }}>{p.color}</span>
+                    <span style={{ fontSize: '0.85rem', color: '#666' }}>{p.color} - {p.category}</span>
                   </td>
                   <td style={{ padding: '15px 10px' }}>${p.price}</td>
                   <td style={{ padding: '15px 10px' }}>
