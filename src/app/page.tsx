@@ -1,22 +1,29 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import styles from "./page.module.css";
 import { ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/store/cart";
 
 import Navbar from "@/components/Navbar";
 
-export default function Home() {
+function HomeContent() {
   const [products, setProducts] = useState<any[]>([]);
+  const searchParams = useSearchParams();
+  const activeCategory = searchParams.get('category');
 
   useEffect(() => {
     fetch('/api/products').then(res => res.json()).then(data => {
       if(data.products) setProducts(data.products);
     }).catch(e => console.error(e));
   }, []);
+
+  const showHombres = !activeCategory || activeCategory === 'HOMBRES';
+  const showMujeres = !activeCategory || activeCategory === 'MUJERES';
+  const showUnisex = !activeCategory || activeCategory === 'UNISEX';
 
   return (
     <div>
@@ -43,7 +50,7 @@ export default function Home() {
 
       {/* Catalog Section */}
       <div id="catalog">
-        {products.filter(p => p.category === 'HOMBRES').length > 0 && (
+        {showHombres && products.filter(p => p.category === 'HOMBRES').length > 0 && (
           <section id="hombres" className={styles.catalogSection} style={{paddingTop: '60px'}}>
             <div className={styles.sectionHeader}>
               <h2 className={styles.sectionTitle}>Hombres</h2>
@@ -72,7 +79,7 @@ export default function Home() {
           </section>
         )}
 
-        {products.filter(p => p.category === 'MUJERES').length > 0 && (
+        {showMujeres && products.filter(p => p.category === 'MUJERES').length > 0 && (
           <section id="mujeres" className={styles.catalogSection} style={{paddingTop: '60px'}}>
             <div className={styles.sectionHeader}>
               <h2 className={styles.sectionTitle}>Mujeres</h2>
@@ -101,7 +108,7 @@ export default function Home() {
           </section>
         )}
 
-        {products.filter(p => p.category === 'UNISEX' || !p.category).length > 0 && (
+        {showUnisex && products.filter(p => p.category === 'UNISEX' || !p.category).length > 0 && (
           <section id="unisex" className={styles.catalogSection} style={{paddingTop: '60px'}}>
             <div className={styles.sectionHeader}>
               <h2 className={styles.sectionTitle}>Unisex</h2>
@@ -132,5 +139,13 @@ export default function Home() {
       </div>
       </div>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <HomeContent />
+    </Suspense>
   );
 }

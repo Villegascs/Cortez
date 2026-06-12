@@ -106,9 +106,12 @@ export default function CartPage() {
         body: formData
       });
 
+      const data = await res.json();
+
       if (res.ok) {
         setSuccess(true);
         setOrderDetails({
+          id: data.orderId,
           items: [...items],
           total: totalUsd,
           customerName: `${firstName} ${lastName}`,
@@ -129,7 +132,8 @@ export default function CartPage() {
     if (!orderDetails) return "#";
     
     const itemsText = orderDetails.items.map((i: any) => `${i.quantity}x ${i.name}`).join(", ");
-    const text = `¡Hola Cortez! Acabo de realizar un pedido.\n\n*Cliente:* ${orderDetails.customerName}\n*Pedido:* ${itemsText}\n*Total:* $${orderDetails.total}\n*Método de entrega:* ${orderDetails.shippingMethod}\n\nAdjunto comprobante de pago en la web.`;
+    const trackingLink = `${window.location.origin}/order/${orderDetails.id}`;
+    const text = `¡Hola Cortez! Acabo de realizar un pedido.\n\n*Cliente:* ${orderDetails.customerName}\n*Pedido:* ${itemsText}\n*Total:* $${orderDetails.total}\n*Método de entrega:* ${orderDetails.shippingMethod}\n\n*Sigue tu orden aquí:*\n${trackingLink}\n\nAdjunto comprobante de pago en la web.`;
     
     return `https://wa.me/584247283924?text=${encodeURIComponent(text)}`;
   };

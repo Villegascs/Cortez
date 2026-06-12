@@ -95,19 +95,6 @@ export default function AdminPanel() {
     }
   };
 
-  const handleUpdateOrderStatus = async (orderId: number, status: string) => {
-    try {
-      await fetch('/api/admin/orders', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId, status })
-      });
-      fetchData(); // refresh
-    } catch (error) {
-      alert("Error actualizando pedido");
-    }
-  };
-
   const [mainImageFile, setMainImageFile] = useState<File | null>(null);
   const [extraFiles, setExtraFiles] = useState<FileList | null>(null);
   const [mainImagePreview, setMainImagePreview] = useState("");
@@ -245,6 +232,19 @@ export default function AdminPanel() {
       fetchData();
     } catch (error) {
       alert("Error cambiando visibilidad");
+    }
+  };
+
+  const handleUpdateOrderStatus = async (id: number, status: string) => {
+    try {
+      await fetch(`/api/admin/orders/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+      fetchData();
+    } catch (error) {
+      alert("Error actualizando estado de la orden");
     }
   };
 
@@ -491,9 +491,22 @@ export default function AdminPanel() {
             <div key={order.id} className={styles.orderCard}>
               <div className={styles.orderHeader}>
                 <span className={styles.orderId}>Orden #{order.id}</span>
-                <span className={`${styles.status} ${styles[order.status]}`}>
-                  {order.status === 'PENDING' ? 'PENDIENTE' : order.status === 'ACCEPTED' ? 'ACEPTADO' : 'RECHAZADO'}
-                </span>
+                <select 
+                  value={order.status} 
+                  onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}
+                  style={{
+                    padding: '6px 10px', borderRadius: '6px', border: '1px solid #ccc',
+                    background: order.status === 'PENDING' ? '#fef3c7' : order.status === 'ACCEPTED' ? '#e0f2fe' : order.status === 'SHIPPING' ? '#e0e7ff' : order.status === 'DELIVERED' ? '#dcfce3' : '#fee2e2',
+                    color: order.status === 'PENDING' ? '#d97706' : order.status === 'ACCEPTED' ? '#0369a1' : order.status === 'SHIPPING' ? '#4338ca' : order.status === 'DELIVERED' ? '#15803d' : '#b91c1c',
+                    fontWeight: 700, fontSize: '0.75rem', outline: 'none', cursor: 'pointer', textTransform: 'uppercase'
+                  }}
+                >
+                  <option value="PENDING">Pendiente</option>
+                  <option value="ACCEPTED">Aceptado</option>
+                  <option value="SHIPPING">Envío en proceso</option>
+                  <option value="DELIVERED">Recibido por el cliente</option>
+                  <option value="REJECTED">Rechazado</option>
+                </select>
               </div>
               
               <div className={styles.orderSection}>
@@ -525,16 +538,7 @@ export default function AdminPanel() {
                 </div>
               </div>
 
-              {order.status === 'PENDING' && (
-                <div className={styles.actionButtons}>
-                  <button className={styles.acceptBtn} onClick={() => handleUpdateOrderStatus(order.id, 'ACCEPTED')}>
-                    Aceptar
-                  </button>
-                  <button className={styles.rejectBtn} onClick={() => handleUpdateOrderStatus(order.id, 'REJECTED')}>
-                    Rechazar
-                  </button>
-                </div>
-              )}
+
             </div>
           ))}
         </div>

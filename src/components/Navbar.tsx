@@ -76,9 +76,9 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
         }}
       >
         <div style={{display:'flex', gap:'20px', fontSize:'0.85rem', fontWeight:600, textTransform:'uppercase'}}>
-          <Link href="/#hombres">Hombres</Link>
-          <Link href="/#mujeres">Mujeres</Link>
-          <Link href="/#unisex">Unisex</Link>
+          <Link href="/?category=HOMBRES">Hombres</Link>
+          <Link href="/?category=MUJERES">Mujeres</Link>
+          <Link href="/?category=UNISEX">Unisex</Link>
         </div>
         
         <div style={{textAlign:'center', fontSize: '1.5rem', fontWeight: '800', letterSpacing: '-1px'}}>
