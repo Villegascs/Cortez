@@ -2,6 +2,7 @@
 
 import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ShoppingBag, Menu, X } from "lucide-react";
 import { useCartStore } from "@/store/cart";
 import gsap from "gsap";
@@ -113,8 +114,10 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
             </button>
           </div>
           
-          <div style={{textAlign:'center', fontSize: '1.5rem', fontWeight: '800', letterSpacing: '-1px'}}>
-            <Link href="/" style={{color: '#000'}}>Cortez</Link>
+          <div style={{textAlign:'center'}}>
+            <Link href="/" style={{display: 'inline-block'}}>
+              <Image src="/logo.png" alt="Cortez" width={120} height={30} style={{ filter: 'invert(1)', objectFit: 'contain' }} priority />
+            </Link>
           </div>
           
           <div style={{justifySelf:'end'}}>
@@ -143,7 +146,7 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
           padding: '20px'
         }}>
           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px'}}>
-            <div style={{fontSize: '1.5rem', fontWeight: '800', letterSpacing: '-1px', color: '#000'}}>Cortez</div>
+            <Image src="/logo.png" alt="Cortez" width={120} height={30} style={{ filter: 'invert(1)', objectFit: 'contain' }} />
             <button onClick={() => setIsMenuOpen(false)} style={{padding: '5px'}}>
               <X size={28} color="#000" />
             </button>
