@@ -131,7 +131,8 @@
 
 @media (max-width: 576px) {
   .grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
   }
   .navbar {
     padding: 15px 20px;
@@ -141,7 +142,13 @@
     bottom: 60px;
   }
   .catalogSection {
-    padding: 40px 20px;
+    padding: 30px 15px;
+  }
+  .cardTitle {
+    font-size: 0.8rem;
+  }
+  .cardPrice {
+    font-size: 0.8rem;
   }
 }
 
