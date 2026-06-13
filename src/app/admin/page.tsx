@@ -334,7 +334,7 @@ export default function AdminPanel() {
           <h3 style={{ marginBottom: '15px', textTransform:'uppercase', fontSize: '1rem' }}>{editId ? "Editar Lente" : "Añadir Lente"}</h3>
           <form onSubmit={handleAddProduct} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <input required placeholder="Nombre (ej. cortez aviator)" className="input-field" value={newProductName} onChange={e=>setNewProductName(e.target.value)} />
-            <input required placeholder="Color (ej. Gold & Dark)" className="input-field" value={newProductColor} onChange={e=>setNewProductColor(e.target.value)} />
+            <input placeholder="Color (Opcional, ej. Gold & Dark)" className="input-field" value={newProductColor} onChange={e=>setNewProductColor(e.target.value)} />
             <input required type="number" placeholder="Precio ($)" className="input-field" value={newProductPrice} onChange={e=>setNewProductPrice(e.target.value)} />
             <input required type="number" placeholder="Stock" className="input-field" value={newProductStock} onChange={e=>setNewProductStock(e.target.value)} />
             <div style={{ position: 'relative' }}>
@@ -390,7 +390,7 @@ export default function AdminPanel() {
                 </div>
               )}
             </div>
-            <textarea required placeholder="Descripción" className="input-field" value={newProductDesc} onChange={e=>setNewProductDesc(e.target.value)} />
+            <textarea placeholder="Descripción (Opcional)" className="input-field" value={newProductDesc} onChange={e=>setNewProductDesc(e.target.value)} />
             
             <div style={{marginTop: '10px'}}>
               <label style={{fontSize: '0.85rem', color: 'var(--text-secondary)'}}>Imagen Principal {!editId && "(Obligatoria)"}</label>

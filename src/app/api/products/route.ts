@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       data: {
         name: data.name,
         color: data.color || "",
-        description: data.description,
+        description: data.description || "",
         price: Number(data.price),
         stock: Number(data.stock),
         image: data.image,
