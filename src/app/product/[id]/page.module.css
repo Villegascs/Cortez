@@ -84,7 +84,7 @@
 }
 
 .mainImage {
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .infoSection {

@@ -238,7 +238,7 @@ export default function CartPage() {
             <div className={styles.cartItems}>
               {items.map(item => (
                 <div key={item.id} className={styles.cartItem}>
-                  <Image src={item.image} alt={item.name} width={100} height={120} className={styles.itemImage} style={{objectFit: 'cover'}}/>
+                  <Image src={item.image} alt={item.name} width={100} height={120} className={styles.itemImage} style={{objectFit: 'contain'}}/>
                   <div className={styles.itemInfo}>
                     <div className={styles.itemHeader}>
                       <span className={styles.itemName}>{item.name}</span>
