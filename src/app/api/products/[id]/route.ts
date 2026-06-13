@@ -18,7 +18,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
         isVisible: data.isVisible !== undefined ? Boolean(data.isVisible) : undefined,
         image: data.image !== undefined ? data.image : undefined,
         images: data.images !== undefined ? data.images : undefined,
-        category: data.category !== undefined ? data.category : undefined
+        category: data.category !== undefined ? data.category : undefined,
+        features: data.features !== undefined ? data.features : undefined
       }
     });
     return NextResponse.json({ success: true, product });
