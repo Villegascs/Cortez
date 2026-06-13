@@ -25,7 +25,6 @@ export default function AdminPanel() {
   const [newProductPrice, setNewProductPrice] = useState("");
   const [newProductStock, setNewProductStock] = useState("");
   const [newProductDesc, setNewProductDesc] = useState("");
-  const [newProductFeatures, setNewProductFeatures] = useState("");
   const [newProductCategory, setNewProductCategory] = useState("UNISEX");
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [categorySearch, setCategorySearch] = useState("");
@@ -113,7 +112,6 @@ export default function AdminPanel() {
     setNewProductPrice(p.price.toString());
     setNewProductStock(p.stock.toString());
     setNewProductDesc(p.description);
-    setNewProductFeatures(p.features || "Protección UV400, Envío exprés disponible, 14 días para devoluciones");
     setNewProductCategory(p.category || "UNISEX");
     setExistingMainImage(p.image);
     setExistingExtraImages(JSON.parse(p.images || "[]"));
@@ -127,7 +125,7 @@ export default function AdminPanel() {
   const handleCancelEdit = () => {
     setEditId(null);
     setNewProductName(""); setNewProductColor(""); setNewProductPrice("");
-    setNewProductStock(""); setNewProductDesc(""); setNewProductFeatures(""); setNewProductCategory("UNISEX"); 
+    setNewProductStock(""); setNewProductDesc(""); setNewProductCategory("UNISEX"); 
     setMainImageFile(null); setExtraFiles(null);
     setMainImagePreview(""); setExtraPreviews([]);
     setExistingMainImage(""); setExistingExtraImages([]);
@@ -178,7 +176,6 @@ export default function AdminPanel() {
           price: newProductPrice,
           stock: newProductStock,
           description: newProductDesc,
-          features: newProductFeatures,
           category: newProductCategory,
           image: mainImageUrl,
           images: JSON.stringify(extraUrls)
@@ -394,7 +391,6 @@ export default function AdminPanel() {
               )}
             </div>
             <textarea placeholder="Descripción (Opcional)" className="input-field" value={newProductDesc} onChange={e=>setNewProductDesc(e.target.value)} />
-            <textarea placeholder="Características (Ej. Protección UV400, Envío exprés disponible...)" className="input-field" value={newProductFeatures} onChange={e=>setNewProductFeatures(e.target.value)} />
             
             <div style={{marginTop: '10px'}}>
               <label style={{fontSize: '0.85rem', color: 'var(--text-secondary)'}}>Imagen Principal {!editId && "(Obligatoria)"}</label>

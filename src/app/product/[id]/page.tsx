@@ -155,25 +155,15 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
           <p className={styles.description}>{product.description}</p>
 
           <div className={styles.features}>
-            {(product.features || "Protección UV400, Envío exprés disponible, 14 días para devoluciones")
-              .split(',')
-              .map((feature: string, idx: number) => {
-                const f = feature.trim();
-                if (!f) return null;
-                // Try to guess an icon based on keywords
-                let Icon = ShieldCheck;
-                if (f.toLowerCase().includes('envío') || f.toLowerCase().includes('express') || f.toLowerCase().includes('entrega')) {
-                  Icon = Truck;
-                } else if (f.toLowerCase().includes('devoluci') || f.toLowerCase().includes('cambio') || f.toLowerCase().includes('días')) {
-                  Icon = RotateCcw;
-                }
-                
-                return (
-                  <div key={idx} className={styles.featureItem}>
-                    <Icon size={18} /> {f}
-                  </div>
-                );
-            })}
+            <div className={styles.featureItem}>
+              <ShieldCheck size={18} /> Protección UV400
+            </div>
+            <div className={styles.featureItem}>
+              <Truck size={18} /> Envío exprés disponible
+            </div>
+            <div className={styles.featureItem}>
+              <RotateCcw size={18} /> 14 días para devoluciones
+            </div>
           </div>
 
           <button 

@@ -32,8 +32,7 @@ export async function POST(request: Request) {
         stock: Number(data.stock),
         image: data.image,
         images: data.images || "[]",
-        category: data.category || 'UNISEX',
-        features: data.features || "Protección UV400, Envío exprés disponible, 14 días para devoluciones"
+        category: data.category || 'UNISEX'
       }
     });
     return NextResponse.json({ success: true, product });
