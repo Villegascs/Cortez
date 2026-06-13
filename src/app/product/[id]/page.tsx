@@ -154,17 +154,6 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
           
           <p className={styles.description}>{product.description}</p>
 
-          <div className={styles.features}>
-            <div className={styles.featureItem}>
-              <ShieldCheck size={18} /> Protección UV400
-            </div>
-            <div className={styles.featureItem}>
-              <Truck size={18} /> Envío exprés disponible
-            </div>
-            <div className={styles.featureItem}>
-              <RotateCcw size={18} /> 14 días para devoluciones
-            </div>
-          </div>
 
           <button 
             className={`btn-primary ${styles.addToCartBtn}`} 
