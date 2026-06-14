@@ -46,10 +46,6 @@ function HomeContent() {
             Ver Catálogo
           </Link>
         </div>
-        <div className={`${styles.heroFooterText} animate-fade-in`}>
-          <div className={styles.heroFooterMain}>WELCOME SUMMER</div>
-          <div className={styles.heroFooterSub}>FREE DELIVERY POR LA COMPRA DE DOS PIEZAS | NEW COLLECTION COMMING SOON!</div>
-        </div>
       </section>
 
       {/* Catalog Section */}
