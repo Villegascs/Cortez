@@ -62,7 +62,7 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
           fontWeight: 600,
           letterSpacing: '1px'
         }}>
-          ENVÍOS GRATIS A PARTIR DE $100 — PAGO MÓVIL, ZELLE Y BINANCE
+          NUEVA COLECCIÓN EN CAMINO
         </div>
         
         <nav 
