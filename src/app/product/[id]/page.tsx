@@ -166,7 +166,6 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
             {isSoldOut ? "AGOTADO" : "AÑADIR A LA CESTA"}
           </button>
         </div>
-        </div>
       </div>
 
       <div style={{ padding: '80px 40px', maxWidth: '1400px', margin: '0 auto', width: '100%' }}>
