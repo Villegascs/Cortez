@@ -50,7 +50,8 @@ export default function CartPage() {
     }).catch(e => console.error(e));
   }, []);
 
-  const totalUsd = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+  const subtotalUsd = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+  const totalUsd = subtotalUsd + (shippingMethod === "DELIVERY_VALENCIA" ? 3 : 0);
   const totalBs = totalUsd * usdtRate;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -262,11 +263,11 @@ export default function CartPage() {
             <h2 style={{textTransform:'uppercase', fontSize: '1.2rem', marginBottom: '20px'}}>Resumen</h2>
             <div className={styles.summaryRow}>
               <span>Subtotal</span>
-              <span>${totalUsd}</span>
+              <span>${subtotalUsd}</span>
             </div>
             <div className={styles.summaryRow}>
               <span>Envío</span>
-              <span>Gratis</span>
+              <span>{shippingMethod === "DELIVERY_VALENCIA" ? "$3" : "Gratis"}</span>
             </div>
             <div className={styles.totalRow}>
               <span>Total</span>
@@ -364,7 +365,7 @@ export default function CartPage() {
                   onChange={setPaymentMethod}
                   options={[
                     { value: "PAGO_MOVIL", label: "Pago Móvil" },
-                    { value: "ZELLE", label: "Zelle" },
+                    { value: "EFECTIVO", label: "Efectivo (SOLO VALENCIA)" },
                     { value: "BINANCE", label: "Binance Pay" }
                   ]}
                   placeholder="Selecciona método de pago"
@@ -374,6 +375,21 @@ export default function CartPage() {
 
               {paymentMethod === "PAGO_MOVIL" && (
                 <>
+                  <div style={{ background: '#f8fafc', padding: '15px', borderRadius: '8px', marginBottom: '20px', fontSize: '0.9rem', border: '1px solid #e2e8f0', color: '#000' }}>
+                    <p style={{ fontWeight: 600, marginBottom: '10px' }}>Datos para Pago Móvil:</p>
+                    <p style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                      <span>Banco:</span>
+                      <strong onClick={() => navigator.clipboard.writeText('Bancamiga')} style={{cursor: 'pointer'}} title="Copiar">Bancamiga 📋</strong>
+                    </p>
+                    <p style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                      <span>Cédula:</span>
+                      <strong onClick={() => navigator.clipboard.writeText('27241528')} style={{cursor: 'pointer'}} title="Copiar">27241528 📋</strong>
+                    </p>
+                    <p style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span>Teléfono:</span>
+                      <strong onClick={() => navigator.clipboard.writeText('04247283924')} style={{cursor: 'pointer'}} title="Copiar">04247283924 📋</strong>
+                    </p>
+                  </div>
                   <div className={styles.formGroup}>
                     <label>Banco Origen</label>
                     <Combobox
@@ -391,17 +407,31 @@ export default function CartPage() {
                 </>
               )}
 
-              <div className={styles.formGroup}>
-                <label>Referencia (Últimos 4-6 dígitos)</label>
-                <input required type="text" className="input-field" value={paymentRef} onChange={e => setPaymentRef(e.target.value)} />
-              </div>
+              {paymentMethod === "BINANCE" && (
+                <div style={{ background: '#f8fafc', padding: '15px', borderRadius: '8px', marginBottom: '20px', fontSize: '0.9rem', border: '1px solid #e2e8f0', color: '#000' }}>
+                  <p style={{ fontWeight: 600, marginBottom: '10px' }}>Datos para Binance Pay:</p>
+                  <p style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Binance ID:</span>
+                    <strong onClick={() => navigator.clipboard.writeText('201174382')} style={{cursor: 'pointer'}} title="Copiar">201174382 📋</strong>
+                  </p>
+                </div>
+              )}
 
-              <div className={styles.formGroup}>
-                <label>Captura de Pago (Opcional)</label>
-                <input type="file" accept="image/*" className="input-field" style={{padding: '10px'}} onChange={e => {
-                  if(e.target.files && e.target.files[0]) setPaymentFile(e.target.files[0]);
-                }} />
-              </div>
+              {paymentMethod !== "EFECTIVO" && (
+                <>
+                  <div className={styles.formGroup}>
+                    <label>Referencia (Últimos 4-6 dígitos)</label>
+                    <input required type="text" className="input-field" value={paymentRef} onChange={e => setPaymentRef(e.target.value)} />
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label>Captura de Pago (Opcional)</label>
+                    <input type="file" accept="image/*" className="input-field" style={{padding: '10px'}} onChange={e => {
+                      if(e.target.files && e.target.files[0]) setPaymentFile(e.target.files[0]);
+                    }} />
+                  </div>
+                </>
+              )}
 
               <button type="submit" className="btn-primary" style={{width: '100%', marginTop: '20px'}} disabled={loading}>
                 {loading ? "PROCESANDO..." : "PROCEDER AL PAGO"}
