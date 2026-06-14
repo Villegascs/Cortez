@@ -46,7 +46,7 @@ function HomeContent() {
         <section className={styles.catalogSection} style={{paddingTop: '60px'}}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>
-              {!activeCategory ? "Catálogo Completo" : activeCategory === 'HOMBRES' ? 'Hombres' : activeCategory === 'MUJERES' ? 'Mujeres' : 'Unisex'}
+              {!activeCategory ? "Catálogo Completo" : activeCategory === 'LENTES' ? 'Lentes' : 'Accesorios'}
             </h2>
           </div>
           <div className={styles.grid}>

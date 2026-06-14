@@ -104,9 +104,8 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
           
           <div className="hidden-mobile" style={{display:'flex', gap:'20px', fontSize:'0.85rem', fontWeight:600, textTransform:'uppercase'}}>
             <a href="/" className="brutal-link">Inicio</a>
-            <Link href="/?category=HOMBRES" className="brutal-link" target="_blank" rel="noopener noreferrer">Hombres</Link>
-            <Link href="/?category=MUJERES" className="brutal-link" target="_blank" rel="noopener noreferrer">Mujeres</Link>
-            <Link href="/?category=UNISEX" className="brutal-link" target="_blank" rel="noopener noreferrer">Unisex</Link>
+            <Link href="/?category=LENTES" className="brutal-link" target="_blank" rel="noopener noreferrer">Lentes</Link>
+            <Link href="/?category=ACCESORIOS" className="brutal-link" target="_blank" rel="noopener noreferrer">Accesorios</Link>
           </div>
 
           <div className="hidden-desktop" style={{display:'flex', alignItems: 'center'}}>
@@ -159,9 +158,8 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
           
           <div style={{display: 'flex', flexDirection: 'column', gap: '30px', fontSize: '1.5rem', fontWeight: 600, textTransform: 'uppercase'}}>
             <a href="/" onClick={() => setIsMenuOpen(false)} style={{textDecoration: 'none', color: 'inherit'}}>Inicio</a>
-            <Link href="/?category=HOMBRES" onClick={() => setIsMenuOpen(false)} target="_blank" rel="noopener noreferrer">Hombres</Link>
-            <Link href="/?category=MUJERES" onClick={() => setIsMenuOpen(false)} target="_blank" rel="noopener noreferrer">Mujeres</Link>
-            <Link href="/?category=UNISEX" onClick={() => setIsMenuOpen(false)} target="_blank" rel="noopener noreferrer">Unisex</Link>
+            <Link href="/?category=LENTES" onClick={() => setIsMenuOpen(false)} target="_blank" rel="noopener noreferrer">Lentes</Link>
+            <Link href="/?category=ACCESORIOS" onClick={() => setIsMenuOpen(false)} target="_blank" rel="noopener noreferrer">Accesorios</Link>
             <Link href="/admin" onClick={() => setIsMenuOpen(false)} style={{color: 'var(--text-secondary)', fontSize: '1rem', marginTop: '20px'}}>Admin</Link>
           </div>
         </div>

@@ -25,10 +25,10 @@ export default function AdminPanel() {
   const [newProductPrice, setNewProductPrice] = useState("");
   const [newProductStock, setNewProductStock] = useState("");
   const [newProductDesc, setNewProductDesc] = useState("");
-  const [newProductCategory, setNewProductCategory] = useState("UNISEX");
+  const [newProductCategory, setNewProductCategory] = useState("LENTES");
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [categorySearch, setCategorySearch] = useState("");
-  const CATEGORIES = ["UNISEX", "HOMBRES", "MUJERES"];
+  const CATEGORIES = ["LENTES", "ACCESORIOS"];
   const [newProductImage, setNewProductImage] = useState("");
 
   const fetchData = async () => {
