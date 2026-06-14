@@ -12,6 +12,7 @@ import Navbar from "@/components/Navbar";
 export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const [product, setProduct] = useState<any>(null);
+  const [allProducts, setAllProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   
   const { items, addItem } = useCartStore();
@@ -21,6 +22,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
   useEffect(() => {
     fetch('/api/products').then(res => res.json()).then(data => {
       if(data.products) {
+        setAllProducts(data.products);
         const found = data.products.find((p: any) => p.id === Number(resolvedParams.id));
         setProduct(found);
       }
@@ -163,6 +165,30 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
           >
             {isSoldOut ? "AGOTADO" : "AÑADIR A LA CESTA"}
           </button>
+        </div>
+        </div>
+      </div>
+
+      <div style={{ padding: '80px 40px', maxWidth: '1400px', margin: '0 auto', width: '100%' }}>
+        <h3 style={{ fontSize: '1.2rem', marginBottom: '30px', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '1px' }}>También te podría gustar</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '30px' }}>
+          {allProducts
+            .filter((p: any) => p.id !== product.id)
+            .slice(0, 4)
+            .map((p: any) => (
+              <Link href={`/product/${p.id}`} key={p.id}>
+                <div style={{ cursor: 'pointer' }}>
+                  <div style={{ position: 'relative', width: '100%', aspectRatio: '4/5', backgroundColor: 'transparent', marginBottom: '15px' }}>
+                    <Image src={p.image} alt={p.name} fill style={{ objectFit: 'contain' }} sizes="(max-width: 768px) 100vw, 25vw" />
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                    <span style={{ fontSize: '0.9rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{p.name}</span>
+                    <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>${p.price}</span>
+                  </div>
+                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }} className="serif-italic">{p.color}</span>
+                </div>
+              </Link>
+            ))}
         </div>
       </div>
 
