@@ -29,16 +29,17 @@ function HomeContent() {
       <div style={{ paddingTop: '100px' }}>
 
       {/* Hero Section */}
-      <section className={styles.hero}>
-        <Image 
-          src="/portada.jpg" 
-          alt="Cortez Hero" 
-          fill 
-          priority
-          className={styles.heroImage}
-        />
-
-      </section>
+      {!activeCategory && (
+        <section className={styles.hero}>
+          <Image 
+            src="/portada.jpg" 
+            alt="Cortez Hero" 
+            fill 
+            priority
+            className={styles.heroImage}
+          />
+        </section>
+      )}
 
       {/* Catalog Section */}
       <div id="catalog">
