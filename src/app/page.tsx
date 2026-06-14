@@ -14,12 +14,21 @@ function HomeContent() {
   const [products, setProducts] = useState<any[]>([]);
   const searchParams = useSearchParams();
   const activeCategory = searchParams.get('category');
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
     fetch('/api/products').then(res => res.json()).then(data => {
       if(data.products) setProducts(data.products);
     }).catch(e => console.error(e));
   }, []);
+
+  useEffect(() => {
+    if (activeCategory) return;
+    const interval = setInterval(() => {
+      setCurrentSlide(prev => prev === 0 ? 1 : 0);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [activeCategory]);
 
 
   return (
@@ -31,13 +40,39 @@ function HomeContent() {
       {/* Hero Section */}
       {!activeCategory && (
         <section className={styles.hero}>
-          <Image 
-            src="/portada.jpg" 
-            alt="Cortez Hero" 
-            fill 
-            priority
-            className={styles.heroImage}
-          />
+          {/* Slide 1 */}
+          <div className={`${styles.slide} ${currentSlide === 0 ? styles.active : ''}`}>
+            <Image 
+              src="/hero_1_desktop.png" 
+              alt="Cortez Hero 1" 
+              fill 
+              priority
+              className={`${styles.heroImage} ${styles.desktopOnly}`}
+            />
+            <Image 
+              src="/hero_1_mobile.png" 
+              alt="Cortez Hero 1 Mobile" 
+              fill 
+              priority
+              className={`${styles.heroImage} ${styles.mobileOnly}`}
+            />
+          </div>
+
+          {/* Slide 2 */}
+          <div className={`${styles.slide} ${currentSlide === 1 ? styles.active : ''}`}>
+            <Image 
+              src="/hero_2_desktop.png" 
+              alt="Cortez Hero 2" 
+              fill 
+              className={`${styles.heroImage} ${styles.desktopOnly}`}
+            />
+            <Image 
+              src="/hero_2_mobile.png" 
+              alt="Cortez Hero 2 Mobile" 
+              fill 
+              className={`${styles.heroImage} ${styles.mobileOnly}`}
+            />
+          </div>
         </section>
       )}
 
