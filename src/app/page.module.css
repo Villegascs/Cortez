@@ -64,7 +64,7 @@
 }
 
 .heroImage {
-  object-fit: contain;
+  object-fit: cover;
   opacity: 0.8;
 }
 
