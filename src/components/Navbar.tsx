@@ -103,7 +103,7 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
           `}</style>
           
           <div className="hidden-mobile" style={{display:'flex', gap:'20px', fontSize:'0.85rem', fontWeight:600, textTransform:'uppercase'}}>
-            <Link href="/" className="brutal-link">Inicio</Link>
+            <a href="/" className="brutal-link">Inicio</a>
             <Link href="/?category=HOMBRES" className="brutal-link" target="_blank" rel="noopener noreferrer">Hombres</Link>
             <Link href="/?category=MUJERES" className="brutal-link" target="_blank" rel="noopener noreferrer">Mujeres</Link>
             <Link href="/?category=UNISEX" className="brutal-link" target="_blank" rel="noopener noreferrer">Unisex</Link>
@@ -116,9 +116,9 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
           </div>
           
           <div style={{textAlign:'center'}}>
-            <Link href="/" style={{display: 'inline-block'}}>
+            <a href="/" style={{display: 'inline-block'}}>
               <Image src="/logo.png" alt="Cortez" width={180} height={40} style={{ filter: 'invert(1)', objectFit: 'contain', transform: 'scale(2.5)' }} priority />
-            </Link>
+            </a>
           </div>
           
           <div style={{justifySelf:'end'}}>
@@ -148,9 +148,9 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
         }}>
           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px'}}>
             <div style={{ paddingLeft: '20px' }}>
-              <Link href="/" onClick={() => setIsMenuOpen(false)}>
+              <a href="/" onClick={() => setIsMenuOpen(false)}>
                 <Image src="/logo.png" alt="Cortez" width={140} height={35} style={{ filter: 'invert(1)', objectFit: 'contain', transform: 'scale(2)' }} />
-              </Link>
+              </a>
             </div>
             <button onClick={() => setIsMenuOpen(false)} style={{padding: '5px'}}>
               <X size={28} color="#000" />
@@ -158,7 +158,7 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
           </div>
           
           <div style={{display: 'flex', flexDirection: 'column', gap: '30px', fontSize: '1.5rem', fontWeight: 600, textTransform: 'uppercase'}}>
-            <Link href="/" onClick={() => setIsMenuOpen(false)}>Inicio</Link>
+            <a href="/" onClick={() => setIsMenuOpen(false)} style={{textDecoration: 'none', color: 'inherit'}}>Inicio</a>
             <Link href="/?category=HOMBRES" onClick={() => setIsMenuOpen(false)} target="_blank" rel="noopener noreferrer">Hombres</Link>
             <Link href="/?category=MUJERES" onClick={() => setIsMenuOpen(false)} target="_blank" rel="noopener noreferrer">Mujeres</Link>
             <Link href="/?category=UNISEX" onClick={() => setIsMenuOpen(false)} target="_blank" rel="noopener noreferrer">Unisex</Link>
