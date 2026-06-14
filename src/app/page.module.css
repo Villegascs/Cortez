@@ -160,7 +160,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 4/5;
-  background-color: #f6f6f6;
+  background-color: transparent;
   overflow: hidden;
   margin-bottom: 15px;
 }

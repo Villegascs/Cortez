@@ -80,7 +80,7 @@
   width: 100%;
   max-width: 600px;
   aspect-ratio: 4/5;
-  background-color: var(--surface-color);
+  background-color: transparent;
 }
 
 .mainImage {
