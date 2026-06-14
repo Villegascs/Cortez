@@ -40,12 +40,7 @@ function HomeContent() {
           priority
           className={styles.heroImage}
         />
-        <div className={`${styles.heroContent} animate-fade-in`}>
-          <h1 className={styles.heroTitle}>NUEVA COLECCIÓN</h1>
-          <Link href="#catalog" className={styles.heroLink}>
-            Ver Catálogo
-          </Link>
-        </div>
+
       </section>
 
       {/* Catalog Section */}
