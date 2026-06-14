@@ -40,38 +40,66 @@ function HomeContent() {
       {/* Hero Section */}
       {!activeCategory && (
         <section className={styles.hero}>
-          {/* Slide 1 */}
-          <div className={`${styles.slide} ${currentSlide === 0 ? styles.active : ''}`}>
-            <Image 
-              src="/hero_1_desktop.png" 
-              alt="Cortez Hero 1" 
-              fill 
-              priority
-              className={`${styles.heroImage} ${styles.desktopOnly}`}
-            />
-            <Image 
-              src="/hero_1_mobile.png" 
-              alt="Cortez Hero 1 Mobile" 
-              fill 
-              priority
-              className={`${styles.heroImage} ${styles.mobileOnly}`}
-            />
-          </div>
+          <div style={{
+            display: 'flex', 
+            width: '200%', 
+            height: '100%',
+            transform: `translateX(-${currentSlide * 50}%)`,
+            transition: 'transform 0.8s cubic-bezier(0.86, 0, 0.07, 1)'
+          }}>
+            {/* Slide 1 */}
+            <div style={{ position: 'relative', width: '50%', height: '100%' }}>
+              <Image 
+                src="/hero_1_desktop.png" 
+                alt="Cortez Hero 1" 
+                fill 
+                priority
+                className={`${styles.heroImage} ${styles.desktopOnly}`}
+              />
+              <Image 
+                src="/hero_1_mobile.png" 
+                alt="Cortez Hero 1 Mobile" 
+                fill 
+                priority
+                className={`${styles.heroImage} ${styles.mobileOnly}`}
+              />
+            </div>
 
-          {/* Slide 2 */}
-          <div className={`${styles.slide} ${currentSlide === 1 ? styles.active : ''}`}>
-            <Image 
-              src="/hero_2_desktop.png" 
-              alt="Cortez Hero 2" 
-              fill 
-              className={`${styles.heroImage} ${styles.desktopOnly}`}
-            />
-            <Image 
-              src="/hero_2_mobile.png" 
-              alt="Cortez Hero 2 Mobile" 
-              fill 
-              className={`${styles.heroImage} ${styles.mobileOnly}`}
-            />
+            {/* Slide 2 */}
+            <div style={{ position: 'relative', width: '50%', height: '100%' }}>
+              <Image 
+                src="/hero_2_desktop.png" 
+                alt="Cortez Hero 2" 
+                fill 
+                priority
+                className={`${styles.heroImage} ${styles.desktopOnly}`}
+              />
+              <Image 
+                src="/hero_2_mobile.png" 
+                alt="Cortez Hero 2 Mobile" 
+                fill 
+                priority
+                className={`${styles.heroImage} ${styles.mobileOnly}`}
+              />
+            </div>
+          </div>
+          
+          {/* Indicadores */}
+          <div style={{
+            position: 'absolute', bottom: '30px', left: '50%', transform: 'translateX(-50%)',
+            display: 'flex', gap: '10px', zIndex: 10
+          }}>
+            {[0, 1].map((idx) => (
+              <div 
+                key={idx} 
+                onClick={() => setCurrentSlide(idx)}
+                style={{
+                  width: '12px', height: '12px', borderRadius: '50%', cursor: 'pointer',
+                  background: currentSlide === idx ? '#fff' : 'rgba(255,255,255,0.4)',
+                  transition: 'background 0.3s ease'
+                }}
+              />
+            ))}
           </div>
         </section>
       )}
