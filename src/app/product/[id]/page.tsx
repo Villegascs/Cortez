@@ -198,9 +198,11 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
           alignItems: 'center', justifyContent: 'center'
         }}>
           <div style={{
-            background: '#fff', padding: '40px', maxWidth: '400px', width: '90%',
+            background: 'var(--bg-color)', padding: '40px', maxWidth: '400px', width: '90%',
             textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '20px',
-            animation: 'fadeIn 0.3s ease'
+            animation: 'fadeIn 0.3s ease',
+            border: '1px solid var(--border-color)',
+            color: 'var(--text-primary)'
           }}>
             <h2 style={{textTransform:'uppercase', fontSize:'1.2rem', margin:0}}>Añadido a la Cesta</h2>
             <p style={{margin:0, color:'var(--text-secondary)'}}>
@@ -210,11 +212,8 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
               <Link href="/cart" className="btn-primary">Ver la Cesta y Pagar</Link>
               <button 
                 onClick={() => setAdded(false)} 
-                style={{
-                  background:'transparent', border:'1px solid var(--border-color)',
-                  padding:'15px', cursor:'pointer', fontWeight:600, textTransform:'uppercase',
-                  letterSpacing:'1px', fontSize:'0.8rem'
-                }}
+                className="btn-secondary"
+                style={{ width: '100%' }}
               >
                 Seguir Comprando
               </button>
