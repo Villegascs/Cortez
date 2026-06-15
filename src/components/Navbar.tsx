@@ -146,37 +146,50 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
         </nav>
       </header>
 
-      {/* Mobile Bottom Navigation Bar (Instagram Style) */}
+      {/* Mobile Floating Glass Buttons */}
       <div className="hidden-desktop" style={{
         position: 'fixed',
-        bottom: 0,
+        bottom: '30px',
         left: 0,
         width: '100%',
-        background: 'var(--navbar-bg)',
-        backdropFilter: 'blur(10px)',
-        borderTop: '1px solid var(--border-color)',
         zIndex: 50,
         display: 'flex',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-        padding: '10px 0',
-        paddingBottom: 'calc(10px + env(safe-area-inset-bottom))',
+        justifyContent: 'center',
+        gap: '15px',
+        padding: '0 20px',
+        pointerEvents: 'none', // allow clicking through the container
       }}>
-        <Link href="/" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: 'var(--text-primary)', textDecoration: 'none', gap: '4px' }}>
-          <Home size={24} strokeWidth={1.5} />
-          <span style={{ fontSize: '0.65rem', fontWeight: 500 }}>Inicio</span>
+        <style>{`
+          .glass-btn {
+            pointer-events: auto;
+            flex: 1;
+            padding: 15px 0;
+            text-align: center;
+            border-radius: 30px;
+            background: rgba(20, 20, 20, 0.4);
+            backdrop-filter: blur(25px) saturate(200%);
+            -webkit-backdrop-filter: blur(25px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-decoration: none;
+            transition: transform 0.2s ease, background 0.2s ease;
+          }
+          .glass-btn:active {
+            transform: scale(0.95);
+            background: rgba(20, 20, 20, 0.6);
+          }
+        `}</style>
+        
+        <Link href="/?category=LENTES" className="glass-btn">
+          Lentes
         </Link>
-        <Link href="/?category=LENTES" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: 'var(--text-primary)', textDecoration: 'none', gap: '4px' }}>
-          <Glasses size={24} strokeWidth={1.5} />
-          <span style={{ fontSize: '0.65rem', fontWeight: 500 }}>Lentes</span>
-        </Link>
-        <Link href="/?category=ACCESORIOS" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: 'var(--text-primary)', textDecoration: 'none', gap: '4px' }}>
-          <Sparkles size={24} strokeWidth={1.5} />
-          <span style={{ fontSize: '0.65rem', fontWeight: 500 }}>Extras</span>
-        </Link>
-        <Link href="/admin" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: 'var(--text-primary)', textDecoration: 'none', gap: '4px' }}>
-          <User size={24} strokeWidth={1.5} />
-          <span style={{ fontSize: '0.65rem', fontWeight: 500 }}>Admin</span>
+        <Link href="/?category=ACCESORIOS" className="glass-btn">
+          Accesorios
         </Link>
       </div>
     </>
