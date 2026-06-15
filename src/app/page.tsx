@@ -127,7 +127,7 @@ function HomeContent() {
                     <div className={styles.cardInfo}>
                       <div className={styles.cardTopRow}>
                         <span className={styles.cardTitle}>{product.name}</span>
-                        <span className={styles.cardPrice}>${product.price}</span>
+                        <span className={styles.cardPrice}>{product.price} USDT</span>
                       </div>
                       <span className={`${styles.cardColor} serif-italic`}>{product.color}</span>
                     </div>

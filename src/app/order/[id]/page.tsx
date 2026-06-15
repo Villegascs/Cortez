@@ -96,14 +96,14 @@ export default function OrderTrackingPage({ params }: { params: Promise<{ id: st
             {order.items.map((item: any, idx: number) => (
               <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
                 <span>{item.quantity}x {item.product.name}</span>
-                <span style={{ fontWeight: 500 }}>${item.price * item.quantity}</span>
+                <span style={{ fontWeight: 500 }}>{item.price * item.quantity} USDT</span>
               </div>
             ))}
           </div>
           
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px', paddingTop: '15px', borderTop: '1px solid #e2e8f0', fontSize: '1.2rem', fontWeight: 700 }}>
             <span>Total Pagado</span>
-            <span>${order.totalUsd}</span>
+            <span>{order.totalUsd} USDT</span>
           </div>
         </div>
 

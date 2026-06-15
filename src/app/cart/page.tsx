@@ -140,7 +140,7 @@ export default function CartPage() {
     
     const itemsText = orderDetails.items.map((i: any) => `${i.quantity}x ${i.name}`).join(", ");
     const trackingLink = `${window.location.origin}/order/${orderDetails.id}`;
-    const text = `¡Hola Cortez! Acabo de realizar un pedido.\n\n*Cliente:* ${orderDetails.customerName}\n*Pedido:* ${itemsText}\n*Total:* $${orderDetails.total}\n*Método de entrega:* ${orderDetails.shippingMethod}\n\n*Sigue tu orden aquí:*\n${trackingLink}\n\nAdjunto comprobante de pago en la web.`;
+    const text = `¡Hola Cortez! Acabo de realizar un pedido.\n\n*Cliente:* ${orderDetails.customerName}\n*Pedido:* ${itemsText}\n*Total:* ${orderDetails.total} USDT\n*Método de entrega:* ${orderDetails.shippingMethod}\n\n*Sigue tu orden aquí:*\n${trackingLink}\n\nAdjunto comprobante de pago en la web.`;
     
     return `https://wa.me/584247283924?text=${encodeURIComponent(text)}`;
   };
@@ -199,12 +199,12 @@ export default function CartPage() {
                       {orderDetails.items.map((i: any, idx: number) => (
                         <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '0.9rem' }}>
                           <span style={{ color: '#334155' }}>{i.quantity}x {i.name}</span>
-                          <span style={{ fontWeight: 500 }}>${i.price * i.quantity}</span>
+                          <span style={{ fontWeight: 500 }}>{i.price * i.quantity} USDT</span>
                         </div>
                       ))}
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '15px', fontWeight: 700, fontSize: '1.1rem', color: '#0f172a' }}>
                         <span>Total</span>
-                        <span>${orderDetails.total}</span>
+                        <span>{orderDetails.total} USDT</span>
                       </div>
                     </div>
                   </div>
@@ -243,7 +243,7 @@ export default function CartPage() {
                   <div className={styles.itemInfo}>
                     <div className={styles.itemHeader}>
                       <span className={styles.itemName}>{item.name}</span>
-                      <span className={styles.itemPrice}>${item.price}</span>
+                      <span className={styles.itemPrice}>{item.price} USDT</span>
                     </div>
                     <div className={styles.itemActions}>
                       <span>Cant: {item.quantity}</span>
@@ -263,16 +263,16 @@ export default function CartPage() {
             <h2 style={{textTransform:'uppercase', fontSize: '1.2rem', marginBottom: '20px'}}>Resumen</h2>
             <div className={styles.summaryRow}>
               <span>Subtotal</span>
-              <span>${subtotalUsd}</span>
+              <span>{subtotalUsd} USDT</span>
             </div>
             <div className={styles.summaryRow}>
               <span>Envío</span>
-              <span>{shippingMethod === "DELIVERY_VALENCIA" ? "$3" : "Gratis"}</span>
+              <span>{shippingMethod === "DELIVERY_VALENCIA" ? "3 USDT" : "Gratis"}</span>
             </div>
             <div className={styles.totalRow}>
               <span>Total</span>
               <div style={{textAlign: 'right'}}>
-                <span>${totalUsd}</span>
+                <span>{totalUsd} USDT</span>
                 <span className={styles.bsAmount}>~ {totalBs.toFixed(2)} Bs (Tasa: {usdtRate})</span>
               </div>
             </div>

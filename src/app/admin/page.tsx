@@ -335,7 +335,7 @@ export default function AdminPanel() {
           <form onSubmit={handleAddProduct} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <input required placeholder="Nombre (ej. cortez aviator)" className="input-field" value={newProductName} onChange={e=>setNewProductName(e.target.value)} />
             <input placeholder="Color (Opcional, ej. Gold & Dark)" className="input-field" value={newProductColor} onChange={e=>setNewProductColor(e.target.value)} />
-            <input required type="number" placeholder="Precio ($)" className="input-field" value={newProductPrice} onChange={e=>setNewProductPrice(e.target.value)} />
+            <input required type="number" placeholder="Precio (USDT)" className="input-field" value={newProductPrice} onChange={e=>setNewProductPrice(e.target.value)} />
             <input required type="number" placeholder="Stock" className="input-field" value={newProductStock} onChange={e=>setNewProductStock(e.target.value)} />
             <div style={{ position: 'relative' }}>
               <button
@@ -456,7 +456,7 @@ export default function AdminPanel() {
                     <strong>{p.name}</strong> {!p.isVisible && <span style={{color:'red', fontSize:'0.7rem', marginLeft:'5px'}}>(OCULTO)</span>}<br/>
                     <span style={{ fontSize: '0.85rem', color: '#666' }}>{p.color} - {p.category}</span>
                   </td>
-                  <td style={{ padding: '15px 10px' }}>${p.price}</td>
+                  <td style={{ padding: '15px 10px' }}>{p.price} USDT</td>
                   <td style={{ padding: '15px 10px' }}>
                     <input 
                       type="number" 
@@ -520,7 +520,7 @@ export default function AdminPanel() {
               <div className={styles.orderSection}>
                 <div className={styles.sectionTitle}>Pago</div>
                 <div className={styles.paymentInfo}>
-                  <strong>Monto:</strong> ${order.totalUsd} / {order.totalBs} Bs <br/>
+                  <strong>Monto:</strong> {order.totalUsd} USDT / {order.totalBs} Bs <br/>
                   <strong>Método:</strong> {order.paymentMethod} <br/>
                   {order.paymentMethod === 'PAGO_MOVIL' && (
                     <>

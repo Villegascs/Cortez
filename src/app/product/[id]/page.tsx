@@ -150,7 +150,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
         <div className={styles.infoSection}>
           <h1 className={styles.title}>{product.name}</h1>
           <p className={`${styles.color} serif-italic`}>{product.color}</p>
-          <p className={styles.price}>${product.price} USD</p>
+          <p className={styles.price}>{product.price} USDT</p>
           
           <div className={styles.divider}></div>
           
@@ -182,7 +182,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                     <span style={{ fontSize: '0.9rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{p.name}</span>
-                    <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>${p.price}</span>
+                    <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{p.price} USDT</span>
                   </div>
                   <span style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }} className="serif-italic">{p.color}</span>
                 </div>
