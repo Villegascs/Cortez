@@ -3,7 +3,7 @@
 import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ShoppingBag, Menu, X } from "lucide-react";
+import { ShoppingBag, Home, Glasses, Sparkles, User } from "lucide-react";
 import { useCartStore } from "@/store/cart";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -16,7 +16,6 @@ if (typeof window !== "undefined") {
 export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: boolean }) {
   const { items } = useCartStore();
   const navRef = useRef<HTMLElement>(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useGSAP(() => {
     if (!navRef.current) return;
@@ -127,9 +126,7 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
           </div>
 
           <div className="hidden-desktop" style={{display:'flex', alignItems: 'center'}}>
-            <button type="button" onClick={() => setIsMenuOpen(true)} style={{padding: '5px', background: 'transparent', border: 'none', cursor: 'pointer'}}>
-              <Menu size={24} style={{ color: 'var(--icon-color)' }} />
-            </button>
+            {/* Hamburger removed */}
           </div>
           
           <div style={{textAlign:'center'}}>
@@ -149,49 +146,38 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
         </nav>
       </header>
 
-      {/* Mobile Drawer */}
-      <div 
-        className={`mobile-drawer ${isMenuOpen ? 'is-open' : ''}`}
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(11, 14, 20, 0.98)',
-          zIndex: 9999,
-          display: 'flex',
-          flexDirection: 'column',
-          opacity: isMenuOpen ? 1 : 0,
-          pointerEvents: isMenuOpen ? 'auto' : 'none',
-          transition: 'opacity 0.3s ease',
-          padding: '20px'
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '80px' }}>
-          <div style={{ paddingLeft: '20px' }}>
-            <a href="/" onClick={() => setIsMenuOpen(false)}>
-              <Image src="/logo.png" alt="Cortez" width={140} height={35} style={{ filter: 'invert(1)', objectFit: 'contain', transform: 'scale(2)' }} />
-            </a>
-          </div>
-          <button onClick={() => setIsMenuOpen(false)} style={{ padding: '10px', background: 'transparent', border: 'none', cursor: 'pointer' }}>
-            <X size={32} color="#ffffff" strokeWidth={1.5} />
-          </button>
-        </div>
-        
-        <div style={{
-          display: 'flex', 
-          flexDirection: 'column', 
-          alignItems: 'center', 
-          gap: '20px', 
-          width: '100%',
-          padding: '0 20px'
-        }}>
-          <Link href="/" onClick={() => setIsMenuOpen(false)} className="villegas-nav-link">Inicio</Link>
-          <Link href="/?category=LENTES" onClick={() => setIsMenuOpen(false)} className="villegas-nav-link">Lentes</Link>
-          <Link href="/?category=ACCESORIOS" onClick={() => setIsMenuOpen(false)} className="villegas-nav-link">Accesorios</Link>
-          <Link href="/admin" onClick={() => setIsMenuOpen(false)} className="villegas-nav-link" style={{marginTop: '40px', fontSize: '1.2rem', color: '#888'}}>Admin</Link>
-        </div>
+      {/* Mobile Bottom Navigation Bar (Instagram Style) */}
+      <div className="hidden-desktop" style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        width: '100%',
+        background: 'var(--navbar-bg)',
+        backdropFilter: 'blur(10px)',
+        borderTop: '1px solid var(--border-color)',
+        zIndex: 50,
+        display: 'flex',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        padding: '10px 0',
+        paddingBottom: 'calc(10px + env(safe-area-inset-bottom))',
+      }}>
+        <Link href="/" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: 'var(--text-primary)', textDecoration: 'none', gap: '4px' }}>
+          <Home size={24} strokeWidth={1.5} />
+          <span style={{ fontSize: '0.65rem', fontWeight: 500 }}>Inicio</span>
+        </Link>
+        <Link href="/?category=LENTES" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: 'var(--text-primary)', textDecoration: 'none', gap: '4px' }}>
+          <Glasses size={24} strokeWidth={1.5} />
+          <span style={{ fontSize: '0.65rem', fontWeight: 500 }}>Lentes</span>
+        </Link>
+        <Link href="/?category=ACCESORIOS" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: 'var(--text-primary)', textDecoration: 'none', gap: '4px' }}>
+          <Sparkles size={24} strokeWidth={1.5} />
+          <span style={{ fontSize: '0.65rem', fontWeight: 500 }}>Extras</span>
+        </Link>
+        <Link href="/admin" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: 'var(--text-primary)', textDecoration: 'none', gap: '4px' }}>
+          <User size={24} strokeWidth={1.5} />
+          <span style={{ fontSize: '0.65rem', fontWeight: 500 }}>Admin</span>
+        </Link>
       </div>
     </>
   );
