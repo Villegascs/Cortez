@@ -28,9 +28,9 @@ export default function Footer() {
             <Image 
               src="/logo.png" 
               alt="Cortez Logo" 
-              width={140} 
-              height={35} 
-              style={{ filter: 'var(--logo-invert)', objectFit: 'contain' }} 
+              width={180} 
+              height={40} 
+              style={{ filter: 'var(--logo-invert)', objectFit: 'contain', transform: 'scale(2.5)', transformOrigin: 'left center' }} 
             />
           </Link>
           
