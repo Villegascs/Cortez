@@ -49,12 +49,12 @@ body {
   color: var(--text-primary);
   font-family: var(--font-sans);
   line-height: 1.5;
-  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden; /* move here so fixed children still work on iOS */
 }
 
 /* Ocultar el indicador "N" de Next.js Turbopack a la fuerza */
