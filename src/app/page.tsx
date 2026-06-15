@@ -25,7 +25,7 @@ function HomeContent() {
   useEffect(() => {
     if (activeCategory) return;
     const interval = setInterval(() => {
-      setCurrentSlide(prev => prev === 0 ? 1 : 0);
+      setCurrentSlide(prev => prev === 2 ? 0 : prev + 1);
     }, 5000);
     return () => clearInterval(interval);
   }, [activeCategory]);
@@ -42,53 +42,45 @@ function HomeContent() {
         <section className={styles.hero}>
           <div style={{
             display: 'flex', 
-            width: '200%', 
+            width: '300%', 
             height: '100%',
-            transform: `translateX(-${currentSlide * 50}%)`,
+            transform: `translateX(-${currentSlide * 33.3333}%)`,
             transition: 'transform 0.8s cubic-bezier(0.86, 0, 0.07, 1)'
           }}>
             {/* Slide 1 */}
-            <div style={{ position: 'relative', width: '50%', height: '100%' }}>
-              <Image 
-                src="/hero_1_desktop.png" 
-                alt="Cortez Hero 1" 
-                fill 
-                priority
-                className={`${styles.heroImage} ${styles.desktopOnly}`}
-              />
-              <Image 
-                src="/hero_1_mobile.png" 
-                alt="Cortez Hero 1 Mobile" 
-                fill 
-                priority
-                className={`${styles.heroImage} ${styles.mobileOnly}`}
-              />
+            <div style={{ position: 'relative', width: '33.3333%', height: '100%' }}>
+              <Image src="/hero_1_desktop.png" alt="Cortez Hero 1" fill priority className={`${styles.heroImage} ${styles.desktopOnly}`} />
+              <Image src="/hero_1_mobile.png" alt="Cortez Hero 1 Mobile" fill priority className={`${styles.heroImage} ${styles.mobileOnly}`} />
             </div>
 
             {/* Slide 2 */}
-            <div style={{ position: 'relative', width: '50%', height: '100%' }}>
-              <Image 
-                src="/hero_2_desktop.png" 
-                alt="Cortez Hero 2" 
-                fill 
-                priority
-                className={`${styles.heroImage} ${styles.desktopOnly}`}
-              />
-              <Image 
-                src="/hero_2_mobile.png" 
-                alt="Cortez Hero 2 Mobile" 
-                fill 
-                priority
-                className={`${styles.heroImage} ${styles.mobileOnly}`}
-              />
+            <div style={{ position: 'relative', width: '33.3333%', height: '100%' }}>
+              <Image src="/hero_2_desktop.png" alt="Cortez Hero 2" fill priority className={`${styles.heroImage} ${styles.desktopOnly}`} />
+              <Image src="/hero_2_mobile.png" alt="Cortez Hero 2 Mobile" fill priority className={`${styles.heroImage} ${styles.mobileOnly}`} />
+            </div>
+
+            {/* Slide 3 (Rudes) */}
+            <div style={{ position: 'relative', width: '33.3333%', height: '100%' }}>
+              <Image src="/rudes_portada.png" alt="Cortez Hero 3 Rudes" fill priority className={styles.heroImage} />
             </div>
           </div>
           
+          {/* Left Side Logo Overlay */}
           <div style={{
-            position: 'absolute', bottom: '60px', left: '50%', transform: 'translateX(-50%)',
-            zIndex: 10, width: '95%', maxWidth: '700px', display: 'flex', justifyContent: 'center'
+            position: 'absolute', top: '50%', left: '5%', transform: 'translateY(-50%)',
+            zIndex: 10, width: '15vw', maxWidth: '120px', minWidth: '60px',
+            display: 'flex', alignItems: 'center'
           }}>
-            <img src="/texto_principal.png" alt="Cortez Collection" style={{ width: '100%', height: 'auto', objectFit: 'contain' }} />
+            <img src="/cortez_blanco.png" alt="Cortez Logo" style={{ width: '100%', height: 'auto', objectFit: 'contain' }} />
+          </div>
+
+          {/* Right Side Text Overlay */}
+          <div style={{
+            position: 'absolute', top: '50%', right: '5%', transform: 'translateY(-50%)',
+            zIndex: 10, width: '20vw', maxWidth: '180px', minWidth: '80px',
+            display: 'flex', alignItems: 'center'
+          }}>
+            <img src="/weird_text.png" alt="Weird & cool people" style={{ width: '100%', height: 'auto', objectFit: 'contain' }} />
           </div>
 
           {/* Indicadores */}
@@ -96,7 +88,7 @@ function HomeContent() {
             position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
             display: 'flex', gap: '10px', zIndex: 10
           }}>
-            {[0, 1].map((idx) => (
+            {[0, 1, 2].map((idx) => (
               <div 
                 key={idx} 
                 onClick={() => setCurrentSlide(idx)}
