@@ -131,12 +131,10 @@ function HomeContent() {
                         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, letterSpacing: '2px', fontSize: '1.2rem', color: '#000', zIndex: 10 }}>SOLD OUT</div>
                       )}
                     </div>
-                    <div className={styles.cardInfo}>
-                      <div className={styles.cardTopRow}>
-                        <span className={styles.cardTitle}>{product.name}</span>
-                        <span className={styles.cardPrice}>{product.price} USDT</span>
-                      </div>
-                      <span className={`${styles.cardColor} serif-italic`}>{product.color}</span>
+                    <div className={styles.cardInfo} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <span className={styles.cardTitle} style={{ fontSize: '1.2rem', fontWeight: 800 }}>{product.name}</span>
+                      <span className={styles.cardPrice} style={{ fontSize: '1rem', fontWeight: 600 }}>{product.price} USDT</span>
+                      <span className={`${styles.cardColor} serif-italic`} style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{product.color}</span>
                     </div>
                   </div>
                 </Link>
