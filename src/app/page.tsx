@@ -61,7 +61,8 @@ function HomeContent() {
 
             {/* Slide 3 (Rudes) */}
             <div style={{ position: 'relative', width: '33.3333%', height: '100%' }}>
-              <Image src="/rudes_portada.png" alt="Cortez Hero 3 Rudes" fill priority className={styles.heroImage} />
+              <Image src="/rudes_portada.png" alt="Cortez Hero 3 Rudes" fill priority className={`${styles.heroImage} ${styles.desktopOnly}`} />
+              <Image src="/rudes_portada_mobile.jpg" alt="Cortez Hero 3 Rudes Mobile" fill priority className={`${styles.heroImage} ${styles.mobileOnly}`} />
             </div>
           </div>
 
