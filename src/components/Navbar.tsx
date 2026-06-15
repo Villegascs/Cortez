@@ -140,7 +140,7 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
           width: '100%',
           height: '100vh',
           background: 'var(--bg-color)',
-          zIndex: 100,
+          zIndex: 2000,
           display: 'flex',
           flexDirection: 'column',
           padding: '20px'

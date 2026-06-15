@@ -119,6 +119,7 @@
 .catalogSection {
   padding: 80px 40px;
   background-color: #fff;
+  color: #000;
 }
 
 .sectionHeader {
@@ -207,14 +208,16 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  color: #000;
 }
 
 .cardPrice {
   font-size: 0.9rem;
   font-weight: 500;
+  color: #000;
 }
 
 .cardColor {
-  color: var(--text-secondary);
+  color: #666;
   font-size: 0.95rem;
 }
