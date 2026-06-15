@@ -86,7 +86,7 @@ function HomeContent() {
           
           <div style={{
             position: 'absolute', bottom: '60px', left: '50%', transform: 'translateX(-50%)',
-            zIndex: 10, width: '90%', maxWidth: '400px', display: 'flex', justifyContent: 'center'
+            zIndex: 10, width: '95%', maxWidth: '700px', display: 'flex', justifyContent: 'center'
           }}>
             <img src="/texto_principal.png" alt="Cortez Collection" style={{ width: '100%', height: 'auto', objectFit: 'contain' }} />
           </div>
