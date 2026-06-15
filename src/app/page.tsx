@@ -25,7 +25,7 @@ function HomeContent() {
   useEffect(() => {
     if (activeCategory) return;
     const interval = setInterval(() => {
-      setCurrentSlide(prev => prev === 3 ? 0 : prev + 1);
+      setCurrentSlide(prev => prev === 2 ? 0 : prev + 1);
     }, 5000);
     return () => clearInterval(interval);
   }, [activeCategory]);
@@ -42,32 +42,26 @@ function HomeContent() {
           <section className={styles.hero}>
             <div style={{
             display: 'flex', 
-            width: '400%', 
+            width: '300%', 
             height: '100%',
-            transform: `translateX(-${currentSlide * 25}%)`,
+            transform: `translateX(-${currentSlide * 33.3333}%)`,
             transition: 'transform 0.8s cubic-bezier(0.86, 0, 0.07, 1)'
           }}>
             {/* Slide 1 */}
-            <div style={{ position: 'relative', width: '25%', height: '100%' }}>
+            <div style={{ position: 'relative', width: '33.3333%', height: '100%' }}>
               <Image src="/hero_1_desktop.png" alt="Cortez Hero 1" fill priority className={`${styles.heroImage} ${styles.desktopOnly}`} />
               <Image src="/hero_1_mobile.png" alt="Cortez Hero 1 Mobile" fill priority className={`${styles.heroImage} ${styles.mobileOnly}`} />
             </div>
 
             {/* Slide 2 */}
-            <div style={{ position: 'relative', width: '25%', height: '100%' }}>
+            <div style={{ position: 'relative', width: '33.3333%', height: '100%' }}>
               <Image src="/hero_2_desktop.png" alt="Cortez Hero 2" fill priority className={`${styles.heroImage} ${styles.desktopOnly}`} />
               <Image src="/hero_2_mobile.png" alt="Cortez Hero 2 Mobile" fill priority className={`${styles.heroImage} ${styles.mobileOnly}`} />
             </div>
 
             {/* Slide 3 (Rudes) */}
-            <div style={{ position: 'relative', width: '25%', height: '100%' }}>
+            <div style={{ position: 'relative', width: '33.3333%', height: '100%' }}>
               <Image src="/rudes_portada.png" alt="Cortez Hero 3 Rudes" fill priority className={styles.heroImage} />
-            </div>
-
-            {/* Slide 4 (Last Pieces) */}
-            <div style={{ position: 'relative', width: '25%', height: '100%' }}>
-              <Image src="/last_pieces_desktop.png" alt="Cortez Last Pieces" fill priority className={`${styles.heroImage} ${styles.desktopOnly}`} />
-              <Image src="/last_pieces_mobile.png" alt="Cortez Last Pieces Mobile" fill priority className={`${styles.heroImage} ${styles.mobileOnly}`} />
             </div>
           </div>
 
@@ -83,7 +77,7 @@ function HomeContent() {
               position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
               display: 'flex', gap: '10px', zIndex: 10
             }}>
-            {[0, 1, 2, 3].map((idx) => (
+            {[0, 1, 2].map((idx) => (
               <div
                 key={idx}
                 onClick={() => setCurrentSlide(idx)}
