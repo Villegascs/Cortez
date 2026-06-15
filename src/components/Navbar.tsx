@@ -127,7 +127,7 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
           </div>
 
           <div className="hidden-desktop" style={{display:'flex', alignItems: 'center'}}>
-            <button onClick={() => setIsMenuOpen(true)} style={{padding: '5px'}}>
+            <button type="button" onClick={() => setIsMenuOpen(true)} style={{padding: '5px', background: 'transparent', border: 'none', cursor: 'pointer'}}>
               <Menu size={24} style={{ color: 'var(--icon-color)' }} />
             </button>
           </div>
@@ -156,14 +156,15 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
           position: 'fixed',
           top: 0,
           left: 0,
-          width: '100%',
-          height: '100vh',
+          right: 0,
+          bottom: 0,
           background: 'rgba(11, 14, 20, 0.98)',
           zIndex: 9999,
           display: 'flex',
           flexDirection: 'column',
-          transform: isMenuOpen ? 'translateX(0)' : 'translateX(100%)',
-          transition: 'transform 0.4s cubic-bezier(0.77, 0, 0.175, 1)',
+          opacity: isMenuOpen ? 1 : 0,
+          pointerEvents: isMenuOpen ? 'auto' : 'none',
+          transition: 'opacity 0.3s ease',
           padding: '20px'
         }}
       >
