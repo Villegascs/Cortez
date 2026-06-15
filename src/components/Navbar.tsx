@@ -153,7 +153,7 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
         left: 0,
         width: '100%',
         zIndex: 50,
-        display: 'flex',
+        display: 'none', // Hidden for now as requested
         justifyContent: 'center',
         gap: '15px',
         padding: '0 20px',
