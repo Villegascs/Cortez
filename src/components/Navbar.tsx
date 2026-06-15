@@ -164,14 +164,16 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
         style={{
           position: 'fixed',
           top: 0,
-          right: isMenuOpen ? '0' : '-100%',
+          left: 0,
           width: '100%',
           height: '100vh',
           background: 'rgba(11, 14, 20, 0.98)',
-          zIndex: 2000,
+          zIndex: 9999,
           display: 'flex',
           flexDirection: 'column',
-          transition: 'right 0.4s cubic-bezier(0.77, 0, 0.175, 1)',
+          transform: isMenuOpen ? 'translateX(0)' : 'translateX(100%)',
+          visibility: isMenuOpen ? 'visible' : 'hidden',
+          transition: 'transform 0.4s cubic-bezier(0.77, 0, 0.175, 1), visibility 0.4s',
           padding: '20px'
         }}
       >
