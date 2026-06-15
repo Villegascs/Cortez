@@ -12,8 +12,30 @@
   --error-color: #D0021B;
   --success-color: #00E676;
   
+  --navbar-bg: rgba(255,255,255,0.95);
+  --logo-invert: invert(1);
+  --icon-color: #000000;
+  
   --font-sans: 'Inter', sans-serif;
   --font-serif: 'Playfair Display', serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #050505;
+    --surface-color: #151515;
+    --surface-light: #252525;
+    
+    --text-primary: #FFFFFF;
+    --text-secondary: #AAAAAA;
+    
+    --accent-color: #FFFFFF;
+    --border-color: #2A2A2A;
+    
+    --navbar-bg: rgba(5,5,5,0.95);
+    --logo-invert: invert(0);
+    --icon-color: #FFFFFF;
+  }
 }
 
 * {

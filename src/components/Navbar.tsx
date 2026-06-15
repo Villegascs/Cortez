@@ -72,7 +72,7 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
             alignItems: 'center',
             padding: '15px 20px', 
             borderBottom: '1px solid var(--border-color)',
-            background: 'rgba(255,255,255,0.95)', 
+            background: 'var(--navbar-bg)', 
             backdropFilter: 'blur(10px)', 
           }}
         >
@@ -90,7 +90,7 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
               left: 0;
               width: 100%;
               height: 2px;
-              background-color: #000;
+              background-color: var(--text-primary);
               transform: translateX(-101%);
               transition: transform 0.3s cubic-bezier(0.86, 0, 0.07, 1);
             }
@@ -110,19 +110,19 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
 
           <div className="hidden-desktop" style={{display:'flex', alignItems: 'center'}}>
             <button onClick={() => setIsMenuOpen(true)} style={{padding: '5px'}}>
-              <Menu size={24} color="#000" />
+              <Menu size={24} style={{ color: 'var(--icon-color)' }} />
             </button>
           </div>
           
           <div style={{textAlign:'center'}}>
             <a href="/" style={{display: 'inline-block'}}>
-              <Image src="/logo.png" alt="Cortez" width={180} height={40} style={{ filter: 'invert(1)', objectFit: 'contain', transform: 'scale(2.5)' }} priority />
+              <Image src="/logo.png" alt="Cortez" width={180} height={40} style={{ filter: 'var(--logo-invert)', objectFit: 'contain', transform: 'scale(2.5)' }} priority />
             </a>
           </div>
           
           <div style={{justifySelf:'end'}}>
             {!isSuccessPage && (
-              <Link href="/cart" style={{display: 'flex', alignItems: 'center', gap: '5px', color: '#000'}}>
+              <Link href="/cart" style={{display: 'flex', alignItems: 'center', gap: '5px', color: 'var(--text-primary)'}}>
                 <ShoppingBag size={20} strokeWidth={1.5} />
                 <span style={{fontSize: '0.8rem', fontWeight: 600}}>{items.length}</span>
               </Link>
@@ -139,20 +139,20 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
           left: 0,
           width: '100%',
           height: '100vh',
-          backgroundColor: '#fff',
+          background: 'var(--bg-color)',
           zIndex: 100,
           display: 'flex',
           flexDirection: 'column',
           padding: '20px'
         }}>
-          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px'}}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
             <div style={{ paddingLeft: '20px' }}>
               <a href="/" onClick={() => setIsMenuOpen(false)}>
-                <Image src="/logo.png" alt="Cortez" width={140} height={35} style={{ filter: 'invert(1)', objectFit: 'contain', transform: 'scale(2)' }} />
+                <Image src="/logo.png" alt="Cortez" width={140} height={35} style={{ filter: 'var(--logo-invert)', objectFit: 'contain', transform: 'scale(2)' }} />
               </a>
             </div>
-            <button onClick={() => setIsMenuOpen(false)} style={{padding: '5px'}}>
-              <X size={28} color="#000" />
+            <button onClick={() => setIsMenuOpen(false)} style={{ padding: '10px' }}>
+              <X size={28} style={{ color: 'var(--icon-color)' }} />
             </button>
           </div>
           

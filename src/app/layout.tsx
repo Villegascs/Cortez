@@ -20,6 +20,8 @@ export const metadata: Metadata = {
   description: "Descubre nuestra colección exclusiva de lentes.",
 };
 
+import Footer from "@/components/Footer";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,10 +29,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${inter.variable} ${playfair.variable}`}>
-      <body>
-        <main>
+      <body style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        <main style={{ flex: 1 }}>
           {children}
         </main>
+        <Footer />
       </body>
     </html>
   );

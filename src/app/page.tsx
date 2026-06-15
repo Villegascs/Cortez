@@ -84,9 +84,16 @@ function HomeContent() {
             </div>
           </div>
           
+          <div style={{
+            position: 'absolute', bottom: '60px', left: '50%', transform: 'translateX(-50%)',
+            zIndex: 10, width: '90%', maxWidth: '400px', display: 'flex', justifyContent: 'center'
+          }}>
+            <img src="/texto_principal.png" alt="Cortez Collection" style={{ width: '100%', height: 'auto', objectFit: 'contain' }} />
+          </div>
+
           {/* Indicadores */}
           <div style={{
-            position: 'absolute', bottom: '30px', left: '50%', transform: 'translateX(-50%)',
+            position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
             display: 'flex', gap: '10px', zIndex: 10
           }}>
             {[0, 1].map((idx) => (
@@ -94,7 +101,7 @@ function HomeContent() {
                 key={idx} 
                 onClick={() => setCurrentSlide(idx)}
                 style={{
-                  width: '12px', height: '12px', borderRadius: '50%', cursor: 'pointer',
+                  width: '10px', height: '10px', borderRadius: '50%', cursor: 'pointer',
                   background: currentSlide === idx ? '#fff' : 'rgba(255,255,255,0.4)',
                   transition: 'background 0.3s ease'
                 }}
