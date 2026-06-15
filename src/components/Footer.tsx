@@ -19,18 +19,20 @@ export default function Footer() {
       }}>
         {/* Top Row: Logo & Instagram */}
         <div style={{
+          position: 'relative',
           display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
+          justifyContent: 'center',
+          alignItems: 'center',
+          minHeight: '60px'
         }}>
-          {/* Logo Cortez Left */}
+          {/* Logo Cortez Center */}
           <Link href="/">
             <Image 
               src="/logo.png" 
               alt="Cortez Logo" 
               width={180} 
               height={40} 
-              style={{ filter: 'var(--logo-invert)', objectFit: 'contain', transform: 'scale(2.5)', transformOrigin: 'left center' }} 
+              style={{ filter: 'var(--logo-invert)', objectFit: 'contain', transform: 'scale(2.5)', transformOrigin: 'center' }} 
             />
           </Link>
           
@@ -40,6 +42,8 @@ export default function Footer() {
             target="_blank" 
             rel="noopener noreferrer"
             style={{
+              position: 'absolute',
+              right: 0,
               display: 'flex',
               alignItems: 'center',
               color: 'var(--text-secondary)',
