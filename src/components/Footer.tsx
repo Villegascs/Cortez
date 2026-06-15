@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Footer() {
   return (
@@ -14,61 +15,66 @@ export default function Footer() {
         margin: '0 auto',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
         gap: '20px'
       }}>
-        <h2 style={{
-          fontSize: '1.5rem',
-          fontWeight: 700,
-          letterSpacing: '2px',
-          textTransform: 'uppercase'
+        {/* Top Row: Logo & Instagram */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
         }}>
-          CORTEZ
-        </h2>
-        
-        <a 
-          href="https://www.instagram.com/cortez/" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            color: 'var(--text-secondary)',
-            fontSize: '0.9rem',
-            textDecoration: 'none',
-            transition: 'color 0.2s ease'
-          }}
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="var(--icon-color)"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+          {/* Logo Cortez Left */}
+          <Link href="/">
+            <Image 
+              src="/logo.png" 
+              alt="Cortez Logo" 
+              width={140} 
+              height={35} 
+              style={{ filter: 'var(--logo-invert)', objectFit: 'contain' }} 
+            />
+          </Link>
+          
+          {/* Instagram Right */}
+          <a 
+            href="https://www.instagram.com/cortez.ve/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              color: 'var(--text-secondary)',
+              textDecoration: 'none',
+              transition: 'color 0.2s ease'
+            }}
+            title="Síguenos en Instagram"
           >
-            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-          </svg>
-          <span>SÍGUENOS EN INSTAGRAM</span>
-        </a>
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--icon-color)"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+            </svg>
+          </a>
+        </div>
         
         <div style={{
           width: '100%',
           height: '1px',
           background: 'var(--border-color)',
-          margin: '20px 0'
+          margin: '10px 0'
         }} />
         
         <div style={{
           display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '10px',
+          justifyContent: 'center',
           fontSize: '0.8rem',
           color: 'var(--text-secondary)',
           textAlign: 'center'
