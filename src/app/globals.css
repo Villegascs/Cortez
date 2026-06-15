@@ -124,7 +124,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Premium Buttons (Meller Style) */
 .btn-primary {
   background-color: var(--accent-color);
-  color: #FFFFFF;
+  color: var(--bg-color);
   padding: 16px 32px;
   font-weight: 500;
   font-size: 0.9rem;
@@ -138,7 +138,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-primary:hover {
-  background-color: #333333;
+  opacity: 0.8;
 }
 
 .btn-secondary {
