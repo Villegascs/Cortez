@@ -18,6 +18,15 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
   const navRef = useRef<HTMLElement>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { document.body.style.overflow = 'unset'; };
+  }, [isMenuOpen]);
+
   useGSAP(() => {
     if (!navRef.current) return;
     
@@ -39,7 +48,7 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
         }
       }
     });
-  }, { scope: navRef });
+  }, { scope: navRef, dependencies: [] });
 
   return (
     <>
@@ -156,7 +165,7 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
           position: 'fixed',
           top: 0,
           right: isMenuOpen ? '0' : '-100%',
-          width: '100vw',
+          width: '100%',
           height: '100vh',
           background: 'rgba(11, 14, 20, 0.98)',
           zIndex: 2000,
