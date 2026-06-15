@@ -97,10 +97,28 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
             .brutal-link:hover::after {
               transform: translateX(0);
             }
-            @media (min-width: 768px) {
-              .desktop-nav-padding { padding: 20px 40px !important; }
-            }
-          `}</style>
+          @media (min-width: 768px) {
+            .desktop-nav-padding { padding: 20px 40px !important; }
+          }
+          
+          .villegas-nav-link {
+            font-size: 24px;
+            color: #ffffff;
+            text-decoration: none;
+            text-transform: capitalize;
+            padding: 15px 30px;
+            width: 100%;
+            text-align: center;
+            transition: all 0.3s ease;
+            border-radius: 24px;
+          }
+          
+          .villegas-nav-link:hover, .villegas-nav-link:active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            transform: translateY(-2px);
+          }
+        `}</style>
           
           <div className="hidden-mobile" style={{display:'flex', gap:'20px', fontSize:'0.85rem', fontWeight:600, textTransform:'uppercase'}}>
             <a href="/" className="brutal-link">Inicio</a>
@@ -132,38 +150,47 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
       </header>
 
       {/* Mobile Drawer */}
-      {isMenuOpen && (
-        <div style={{
+      <div 
+        className={`mobile-drawer ${isMenuOpen ? 'is-open' : ''}`}
+        style={{
           position: 'fixed',
           top: 0,
-          left: 0,
-          width: '100%',
+          right: isMenuOpen ? '0' : '-100%',
+          width: '100vw',
           height: '100vh',
-          background: 'var(--bg-color)',
+          background: 'rgba(11, 14, 20, 0.98)',
           zIndex: 2000,
           display: 'flex',
           flexDirection: 'column',
+          transition: 'right 0.4s cubic-bezier(0.77, 0, 0.175, 1)',
           padding: '20px'
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
-            <div style={{ paddingLeft: '20px' }}>
-              <a href="/" onClick={() => setIsMenuOpen(false)}>
-                <Image src="/logo.png" alt="Cortez" width={140} height={35} style={{ filter: 'var(--logo-invert)', objectFit: 'contain', transform: 'scale(2)' }} />
-              </a>
-            </div>
-            <button onClick={() => setIsMenuOpen(false)} style={{ padding: '10px' }}>
-              <X size={28} style={{ color: 'var(--icon-color)' }} />
-            </button>
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '80px' }}>
+          <div style={{ paddingLeft: '20px' }}>
+            <a href="/" onClick={() => setIsMenuOpen(false)}>
+              <Image src="/logo.png" alt="Cortez" width={140} height={35} style={{ filter: 'invert(1)', objectFit: 'contain', transform: 'scale(2)' }} />
+            </a>
           </div>
-          
-          <div style={{display: 'flex', flexDirection: 'column', gap: '30px', fontSize: '1.5rem', fontWeight: 600, textTransform: 'uppercase'}}>
-            <a href="/" onClick={() => setIsMenuOpen(false)} style={{textDecoration: 'none', color: 'inherit'}}>Inicio</a>
-            <Link href="/?category=LENTES" onClick={() => setIsMenuOpen(false)} style={{textDecoration: 'none', color: 'inherit'}}>Lentes</Link>
-            <Link href="/?category=ACCESORIOS" onClick={() => setIsMenuOpen(false)} style={{textDecoration: 'none', color: 'inherit'}}>Accesorios</Link>
-            <Link href="/admin" onClick={() => setIsMenuOpen(false)} style={{textDecoration: 'none', color: 'var(--text-secondary)', fontSize: '1rem', marginTop: '20px'}}>Admin</Link>
-          </div>
+          <button onClick={() => setIsMenuOpen(false)} style={{ padding: '10px', background: 'transparent', border: 'none', cursor: 'pointer' }}>
+            <X size={32} color="#ffffff" strokeWidth={1.5} />
+          </button>
         </div>
-      )}
+        
+        <div style={{
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center', 
+          gap: '20px', 
+          width: '100%',
+          padding: '0 20px'
+        }}>
+          <Link href="/" onClick={() => setIsMenuOpen(false)} className="villegas-nav-link">Inicio</Link>
+          <Link href="/?category=LENTES" onClick={() => setIsMenuOpen(false)} className="villegas-nav-link">Lentes</Link>
+          <Link href="/?category=ACCESORIOS" onClick={() => setIsMenuOpen(false)} className="villegas-nav-link">Accesorios</Link>
+          <Link href="/admin" onClick={() => setIsMenuOpen(false)} className="villegas-nav-link" style={{marginTop: '40px', fontSize: '1.2rem', color: '#888'}}>Admin</Link>
+        </div>
+      </div>
     </>
   );
 }
