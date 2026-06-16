@@ -277,7 +277,7 @@ export default function CartPage() {
               <span>Total</span>
               <div style={{textAlign: 'right'}}>
                 <span>{totalUsd} USDT</span>
-                <span className={styles.bsAmount}>~ {totalBs.toFixed(2)} Bs (Tasa: {usdtRate})</span>
+                <span className={styles.bsAmount}>~ {totalBs.toFixed(2)} Bs</span>
               </div>
             </div>
 
