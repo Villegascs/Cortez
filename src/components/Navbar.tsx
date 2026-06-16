@@ -55,16 +55,9 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
           transition: transform 0.3s cubic-bezier(0.86, 0, 0.07, 1);
         }
         .brutal-link:hover::after { transform: translateX(0); }
-        /* Desktop nav links: hidden on mobile */
         .nav-desktop-links { display: none; }
-        /* Mobile cart (left slot): visible on mobile, hidden on desktop */
-        .nav-mobile-cart { display: flex; }
-        /* Desktop cart (right slot): hidden on mobile */
-        .nav-desktop-cart { display: none; }
         @media (min-width: 769px) {
           .nav-desktop-links { display: flex !important; }
-          .nav-mobile-cart  { display: none !important; }
-          .nav-desktop-cart { display: flex !important; }
         }
       `}</style>
 
@@ -99,13 +92,7 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
               <Link href="/?category=ACCESORIOS" className="brutal-link">Accesorios</Link>
             </div>
 
-            {/* Mobile: cart icon on LEFT */}
-            {!isSuccessPage && (
-              <Link href="/cart" className="nav-mobile-cart" style={{ display: "flex", alignItems: "center", gap: "5px", color: "var(--text-primary)" }}>
-                <ShoppingBag size={20} strokeWidth={1.5} />
-                <span style={{ fontSize: "0.8rem", fontWeight: 600 }}>{items.length}</span>
-              </Link>
-            )}
+            {/* no mobile cart here */
           </div>
 
           {/* CENTER: logo — absolutely centered so it's always in the middle */}
@@ -127,10 +114,10 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
             </Link>
           </div>
 
-          {/* RIGHT slot: cart on desktop, empty on mobile */}
+          {/* RIGHT slot: single cart icon for all devices */}
           <div style={{ zIndex: 2 }}>
             {!isSuccessPage && (
-              <Link href="/cart" className="nav-desktop-cart" style={{ display: "flex", alignItems: "center", gap: "5px", color: "var(--text-primary)" }}>
+              <Link href="/cart" style={{ display: "flex", alignItems: "center", gap: "5px", color: "var(--text-primary)" }}>
                 <ShoppingBag size={20} strokeWidth={1.5} />
                 <span style={{ fontSize: "0.8rem", fontWeight: 600 }}>{items.length}</span>
               </Link>
