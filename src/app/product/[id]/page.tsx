@@ -44,10 +44,14 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
     );
   }
 
+  const cartItem = items.find(i => i.id === product.id);
+  const quantityInCart = cartItem ? cartItem.quantity : 0;
+  const remainingStock = product.stock - quantityInCart;
   const isSoldOut = product.stock <= 0;
+  const canAddMore = remainingStock > 0;
 
   const handleAddToCart = () => {
-    if (isSoldOut) return;
+    if (!canAddMore) return;
     addItem({
       id: product.id,
       name: `${product.name} - ${product.color}`,
@@ -156,14 +160,24 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
           
           <p className={styles.description}>{product.description}</p>
 
+          {product.stock === 1 && (
+             <p style={{ color: '#d97706', fontSize: '0.85rem', fontWeight: 600, marginTop: '15px' }}>
+                ⚠️ Solo queda 1 unidad disponible de este modelo de lente.
+             </p>
+          )}
+          {product.stock > 1 && remainingStock === 0 && !isSoldOut && (
+             <p style={{ color: '#d97706', fontSize: '0.85rem', fontWeight: 600, marginTop: '15px' }}>
+                ⚠️ Ya tienes todas las unidades disponibles en tu cesta.
+             </p>
+          )}
 
           <button 
             className={`btn-primary ${styles.addToCartBtn}`} 
             onClick={handleAddToCart}
-            style={isSoldOut ? { background: '#ccc', cursor: 'not-allowed', color: '#666' } : {}}
-            disabled={isSoldOut}
+            style={!canAddMore ? { background: '#ccc', cursor: 'not-allowed', color: '#666', marginTop: '15px' } : { marginTop: '15px' }}
+            disabled={!canAddMore}
           >
-            {isSoldOut ? "AGOTADO" : "AÑADIR A LA CESTA"}
+            {isSoldOut ? "AGOTADO" : (!canAddMore ? "LÍMITE ALCANZADO" : "AÑADIR A LA CESTA")}
           </button>
         </div>
       </div>

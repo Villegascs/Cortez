@@ -239,10 +239,14 @@ export default function CartPage() {
             <div className={styles.cartItems}>
               {items.map(item => (
                 <div key={item.id} className={styles.cartItem}>
-                  <Image src={item.image} alt={item.name} width={100} height={120} className={styles.itemImage} style={{objectFit: 'contain'}}/>
+                  <Link href={`/product/${item.id}`} style={{ display: 'flex', alignItems: 'center' }}>
+                    <Image src={item.image} alt={item.name} width={100} height={120} className={styles.itemImage} style={{objectFit: 'contain', cursor: 'pointer'}}/>
+                  </Link>
                   <div className={styles.itemInfo}>
                     <div className={styles.itemHeader}>
-                      <span className={styles.itemName}>{item.name}</span>
+                      <Link href={`/product/${item.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                        <span className={styles.itemName} style={{ cursor: 'pointer' }}>{item.name}</span>
+                      </Link>
                       <span className={styles.itemPrice}>{item.price} USDT</span>
                     </div>
                     <div className={styles.itemActions}>
