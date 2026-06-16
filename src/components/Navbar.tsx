@@ -92,7 +92,7 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
               <Link href="/?category=ACCESORIOS" className="brutal-link">Accesorios</Link>
             </div>
 
-            {/* no mobile cart here */
+            {/* no mobile cart here */}
           </div>
 
           {/* CENTER: logo — absolutely centered so it's always in the middle */}
