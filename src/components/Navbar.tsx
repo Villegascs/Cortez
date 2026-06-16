@@ -55,8 +55,9 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
           transition: transform 0.3s cubic-bezier(0.86, 0, 0.07, 1);
         }
         .brutal-link:hover::after { transform: translateX(0); }
-        @media (max-width: 768px) {
-          .nav-desktop-links { display: none !important; }
+        .nav-desktop-links { display: none; }
+        @media (min-width: 769px) {
+          .nav-desktop-links { display: flex !important; }
         }
       `}</style>
 
@@ -80,17 +81,14 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
           background: "var(--navbar-bg)",
           backdropFilter: "blur(10px)",
         }}>
-          {/* Desktop links (hidden on mobile) */}
-          <div className="nav-desktop-links" style={{ display: "flex", gap: "20px", fontSize: "0.85rem", fontWeight: 600, textTransform: "uppercase" }}>
+          {/* Left: desktop nav links only */}
+          <div className="nav-desktop-links" style={{ gap: "20px", fontSize: "0.85rem", fontWeight: 600, textTransform: "uppercase" }}>
             <a href="/" className="brutal-link">Inicio</a>
             <Link href="/?category=LENTES" className="brutal-link">Lentes</Link>
             <Link href="/?category=ACCESORIOS" className="brutal-link">Accesorios</Link>
           </div>
 
-          {/* Mobile: empty left slot */}
-          <div />
-
-          {/* Center: logo */}
+          {/* Center: logo — always centered */}
           <div style={{ textAlign: "center" }}>
             <a href="/" style={{ display: "inline-block" }}>
               <Image
