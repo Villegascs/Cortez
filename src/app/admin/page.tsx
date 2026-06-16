@@ -11,7 +11,8 @@ export default function AdminPanel() {
   const [usdtRate, setUsdtRate] = useState<number>(40.5);
   const [loading, setLoading] = useState(true);
   const [productToDelete, setProductToDelete] = useState<number | null>(null);
-
+  const [activeTab, setActiveTab] = useState<'INVENTARIO' | 'PRODUCTOS' | 'PEDIDOS'>('PEDIDOS');
+  const [showArchived, setShowArchived] = useState(false);
   // Login state
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loginUser, setLoginUser] = useState("");
@@ -325,9 +326,71 @@ export default function AdminPanel() {
         </div>
       </div>
 
-      {/* PRODUCT INVENTORY SECTION */}
-      <h2 style={{ marginBottom: '20px', textTransform:'uppercase', fontSize: '1.5rem' }}>Inventario de Productos</h2>
-      <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '40px', marginBottom: '60px' }}>
+      {/* Navigation Tabs */}
+      <div style={{ display: 'flex', gap: '20px', borderBottom: '2px solid #eaeaea', marginBottom: '30px' }}>
+        <button 
+          onClick={() => setActiveTab('INVENTARIO')}
+          style={{ padding: '10px 20px', fontSize: '1.1rem', background: 'none', border: 'none', borderBottom: activeTab === 'INVENTARIO' ? '2px solid #000' : '2px solid transparent', fontWeight: activeTab === 'INVENTARIO' ? 700 : 500, cursor: 'pointer', marginBottom: '-2px' }}>
+          Inventario
+        </button>
+        <button 
+          onClick={() => setActiveTab('PRODUCTOS')}
+          style={{ padding: '10px 20px', fontSize: '1.1rem', background: 'none', border: 'none', borderBottom: activeTab === 'PRODUCTOS' ? '2px solid #000' : '2px solid transparent', fontWeight: activeTab === 'PRODUCTOS' ? 700 : 500, cursor: 'pointer', marginBottom: '-2px' }}>
+          Productos
+        </button>
+        <button 
+          onClick={() => setActiveTab('PEDIDOS')}
+          style={{ padding: '10px 20px', fontSize: '1.1rem', background: 'none', border: 'none', borderBottom: activeTab === 'PEDIDOS' ? '2px solid #000' : '2px solid transparent', fontWeight: activeTab === 'PEDIDOS' ? 700 : 500, cursor: 'pointer', marginBottom: '-2px' }}>
+          Pedidos
+        </button>
+      </div>
+
+      {activeTab === 'INVENTARIO' && (
+        <div>
+          <h2 style={{ marginBottom: '20px', textTransform:'uppercase', fontSize: '1.5rem' }}>Gestión de Stock</h2>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', background: '#fff', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+            <thead style={{ background: '#f8fafc' }}>
+              <tr style={{ borderBottom: '2px solid #eaeaea' }}>
+                <th style={{ padding: '15px' }}>Lente</th>
+                <th style={{ padding: '15px', textAlign: 'center' }}>Stock Actual</th>
+                <th style={{ padding: '15px' }}>Visibilidad</th>
+              </tr>
+            </thead>
+            <tbody>
+              {products.map(p => (
+                <tr key={p.id} style={{ borderBottom: '1px solid #eaeaea', opacity: p.isVisible ? 1 : 0.6 }}>
+                  <td style={{ padding: '15px', display: 'flex', alignItems: 'center', gap: '15px' }}>
+                    <img src={p.image} alt={p.name} style={{ width: '50px', height: '50px', objectFit: 'contain', borderRadius: '4px', background: '#f8f9fa' }} />
+                    <div>
+                      <strong style={{ fontSize: '1rem' }}>{p.name}</strong> {!p.isVisible && <span style={{color:'red', fontSize:'0.7rem', marginLeft:'5px'}}>(OCULTO)</span>}<br/>
+                      <span style={{ fontSize: '0.85rem', color: '#64748b' }}>{p.color} - {p.category}</span>
+                    </div>
+                  </td>
+                  <td style={{ padding: '15px', textAlign: 'center' }}>
+                    <input 
+                      type="number" 
+                      value={p.stock} 
+                      className="input-field" 
+                      style={{ width: '80px', padding: '8px', textAlign: 'center', fontWeight: 600 }}
+                      onChange={(e) => handleUpdateStock(p.id, Number(e.target.value))}
+                    />
+                  </td>
+                  <td style={{ padding: '15px' }}>
+                    <button onClick={() => handleToggleVisibility(p.id, p.isVisible)} style={{ color: p.isVisible ? '#10b981' : '#64748b', cursor: 'pointer', border: '1px solid #eaeaea', padding: '8px 12px', borderRadius: '6px', background: '#fff', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 500 }}>
+                      {p.isVisible ? <><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg> Visible</> : <><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg> Oculto</>}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {activeTab === 'PRODUCTOS' && (
+        <div>
+          <h2 style={{ marginBottom: '20px', textTransform:'uppercase', fontSize: '1.5rem' }}>Base de Datos de Lentes</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '40px', marginBottom: '60px' }}>
         
         {/* ADD / EDIT PRODUCT */}
         <div style={{ background: 'var(--surface-color)', padding: '20px', height: 'fit-content' }}>
@@ -481,33 +544,48 @@ export default function AdminPanel() {
           </table>
         </div>
       </div>
+      </div>
+      )}
 
-      <h2 style={{ marginBottom: '20px', textTransform:'uppercase', fontSize: '1.5rem' }}>Pedidos Recientes</h2>
-      {orders.length === 0 ? (
-        <p>No hay pedidos registrados.</p>
-      ) : (
-        <div className={styles.ordersGrid}>
-          {orders.map(order => (
-            <div key={order.id} className={styles.orderCard}>
-              <div className={styles.orderHeader}>
-                <span className={styles.orderId}>Orden #{order.id}</span>
-                <select 
-                  value={order.status} 
-                  onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}
-                  style={{
-                    padding: '6px 10px', borderRadius: '6px', border: '1px solid #ccc',
-                    background: order.status === 'PENDING' ? '#fef3c7' : order.status === 'ACCEPTED' ? '#e0f2fe' : order.status === 'SHIPPING' ? '#e0e7ff' : order.status === 'DELIVERED' ? '#dcfce3' : '#fee2e2',
-                    color: order.status === 'PENDING' ? '#d97706' : order.status === 'ACCEPTED' ? '#0369a1' : order.status === 'SHIPPING' ? '#4338ca' : order.status === 'DELIVERED' ? '#15803d' : '#b91c1c',
-                    fontWeight: 700, fontSize: '0.75rem', outline: 'none', cursor: 'pointer', textTransform: 'uppercase'
-                  }}
-                >
-                  <option value="PENDING">Pendiente</option>
-                  <option value="ACCEPTED">Aceptado</option>
-                  <option value="SHIPPING">Envío en proceso</option>
-                  <option value="DELIVERED">Recibido por el cliente</option>
-                  <option value="REJECTED">Rechazado</option>
-                </select>
-              </div>
+      {activeTab === 'PEDIDOS' && (
+      <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <h2 style={{ textTransform:'uppercase', fontSize: '1.5rem', margin: 0 }}>Historial de Pedidos</h2>
+          <button 
+            onClick={() => setShowArchived(!showArchived)}
+            style={{ padding: '8px 16px', background: showArchived ? '#000' : '#fff', color: showArchived ? '#fff' : '#000', border: '1px solid #000', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}>
+            {showArchived ? "Ocultar Archivados" : "Ver Archivados"}
+          </button>
+        </div>
+        
+        {orders.filter(o => showArchived ? o.status === 'ARCHIVED' : o.status !== 'ARCHIVED').length === 0 ? (
+          <div style={{ padding: '40px', textAlign: 'center', background: '#f8fafc', borderRadius: '8px', color: '#64748b' }}>
+            No hay pedidos {showArchived ? "archivados" : "activos"}.
+          </div>
+        ) : (
+          <div className={styles.ordersGrid}>
+            {orders.filter(o => showArchived ? o.status === 'ARCHIVED' : o.status !== 'ARCHIVED').map(order => (
+              <div key={order.id} className={styles.orderCard} style={{ opacity: order.status === 'ARCHIVED' ? 0.6 : 1 }}>
+                <div className={styles.orderHeader}>
+                  <span className={styles.orderId}>Orden #{order.id}</span>
+                  <select 
+                    value={order.status} 
+                    onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}
+                    style={{
+                      padding: '6px 10px', borderRadius: '6px', border: '1px solid #ccc',
+                      background: order.status === 'PENDING' ? '#fef3c7' : order.status === 'ACCEPTED' ? '#e0f2fe' : order.status === 'SHIPPING' ? '#e0e7ff' : order.status === 'DELIVERED' ? '#dcfce3' : order.status === 'ARCHIVED' ? '#f1f5f9' : '#fee2e2',
+                      color: order.status === 'PENDING' ? '#d97706' : order.status === 'ACCEPTED' ? '#0369a1' : order.status === 'SHIPPING' ? '#4338ca' : order.status === 'DELIVERED' ? '#15803d' : order.status === 'ARCHIVED' ? '#475569' : '#b91c1c',
+                      fontWeight: 700, fontSize: '0.75rem', outline: 'none', cursor: 'pointer', textTransform: 'uppercase'
+                    }}
+                  >
+                    <option value="PENDING">Pendiente</option>
+                    <option value="ACCEPTED">Aceptado</option>
+                    <option value="SHIPPING">Envío en proceso</option>
+                    <option value="DELIVERED">Recibido por el cliente</option>
+                    <option value="REJECTED">Rechazado</option>
+                    <option value="ARCHIVED">Archivado</option>
+                  </select>
+                </div>
               
               <div className={styles.orderSection}>
                 <div className={styles.sectionTitle}>Cliente</div>
@@ -542,6 +620,8 @@ export default function AdminPanel() {
             </div>
           ))}
         </div>
+      )}
+      </div>
       )}
 
       {/* Delete Confirmation Modal */}
