@@ -55,9 +55,16 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
           transition: transform 0.3s cubic-bezier(0.86, 0, 0.07, 1);
         }
         .brutal-link:hover::after { transform: translateX(0); }
+        /* Desktop nav links: hidden on mobile */
         .nav-desktop-links { display: none; }
+        /* Mobile cart (left slot): visible on mobile, hidden on desktop */
+        .nav-mobile-cart { display: flex; }
+        /* Desktop cart (right slot): hidden on mobile */
+        .nav-desktop-cart { display: none; }
         @media (min-width: 769px) {
           .nav-desktop-links { display: flex !important; }
+          .nav-mobile-cart  { display: none !important; }
+          .nav-desktop-cart { display: flex !important; }
         }
       `}</style>
 
@@ -73,24 +80,42 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
         </div>
 
         <nav style={{
-          display: "grid",
-          gridTemplateColumns: "1fr auto 1fr",
+          position: "relative",
+          display: "flex",
           alignItems: "center",
+          justifyContent: "space-between",
           padding: "15px 20px",
           borderBottom: "1px solid var(--border-color)",
           background: "var(--navbar-bg)",
           backdropFilter: "blur(10px)",
+          minHeight: "64px",
         }}>
-          {/* Left: desktop nav links only */}
-          <div className="nav-desktop-links" style={{ gap: "20px", fontSize: "0.85rem", fontWeight: 600, textTransform: "uppercase" }}>
-            <a href="/" className="brutal-link">Inicio</a>
-            <Link href="/?category=LENTES" className="brutal-link">Lentes</Link>
-            <Link href="/?category=ACCESORIOS" className="brutal-link">Accesorios</Link>
+          {/* LEFT slot: cart on mobile, nav links on desktop */}
+          <div style={{ display: "flex", alignItems: "center", gap: "20px", zIndex: 2 }}>
+            {/* Desktop nav links */}
+            <div className="nav-desktop-links" style={{ gap: "20px", fontSize: "0.85rem", fontWeight: 600, textTransform: "uppercase" }}>
+              <a href="/" className="brutal-link">Inicio</a>
+              <Link href="/?category=LENTES" className="brutal-link">Lentes</Link>
+              <Link href="/?category=ACCESORIOS" className="brutal-link">Accesorios</Link>
+            </div>
+
+            {/* Mobile: cart icon on LEFT */}
+            {!isSuccessPage && (
+              <Link href="/cart" className="nav-mobile-cart" style={{ display: "flex", alignItems: "center", gap: "5px", color: "var(--text-primary)" }}>
+                <ShoppingBag size={20} strokeWidth={1.5} />
+                <span style={{ fontSize: "0.8rem", fontWeight: 600 }}>{items.length}</span>
+              </Link>
+            )}
           </div>
 
-          {/* Center: logo — always centered */}
-          <div style={{ textAlign: "center" }}>
-            <a href="/" style={{ display: "inline-block" }}>
+          {/* CENTER: logo — absolutely centered so it's always in the middle */}
+          <div style={{
+            position: "absolute",
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 1,
+          }}>
+            <Link href="/" style={{ display: "inline-block" }}>
               <Image
                 src="/logo.png"
                 alt="Cortez"
@@ -99,13 +124,13 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
                 style={{ filter: "var(--logo-invert)", objectFit: "contain", transform: "scale(2.5)" }}
                 priority
               />
-            </a>
+            </Link>
           </div>
 
-          {/* Right: cart */}
-          <div style={{ justifySelf: "end" }}>
+          {/* RIGHT slot: cart on desktop, empty on mobile */}
+          <div style={{ zIndex: 2 }}>
             {!isSuccessPage && (
-              <Link href="/cart" style={{ display: "flex", alignItems: "center", gap: "5px", color: "var(--text-primary)" }}>
+              <Link href="/cart" className="nav-desktop-cart" style={{ display: "flex", alignItems: "center", gap: "5px", color: "var(--text-primary)" }}>
                 <ShoppingBag size={20} strokeWidth={1.5} />
                 <span style={{ fontSize: "0.8rem", fontWeight: 600 }}>{items.length}</span>
               </Link>
