@@ -12,6 +12,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       data: {
         name: data.name !== undefined ? data.name : undefined,
         color: data.color !== undefined ? data.color : undefined,
+        collection: data.collection !== undefined ? data.collection : undefined,
         description: data.description !== undefined ? data.description : undefined,
         price: data.price !== undefined ? Number(data.price) : undefined,
         stock: data.stock !== undefined ? Number(data.stock) : undefined,

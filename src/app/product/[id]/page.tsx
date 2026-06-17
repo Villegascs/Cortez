@@ -158,6 +158,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
         <div className={styles.infoSection}>
           <h1 className={styles.title}>{product.name}</h1>
+          {product.collection && <p className={`${styles.color} serif-italic`} style={{ marginTop: '-10px', marginBottom: '15px' }}>{product.collection}</p>}
           <div style={{ marginBottom: '20px' }}>
             <p style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: '10px', fontFamily: 'var(--font-sans)' }}>
               Color: <span style={{ fontWeight: 400, color: '#4b5563' }}>{product.color}</span>

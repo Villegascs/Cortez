@@ -23,6 +23,7 @@ export default function AdminPanel() {
   // New product form
   const [newProductName, setNewProductName] = useState("");
   const [newProductColor, setNewProductColor] = useState("");
+  const [newProductCollection, setNewProductCollection] = useState("");
   const [newProductPrice, setNewProductPrice] = useState("");
   const [newProductStock, setNewProductStock] = useState("");
   const [newProductDesc, setNewProductDesc] = useState("");
@@ -110,6 +111,7 @@ export default function AdminPanel() {
     setEditId(p.id);
     setNewProductName(p.name);
     setNewProductColor(p.color);
+    setNewProductCollection(p.collection || "");
     setNewProductPrice(p.price.toString());
     setNewProductStock(p.stock.toString());
     setNewProductDesc(p.description);
@@ -125,7 +127,7 @@ export default function AdminPanel() {
 
   const handleCancelEdit = () => {
     setEditId(null);
-    setNewProductName(""); setNewProductColor(""); setNewProductPrice("");
+    setNewProductName(""); setNewProductColor(""); setNewProductCollection(""); setNewProductPrice("");
     setNewProductStock(""); setNewProductDesc(""); setNewProductCategory("UNISEX"); 
     setMainImageFile(null); setExtraFiles(null);
     setMainImagePreview(""); setExtraPreviews([]);
@@ -174,6 +176,7 @@ export default function AdminPanel() {
         body: JSON.stringify({
           name: newProductName,
           color: newProductColor,
+          collection: newProductCollection,
           price: newProductPrice,
           stock: newProductStock,
           description: newProductDesc,
@@ -398,6 +401,7 @@ export default function AdminPanel() {
           <form onSubmit={handleAddProduct} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <input required placeholder="Nombre (ej. cortez aviator)" className="input-field" value={newProductName} onChange={e=>setNewProductName(e.target.value)} />
             <input placeholder="Color (Opcional, ej. Gold & Dark)" className="input-field" value={newProductColor} onChange={e=>setNewProductColor(e.target.value)} />
+            <input placeholder="Colección (Opcional, ej. Weird & Cool)" className="input-field" value={newProductCollection} onChange={e=>setNewProductCollection(e.target.value)} />
             <input required type="number" placeholder="Precio (USDT)" className="input-field" value={newProductPrice} onChange={e=>setNewProductPrice(e.target.value)} />
             <input required type="number" placeholder="Stock" className="input-field" value={newProductStock} onChange={e=>setNewProductStock(e.target.value)} />
             <div style={{ position: 'relative' }}>
