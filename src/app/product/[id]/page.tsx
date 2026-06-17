@@ -49,6 +49,11 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
   const remainingStock = product.stock - quantityInCart;
   const isSoldOut = product.stock <= 0;
   const canAddMore = remainingStock > 0;
+  
+  const variants = allProducts.filter(p => 
+    p.name.trim().toLowerCase() === product.name.trim().toLowerCase()
+  );
+
 
   const handleAddToCart = () => {
     if (!canAddMore) return;
@@ -153,7 +158,30 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
         <div className={styles.infoSection}>
           <h1 className={styles.title}>{product.name}</h1>
-          <p className={`${styles.color} serif-italic`}>{product.color}</p>
+          <div style={{ marginBottom: '20px' }}>
+            <p style={{ fontSize: '0.95rem', fontWeight: 600, marginBottom: '10px', fontFamily: 'var(--font-sans)' }}>
+              Color: <span style={{ fontWeight: 400, color: '#4b5563' }}>{product.color}</span>
+            </p>
+            {variants.length > 1 && (
+              <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                {variants.map(v => (
+                  <Link href={`/product/${v.id}`} key={v.id} title={v.color}>
+                    <div style={{
+                      width: '60px', height: '60px', position: 'relative', 
+                      border: v.id === product.id ? '2px solid #000' : '1px solid #eaeaea', 
+                      borderRadius: '4px', overflow: 'hidden', cursor: 'pointer', 
+                      opacity: v.id === product.id ? 1 : 0.6, transition: 'all 0.2s ease',
+                      padding: '2px'
+                    }}>
+                      <div style={{ width: '100%', height: '100%', position: 'relative', borderRadius: '2px', overflow: 'hidden' }}>
+                        <Image src={v.image} alt={v.color} fill style={{ objectFit: 'contain', background: '#fff' }} sizes="60px" />
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
           <p className={styles.price}>{product.price} USDT</p>
           
           <div className={styles.divider}></div>
