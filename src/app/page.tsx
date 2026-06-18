@@ -55,7 +55,7 @@ function ProductCard({ product }: { product: any }) {
         <div className={styles.cardInfo} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <span className={styles.cardTitle} style={{ fontSize: '1.2rem', fontWeight: 800 }}>{product.name}</span>
           <span className={styles.cardPrice} style={{ fontSize: '1rem', fontWeight: 600 }}>{product.price} USDT</span>
-          <span className={`${styles.cardColor} serif-italic`} style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{product.color}</span>
+          <span className={`${styles.cardColor} serif-italic`} style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{product.collection || product.color}</span>
         </div>
       </div>
     </Link>

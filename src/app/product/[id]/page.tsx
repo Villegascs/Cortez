@@ -227,7 +227,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                     <span style={{ fontSize: '0.9rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{p.name}</span>
                     <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{p.price} USDT</span>
                   </div>
-                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }} className="serif-italic">{p.color}</span>
+                  <span style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }} className="serif-italic">{p.collection || p.color}</span>
                 </div>
               </Link>
             ))}
