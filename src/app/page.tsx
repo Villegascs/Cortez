@@ -153,44 +153,13 @@ function HomeContent() {
                 {!activeCategory ? "Catálogo Completo" : activeCategory === 'LENTES' ? 'Lentes' : 'Accesorios'}
               </h2>
             </div>
-            
-            {(() => {
-              const filteredProducts = products.filter(p => !activeCategory || p.category === activeCategory || (activeCategory === 'UNISEX' && !p.category));
-
-              if (filteredProducts.length === 0) return <div style={{textAlign: 'center', padding: '40px 0'}}>No hay productos disponibles.</div>;
-
-              const groupedByCollection = filteredProducts.reduce((acc, p) => {
-                const collectionName = p.collection || "Catálogo General";
-                if (!acc[collectionName]) acc[collectionName] = {};
-                
-                const modelName = p.name || "Otros Modelos";
-                if (!acc[collectionName][modelName]) acc[collectionName][modelName] = [];
-                
-                acc[collectionName][modelName].push(p);
-                return acc;
-              }, {} as Record<string, Record<string, any[]>>);
-
-              return Object.keys(groupedByCollection).map((collectionName) => (
-                <div key={collectionName} style={{ marginBottom: '60px' }}>
-                  <h3 style={{ fontSize: '1.8rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '2px', borderBottom: '2px solid var(--text-primary)', paddingBottom: '10px', marginBottom: '40px', textAlign: 'center' }}>
-                    {collectionName}
-                  </h3>
-                  
-                  {Object.keys(groupedByCollection[collectionName]).map((modelName) => (
-                    <div key={modelName} style={{ marginBottom: '50px' }}>
-                      <h4 style={{ fontSize: '1.2rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '20px', paddingLeft: '10px', borderLeft: '3px solid var(--text-primary)' }}>
-                        Modelo {modelName}
-                      </h4>
-                      <div className={styles.grid}>
-                        {groupedByCollection[collectionName][modelName].map((product: any) => (
-                          <ProductCard key={product.id} product={product} />
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ));
-            })()}
+            <div className={styles.grid}>
+              {products
+                .filter(p => !activeCategory || p.category === activeCategory || (activeCategory === 'UNISEX' && !p.category))
+                .map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+            </div>
           </section>
         </div>
       </div>
