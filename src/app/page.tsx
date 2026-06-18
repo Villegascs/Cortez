@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, Suspense, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -9,6 +9,58 @@ import { ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/store/cart";
 
 import Navbar from "@/components/Navbar";
+
+function ProductCard({ product }: { product: any }) {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const allImages = useMemo(() => {
+    let extraImages = [];
+    try {
+      extraImages = JSON.parse(product.images || "[]");
+    } catch (e) {}
+    return [product.image, ...extraImages].filter(Boolean);
+  }, [product]);
+
+  useEffect(() => {
+    if (allImages.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentImageIndex(prev => (prev + 1) % allImages.length);
+      }, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [allImages]);
+
+  return (
+    <Link href={`/product/${product.id}`}>
+      <div className={styles.card}>
+        <div className={styles.imageWrapper}>
+          {allImages.map((img, idx) => (
+            <Image 
+              key={idx} 
+              src={img} 
+              alt={`${product.name} ${idx}`} 
+              fill 
+              sizes="(max-width: 768px) 100vw, 33vw" 
+              className={styles.cardImage} 
+              style={{
+                opacity: currentImageIndex === idx ? 1 : 0,
+                transition: 'opacity 0.8s ease-in-out'
+              }}
+            />
+          ))}
+          {product.stock <= 0 && (
+            <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, letterSpacing: '2px', fontSize: '1.2rem', color: '#000', zIndex: 10 }}>SOLD OUT</div>
+          )}
+        </div>
+        <div className={styles.cardInfo} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <span className={styles.cardTitle} style={{ fontSize: '1.2rem', fontWeight: 800 }}>{product.name}</span>
+          <span className={styles.cardPrice} style={{ fontSize: '1rem', fontWeight: 600 }}>{product.price} USDT</span>
+          <span className={`${styles.cardColor} serif-italic`} style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{product.color}</span>
+        </div>
+      </div>
+    </Link>
+  );
+}
 
 function HomeContent() {
   const [products, setProducts] = useState<any[]>([]);
@@ -105,21 +157,7 @@ function HomeContent() {
               {products
                 .filter(p => !activeCategory || p.category === activeCategory || (activeCategory === 'UNISEX' && !p.category))
                 .map((product) => (
-                  <Link href={`/product/${product.id}`} key={product.id}>
-                    <div className={styles.card}>
-                      <div className={styles.imageWrapper}>
-                        <Image src={product.image} alt={product.name} fill sizes="(max-width: 768px) 100vw, 33vw" className={styles.cardImage} />
-                        {product.stock <= 0 && (
-                          <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(255,255,255,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, letterSpacing: '2px', fontSize: '1.2rem', color: '#000', zIndex: 10 }}>SOLD OUT</div>
-                        )}
-                      </div>
-                      <div className={styles.cardInfo} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        <span className={styles.cardTitle} style={{ fontSize: '1.2rem', fontWeight: 800 }}>{product.name}</span>
-                        <span className={styles.cardPrice} style={{ fontSize: '1rem', fontWeight: 600 }}>{product.price} USDT</span>
-                        <span className={`${styles.cardColor} serif-italic`} style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{product.color}</span>
-                      </div>
-                    </div>
-                  </Link>
+                  <ProductCard key={product.id} product={product} />
                 ))}
             </div>
           </section>
