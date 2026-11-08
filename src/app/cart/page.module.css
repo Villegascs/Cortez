@@ -1,67 +1,29 @@
-/* Top Bar (Reused) */
-.topBar {
-  background-color: #000;
-  color: #fff;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  padding: 8px 0;
-  text-align: center;
-}
-
-/* Navbar Minimal */
-.navbar {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 40px;
-  background: #fff;
-  color: #000;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.navbar a {
-  text-transform: uppercase;
-  font-size: 0.85rem;
-  letter-spacing: 1px;
-  font-weight: 500;
-}
-
-.logo {
-  font-size: 1.8rem;
-  font-weight: 700;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-}
+/* ==========================================================================
+   CART & CHECKOUT RESPONSIVE STYLES (MOBILE & LAPTOP/DESKTOP)
+   ========================================================================== */
 
 .container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  width: 100%;
 }
 
 .centeredWrapper {
-  max-width: 680px;
   width: 100%;
   margin: 20px auto 80px;
-  padding: 0 20px;
 }
 
 .title {
-  font-size: 1.8rem;
-  font-weight: 600;
-  margin-bottom: 24px;
+  font-weight: 700;
   text-align: center;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
+  color: var(--text-primary);
 }
 
 .emptyCart {
-  padding: 60px 20px;
+  padding: 40px 16px;
   text-align: center;
   color: var(--text-secondary);
 }
@@ -69,13 +31,13 @@
 .cartItems {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   margin-bottom: 20px;
 }
 
 .cartItem {
   display: flex;
-  gap: 16px;
+  gap: 14px;
   padding: 12px;
   background: #ffffff;
   border-radius: 10px;
@@ -85,7 +47,7 @@
 
 .itemImage {
   background: var(--surface-color);
-  border-radius: 6px;
+  border-radius: 8px;
   flex-shrink: 0;
 }
 
@@ -94,38 +56,42 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
+  min-width: 0;
 }
 
 .itemHeader {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .itemName {
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
+  line-height: 1.25;
 }
 
 .itemPrice {
-  font-weight: 600;
-  font-size: 0.95rem;
+  font-weight: 700;
+  font-size: 0.92rem;
+  white-space: nowrap;
 }
 
 .itemActions {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: var(--text-secondary);
 }
 
 .removeBtn {
   color: #ef4444;
-  font-size: 0.8rem;
-  font-weight: 500;
+  font-size: 0.78rem;
+  font-weight: 600;
   text-transform: uppercase;
   background: none;
   border: none;
@@ -133,6 +99,8 @@
   padding: 4px 8px;
   border-radius: 4px;
   transition: background 0.2s;
+  display: inline-flex;
+  align-items: center;
 }
 
 .removeBtn:hover {
@@ -141,26 +109,32 @@
 
 .checkoutPanel {
   background: var(--surface-color);
-  padding: 32px 28px;
-  border-radius: 16px;
   border: 1px solid var(--border-color);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
   height: fit-content;
 }
 
-@media (max-width: 640px) {
-  .centeredWrapper {
-    padding: 0 14px;
-    margin: 15px auto 60px;
-  }
-  
-  .checkoutPanel {
-    padding: 20px 14px;
-    border-radius: 12px;
-  }
+.formGroup {
+  margin-bottom: 20px;
 }
 
-/* Modal con fondo blur */
+.formGroup label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.documentGroup {
+  display: flex;
+  gap: 8px;
+}
+
+/* ==========================================================================
+   MODAL WITH BLUR
+   ========================================================================== */
 .modalBackdrop {
   position: fixed;
   inset: 0;
@@ -168,19 +142,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 16px;
   background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   animation: fadeIn 0.2s ease-out;
 }
 
 .modalCard {
   width: 100%;
-  max-width: 420px;
+  max-width: 400px;
   background-color: #ffffff;
   border-radius: 18px;
-  padding: 30px 24px;
+  padding: 28px 20px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.06);
   text-align: center;
   animation: scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -196,57 +170,65 @@
   to { opacity: 1; transform: scale(1); }
 }
 
-.summaryRow {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 15px;
-  font-size: 1rem;
-}
-
-.totalRow {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid #ddd;
-  font-weight: 600;
-  font-size: 1.2rem;
-}
-
-.bsAmount {
-  display: block;
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  text-align: right;
-  margin-top: 5px;
-}
-
-.formGroup {
-  margin-bottom: 24px;
-}
-
-.formGroup label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-primary);
-  line-height: 1;
-}
-
-.documentGroup {
-  display: flex;
-  gap: 10px;
-}
-
 .successMessage {
   text-align: center;
-  padding: 60px 20px;
-  background: var(--surface-color);
-  margin-top: 40px;
+  background: #ffffff;
 }
 
-.successMessage h2 {
-  color: var(--success-color);
-  margin-bottom: 10px;
+/* ==========================================================================
+   DESKTOP / LAPTOP SPECIFIC (>= 769px)
+   ========================================================================== */
+@media (min-width: 769px) {
+  .centeredWrapper {
+    max-width: 680px;
+    padding: 0 20px;
+  }
+
+  .title {
+    font-size: 1.8rem;
+    margin-bottom: 24px;
+  }
+
+  .checkoutPanel {
+    padding: 32px 28px;
+    border-radius: 16px;
+  }
+}
+
+/* ==========================================================================
+   MOBILE SPECIFIC (<= 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .centeredWrapper {
+    max-width: 100%;
+    padding: 0 12px;
+    margin: 10px auto 40px;
+  }
+
+  .title {
+    font-size: 1.35rem;
+    margin-bottom: 16px;
+  }
+
+  .checkoutPanel {
+    padding: 18px 12px;
+    border-radius: 14px;
+  }
+
+  .cartItem {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .itemName {
+    font-size: 0.82rem;
+  }
+
+  .itemPrice {
+    font-size: 0.88rem;
+  }
+
+  .formGroup {
+    margin-bottom: 16px;
+  }
 }

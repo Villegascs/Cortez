@@ -429,3 +429,51 @@
   }
 }
 
+/* Responsive adjustments for Mobile Stepper Header */
+@media (max-width: 640px) {
+  .stepper__track {
+    gap: 2px;
+    padding: 3px;
+  }
+  .stepper__segment {
+    padding: 0 6px;
+    gap: 6px;
+    height: 38px;
+  }
+  .stepper__badge {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+  .stepper__title {
+    font-size: 11.5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stepper__segment {
+    padding: 0 4px;
+    gap: 4px;
+    height: 36px;
+  }
+  .stepper__badge {
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+  }
+  .stepper__title {
+    font-size: 10.5px;
+  }
+}
+
+@media (max-width: 380px) {
+  .stepper__segment {
+    padding: 0 2px;
+    gap: 3px;
+  }
+  .stepper__title {
+    font-size: 9.5px;
+  }
+}
+
+

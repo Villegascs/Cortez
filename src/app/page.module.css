@@ -1,3 +1,7 @@
+/* ==========================================================================
+   HOME PAGE RESPONSIVE STYLES (MOBILE & LAPTOP/DESKTOP)
+   ========================================================================== */
+
 /* Top Promo Bar */
 .topBar {
   background-color: #000;
@@ -11,56 +15,27 @@
   position: relative;
 }
 
-.topBarText {
-  display: inline-block;
-  white-space: nowrap;
-}
-
-/* Navbar */
-.navbar {
-  position: absolute;
-  top: 35px; /* below topbar */
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 40px;
-  z-index: 100;
-  background: transparent;
-  color: #fff;
-  transition: all 0.3s ease;
-}
-
-.navbar a {
-  text-transform: uppercase;
-  font-size: 0.85rem;
-  letter-spacing: 1px;
-  font-weight: 500;
-}
-
-.logo {
-  font-size: 1.8rem;
-  font-weight: 700;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.cartIcon {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-/* Hero Section */
+/* ==========================================================================
+   HERO BANNER
+   ========================================================================== */
 .hero {
   position: relative;
-  height: 100vh;
   width: 100%;
   overflow: hidden;
   background: #000;
+}
+
+.heroTrack {
+  display: flex;
+  width: 300%;
+  height: 100%;
+  transition: transform 0.8s cubic-bezier(0.86, 0, 0.07, 1);
+}
+
+.heroSlide {
+  position: relative;
+  width: 33.3333%;
+  height: 100%;
 }
 
 .heroImage {
@@ -75,120 +50,150 @@
   display: none;
 }
 
-@media (max-width: 768px) {
-  .desktopOnly {
-    display: none;
-  }
-  .mobileOnly {
-    display: block;
-  }
+.heroOverlayText {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
 }
 
-.heroContent {
+.heroIndicators {
   position: absolute;
-  bottom: 80px;
-  left: 40px;
-  color: #fff;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
   z-index: 10;
 }
 
-.heroTitle {
-  font-size: clamp(2.5rem, 8vw, 4rem);
-  font-weight: 600;
-  margin-bottom: 20px;
-  max-width: 800px;
-  line-height: 1;
+.indicatorDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
 }
 
-.heroLink {
-  font-size: 0.9rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  border-bottom: 1px solid #fff;
-  padding-bottom: 2px;
-  display: inline-block;
-  transition: opacity 0.3s;
-}
-
-.heroLink:hover {
-  opacity: 0.7;
-}
-
-/* Catalog Section */
+/* ==========================================================================
+   CATALOG SECTION
+   ========================================================================== */
 .catalogSection {
-  padding: 80px 40px;
   background-color: #fff;
   color: #000;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .sectionHeader {
   display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.sectionTitleRow {
+  display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 40px;
+  align-items: center;
 }
 
 .sectionTitle {
-  font-size: 1.5rem;
-  font-weight: 500;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
+/* Category Filter Tabs */
+.categoryTabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.categoryTabs::-webkit-scrollbar {
+  display: none;
+}
+
+.categoryPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border: 1px solid var(--border-color);
+  background: var(--surface-color);
+  color: var(--text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.categoryPillActive {
+  background: #000;
+  color: #fff;
+  border-color: #000;
+}
+
+/* ==========================================================================
+   PRODUCT GRID & CARD
+   ========================================================================== */
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-
-@media (max-width: 992px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 576px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
-  .navbar {
-    padding: 15px 20px;
-  }
-  .heroContent {
-    left: 20px;
-    bottom: 60px;
-  }
-  .catalogSection {
-    padding: 30px 15px;
-  }
-  .cardTitle {
-    font-size: 0.8rem;
-  }
-  .cardPrice {
-    font-size: 0.8rem;
-  }
+  width: 100%;
 }
 
 .card {
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.25s ease;
 }
 
 .imageWrapper {
   position: relative;
   width: 100%;
   aspect-ratio: 4/5;
-  background-color: transparent;
+  background-color: #fafafa;
+  border-radius: 10px;
   overflow: hidden;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border-color);
 }
 
 .cardImage {
   object-fit: contain;
-  transition: transform 0.6s ease;
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+  padding: 8px;
 }
 
-.card:hover .cardImage {
-  transform: scale(1.03);
+.soldOutOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #000;
+  z-index: 10;
 }
 
 .cardInfo {
@@ -196,28 +201,176 @@
   flex-direction: column;
 }
 
-.cardTopRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 4px;
-}
-
 .cardTitle {
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #000;
+  color: var(--text-primary);
+  line-height: 1.25;
 }
 
 .cardPrice {
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #000;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .cardColor {
-  color: #666;
-  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   DESKTOP VIEWPORT SPECIFIC (>= 769px)
+   ========================================================================== */
+@media (min-width: 769px) {
+  .hero {
+    height: calc(100vh - 60px);
+    min-height: 600px;
+  }
+
+  .desktopOnly {
+    display: block;
+  }
+
+  .mobileOnly {
+    display: none;
+  }
+
+  .heroOverlayText {
+    bottom: 60px;
+    width: 85%;
+    maxWidth: 720px;
+  }
+
+  .catalogSection {
+    padding: 60px 40px 100px;
+  }
+
+  .sectionTitle {
+    font-size: 1.6rem;
+  }
+
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+
+  .card:hover .cardImage {
+    transform: scale(1.05);
+  }
+
+  .cardTitle {
+    font-size: 1.15rem;
+    margin-bottom: 6px;
+  }
+
+  .cardPrice {
+    font-size: 1.05rem;
+    margin-bottom: 4px;
+  }
+
+  .cardColor {
+    font-size: 0.95rem;
+  }
+
+  .soldOutOverlay {
+    font-size: 1.2rem;
+  }
+}
+
+/* Extra large screens */
+@media (min-width: 1200px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 36px;
+  }
+}
+
+/* ==========================================================================
+   MOBILE VIEWPORT SPECIFIC (<= 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .hero {
+    height: 72vh;
+    min-height: 480px;
+  }
+
+  .desktopOnly {
+    display: none;
+  }
+
+  .mobileOnly {
+    display: block;
+  }
+
+  .heroOverlayText {
+    bottom: 48px;
+    width: 90%;
+    max-width: 440px;
+  }
+
+  .catalogSection {
+    padding: 32px 14px 60px;
+  }
+
+  .sectionHeader {
+    margin-bottom: 20px;
+  }
+
+  .sectionTitle {
+    font-size: 1.2rem;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .imageWrapper {
+    aspect-ratio: 4/5;
+    margin-bottom: 8px;
+    border-radius: 8px;
+  }
+
+  .cardImage {
+    padding: 4px;
+  }
+
+  .cardInfo {
+    gap: 3px;
+  }
+
+  .cardTitle {
+    font-size: 0.88rem;
+    letter-spacing: 0.3px;
+  }
+
+  .cardPrice {
+    font-size: 0.88rem;
+  }
+
+  .cardColor {
+    font-size: 0.78rem;
+  }
+
+  .soldOutOverlay {
+    font-size: 0.9rem;
+  }
+}
+
+/* Extra small mobile screens (<= 380px) */
+@media (max-width: 380px) {
+  .grid {
+    gap: 8px;
+  }
+
+  .catalogSection {
+    padding: 24px 10px 50px;
+  }
+
+  .cardTitle {
+    font-size: 0.8rem;
+  }
+
+  .cardPrice {
+    font-size: 0.8rem;
+  }
 }

@@ -65,27 +65,27 @@ export default function OrderTrackingPage({ params }: { params: Promise<{ id: st
     <div style={{ minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
       <Navbar />
       
-      <div style={{ paddingTop: '120px', paddingBottom: '60px', maxWidth: '600px', margin: '0 auto', paddingLeft: '20px', paddingRight: '20px' }}>
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '30px', textAlign: 'center' }}>
+      <div style={{ paddingTop: '100px', paddingBottom: '60px', maxWidth: '600px', margin: '0 auto', paddingLeft: '16px', paddingRight: '16px' }}>
+        <h1 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '24px', textAlign: 'center' }}>
           Rastreo de Orden #{order.id}
         </h1>
 
-        <div style={{ background: '#fff', borderRadius: '12px', padding: '40px 20px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', textAlign: 'center', marginBottom: '30px' }}>
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
-            <div style={{ background: statusInfo.bg, padding: '20px', borderRadius: '50%' }}>
+        <div style={{ background: '#fff', borderRadius: '14px', padding: '30px 16px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', textAlign: 'center', marginBottom: '24px', border: '1px solid #e2e8f0' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
+            <div style={{ background: statusInfo.bg, padding: '16px', borderRadius: '50%' }}>
               {statusInfo.icon}
             </div>
           </div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 600, color: statusInfo.color, marginBottom: '10px' }}>
+          <h2 style={{ fontSize: '1.3rem', fontWeight: 700, color: statusInfo.color, marginBottom: '8px' }}>
             {statusInfo.text}
           </h2>
-          <p style={{ color: '#64748b', fontSize: '0.95rem' }}>
+          <p style={{ color: '#64748b', fontSize: '0.9rem' }}>
             Hola {order.firstName}, aquí podrás ver las actualizaciones en tiempo real de tu pedido.
           </p>
         </div>
 
-        <div style={{ background: '#fff', borderRadius: '12px', padding: '25px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-          <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '20px', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px' }}>Resumen del Pedido</h3>
+        <div style={{ background: '#fff', borderRadius: '14px', padding: '20px 16px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
+          <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '16px', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px', textTransform: 'uppercase' }}>Resumen del Pedido</h3>
           
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
             <span style={{ color: '#64748b' }}>Método de entrega</span>
