@@ -1150,7 +1150,7 @@ export default function CartPage() {
                 cursor: 'pointer'
               }}
             >
-              Entendido
+              Aceptar
             </button>
           </div>
         </div>
