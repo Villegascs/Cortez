@@ -183,7 +183,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
               </div>
             )}
           </div>
-          <p className={styles.price}>{product.price} USDT</p>
+          <p className={styles.price}>{product.price} €</p>
           
           <div className={styles.divider}></div>
           
@@ -225,7 +225,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                     <span style={{ fontSize: '0.9rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{p.name}</span>
-                    <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{p.price} USDT</span>
+                    <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{p.price} €</span>
                   </div>
                   <span style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }} className="serif-italic">{p.collection || p.color}</span>
                 </div>

@@ -200,7 +200,7 @@ export default function CartPage() {
     
     const itemsText = orderDetails.items.map((i: any) => `${i.quantity}x ${i.name}`).join(", ");
     const trackingLink = `${window.location.origin}/order/${orderDetails.id}`;
-    const text = `¡Hola Cortez! Acabo de realizar un pedido.\n\n*Cliente:* ${orderDetails.customerName}\n*Pedido:* ${itemsText}\n*Total:* ${orderDetails.total} USDT\n*Método de entrega:* ${orderDetails.shippingMethod}\n\n*Sigue tu orden aquí:*\n${trackingLink}\n\nAdjunto comprobante de pago en la web.`;
+    const text = `¡Hola Cortez! Acabo de realizar un pedido.\n\n*Cliente:* ${orderDetails.customerName}\n*Pedido:* ${itemsText}\n*Total:* ${orderDetails.total} €\n*Método de entrega:* ${orderDetails.shippingMethod}\n\n*Sigue tu orden aquí:*\n${trackingLink}\n\nAdjunto comprobante de pago en la web.`;
     
     return `https://wa.me/584247283924?text=${encodeURIComponent(text)}`;
   };
@@ -259,12 +259,12 @@ export default function CartPage() {
                       {orderDetails.items.map((i: any, idx: number) => (
                         <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '0.9rem' }}>
                           <span style={{ color: '#334155' }}>{i.quantity}x {i.name}</span>
-                          <span style={{ fontWeight: 500 }}>{i.price * i.quantity} USDT</span>
+                          <span style={{ fontWeight: 500 }}>{i.price * i.quantity} €</span>
                         </div>
                       ))}
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '15px', fontWeight: 700, fontSize: '1.1rem', color: '#0f172a' }}>
                         <span>Total</span>
-                        <span>{orderDetails.total} USDT</span>
+                        <span>{orderDetails.total} €</span>
                       </div>
                     </div>
                   </div>
@@ -306,7 +306,7 @@ export default function CartPage() {
                         <Link href={`/product/${item.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                           <span className={styles.itemName} style={{ cursor: 'pointer' }}>{item.name}</span>
                         </Link>
-                        <span className={styles.itemPrice}>{item.price} USDT</span>
+                        <span className={styles.itemPrice}>{item.price} €</span>
                       </div>
                       <div className={styles.itemActions}>
                         <span>Cant: {item.quantity}</span>
@@ -326,19 +326,19 @@ export default function CartPage() {
               <h2 style={{textTransform:'uppercase', fontSize: '1.2rem', marginBottom: '20px'}}>Resumen</h2>
               <div className={styles.summaryRow}>
                 <span>Subtotal</span>
-                <span>{subtotalUsd} USDT</span>
+                <span>{subtotalUsd} €</span>
               </div>
               <div className={styles.summaryRow}>
                 <span>Envío</span>
-                <span>{shippingMethod === "DELIVERY_VALENCIA" ? "3 USDT" : "Gratis"}</span>
+                <span>{shippingMethod === "DELIVERY_VALENCIA" ? "3 €" : "Gratis"}</span>
               </div>
               <div className={styles.totalRow}>
                 <span>Total</span>
                 <div style={{textAlign: 'right'}}>
-                  <span>{totalUsd} USDT</span>
+                  <span>{totalUsd} €</span>
                   <span className={styles.bsAmount}>~ {totalBs.toFixed(2)} Bs</span>
                   <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-                    Tasa oficial BCV: {usdtRate.toFixed(2)} Bs
+                    Tasa oficial BCV (Euro): {usdtRate.toFixed(2)} Bs/€
                   </span>
                 </div>
               </div>
@@ -421,7 +421,7 @@ export default function CartPage() {
                           onChange={setShippingMethod}
                           options={[
                             { value: "PICKUP", label: "Pick Up (Retiro en oficina)" },
-                            { value: "DELIVERY_VALENCIA", label: "Delivery (Valencia) +3 USDT" },
+                            { value: "DELIVERY_VALENCIA", label: "Delivery (Valencia) +3 €" },
                             { value: "ENVIOS_NACIONALES", label: "Envío Nacional (MRW/Zoom/Tealca)" }
                           ]}
                           placeholder="Selecciona método"
@@ -622,7 +622,7 @@ export default function CartPage() {
                         <div style={{ borderTop: '1px dashed #cbd5e1', paddingTop: '12px', marginTop: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                           <span style={{ fontWeight: 600, color: '#0f172a' }}>Monto a Transferir:</span>
                           <div style={{ textAlign: 'right' }}>
-                            <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#0f172a' }}>{totalUsd} USDT</div>
+                            <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#0f172a' }}>{totalUsd} €</div>
                             <div style={{ fontSize: '0.8rem', color: '#64748b' }}>~ {totalBs.toFixed(2)} Bs</div>
                           </div>
                         </div>
