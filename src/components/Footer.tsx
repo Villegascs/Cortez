@@ -27,14 +27,13 @@ export default function Footer() {
           display: flex;
           align-items: center;
           justify-content: center;
-          min-height: 50px;
+          min-height: 60px;
           width: 100%;
         }
 
         .footer-logo-img {
           filter: var(--logo-invert);
           object-fit: contain;
-          height: auto;
           transform-origin: center;
         }
 
@@ -59,26 +58,25 @@ export default function Footer() {
 
         @media (max-width: 768px) {
           .footer-logo-img {
-            width: 86px;
-            max-width: 86px;
-            height: auto;
-            transform: none;
+            width: 115px;
+            height: 28px;
+            transform: scale(1.15);
           }
         }
 
         @media (max-width: 480px) {
           .footer-logo-img {
-            width: 76px;
-            max-width: 76px;
+            width: 105px;
+            height: 26px;
+            transform: scale(1.05);
           }
         }
 
         @media (min-width: 769px) {
           .footer-logo-img {
-            width: 130px;
-            max-width: 130px;
-            height: auto;
-            transform: none;
+            width: 180px;
+            height: 42px;
+            transform: scale(2.3);
           }
         }
       `}</style>
@@ -92,8 +90,8 @@ export default function Footer() {
               <Image 
                 src="/logo.png" 
                 alt="Cortez Logo" 
-                width={130} 
-                height={30} 
+                width={180} 
+                height={42} 
                 className="footer-logo-img"
               />
             </Link>

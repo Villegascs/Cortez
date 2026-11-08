@@ -85,17 +85,18 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
         .navbar-logo-container {
           position: absolute;
           left: 50%;
-          transform: translateX(-50%);
+          top: 50%;
+          transform: translate(-50%, -50%);
           display: flex;
           align-items: center;
           justify-content: center;
           pointer-events: auto;
+          z-index: 1;
         }
 
         .navbar-logo-img {
           filter: var(--logo-invert);
           object-fit: contain;
-          height: auto;
           transform-origin: center;
         }
 
@@ -104,17 +105,17 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
           .desktop-nav-content { display: none !important; }
           .mobile-nav-toggle { display: flex !important; }
           .navbar-logo-img {
-            width: 86px;
-            max-width: 86px;
-            height: auto;
-            transform: none;
+            width: 115px;
+            height: 28px;
+            transform: scale(1.15);
           }
         }
 
         @media (max-width: 480px) {
           .navbar-logo-img {
-            width: 76px;
-            max-width: 76px;
+            width: 105px;
+            height: 26px;
+            transform: scale(1.05);
           }
         }
 
@@ -123,10 +124,9 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
           .desktop-nav-content { display: flex !important; }
           .mobile-nav-toggle { display: none !important; }
           .navbar-logo-img {
-            width: 130px;
-            max-width: 130px;
-            height: auto;
-            transform: none;
+            width: 180px;
+            height: 42px;
+            transform: scale(2.3);
           }
         }
 
@@ -214,8 +214,8 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
               <Image
                 src="/logo.png"
                 alt="Cortez"
-                width={130}
-                height={30}
+                width={180}
+                height={42}
                 className="navbar-logo-img"
                 priority
               />
