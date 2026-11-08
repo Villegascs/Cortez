@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import styles from "./page.module.css";
 import Link from "next/link";
-import { ArrowLeft, Save, ExternalLink, Plus, Trash2, LogOut, ChevronsUpDown, Check, Search, RefreshCw, Eye, EyeOff, Edit3 } from "lucide-react";
+import { ArrowLeft, Save, ExternalLink, Plus, Trash2, LogOut, ChevronsUpDown, Check, Search, RefreshCw, Eye, EyeOff, Edit3, UploadCloud, Image as ImageIcon, ImagePlus, X, RefreshCcw } from "lucide-react";
 
 export default function AdminPanel() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -116,7 +116,7 @@ export default function AdminPanel() {
   };
 
   const [mainImageFile, setMainImageFile] = useState<File | null>(null);
-  const [extraFiles, setExtraFiles] = useState<FileList | null>(null);
+  const [extraFiles, setExtraFiles] = useState<File[]>([]);
   const [mainImagePreview, setMainImagePreview] = useState("");
   const [extraPreviews, setExtraPreviews] = useState<string[]>([]);
 
@@ -124,6 +124,25 @@ export default function AdminPanel() {
   const [editId, setEditId] = useState<number | null>(null);
   const [existingMainImage, setExistingMainImage] = useState("");
   const [existingExtraImages, setExistingExtraImages] = useState<string[]>([]);
+
+  const handleExtraFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const newFiles = Array.from(files);
+      const newPreviews = newFiles.map(f => URL.createObjectURL(f));
+      setExtraFiles(prev => [...prev, ...newFiles]);
+      setExtraPreviews(prev => [...prev, ...newPreviews]);
+    }
+  };
+
+  const handleRemoveNewExtra = (index: number) => {
+    setExtraFiles(prev => prev.filter((_, i) => i !== index));
+    setExtraPreviews(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleRemoveExistingExtra = (index: number) => {
+    setExistingExtraImages(prev => prev.filter((_, i) => i !== index));
+  };
 
   const handleEdit = (p: any) => {
     setEditId(p.id);
@@ -137,7 +156,7 @@ export default function AdminPanel() {
     setExistingMainImage(p.image);
     setExistingExtraImages(JSON.parse(p.images || "[]"));
     setMainImageFile(null);
-    setExtraFiles(null);
+    setExtraFiles([]);
     setMainImagePreview("");
     setExtraPreviews([]);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -147,7 +166,7 @@ export default function AdminPanel() {
     setEditId(null);
     setNewProductName(""); setNewProductColor(""); setNewProductCollection(""); setNewProductPrice("");
     setNewProductStock(""); setNewProductDesc(""); setNewProductCategory("UNISEX"); 
-    setMainImageFile(null); setExtraFiles(null);
+    setMainImageFile(null); setExtraFiles([]);
     setMainImagePreview(""); setExtraPreviews([]);
     setExistingMainImage(""); setExistingExtraImages([]);
   };
@@ -178,7 +197,7 @@ export default function AdminPanel() {
       }
 
       const extraUrls: string[] = [...existingExtraImages];
-      if (extraFiles) {
+      if (extraFiles && extraFiles.length > 0) {
         for (let i = 0; i < extraFiles.length; i++) {
           extraUrls.push(await uploadToImgBB(extraFiles[i]));
         }
@@ -536,7 +555,7 @@ export default function AdminPanel() {
             <h2 style={{ marginBottom: '20px', textTransform:'uppercase', fontSize: '1.4rem', fontWeight: 700, color: 'var(--admin-text)' }}>
               Base de Datos de Lentes
             </h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 340px) 1fr', gap: '30px', marginBottom: '60px' }}>
+            <div className={styles.productManagerLayout}>
           
               {/* Form Add / Edit */}
               <div style={{
@@ -619,56 +638,155 @@ export default function AdminPanel() {
 
                   <textarea placeholder="Descripción (Opcional)" className={styles.adminInput} style={{ minHeight: '80px', resize: 'vertical' }} value={newProductDesc} onChange={e=>setNewProductDesc(e.target.value)} />
                   
-                  {/* Images upload */}
-                  <div style={{ marginTop: '8px' }}>
-                    <label style={{ fontSize: '0.82rem', color: 'var(--admin-text-muted)', display: 'block', marginBottom: '6px' }}>
-                      Imagen Principal {!editId && "(Obligatoria)"}
-                    </label>
-                    {existingMainImage && !mainImagePreview && (
-                      <div style={{ marginBottom: '6px' }}>
-                        <img src={existingMainImage} width={48} height={48} style={{ objectFit: 'contain', background: 'var(--admin-header-bg)', borderRadius: '6px', border: '1px solid var(--admin-card-border)' }} />
+                  {/* Images upload section */}
+                  <div className={styles.photoUploadSection}>
+                    <div className={styles.photoSectionHeader}>
+                      <div className={styles.photoSectionTitle}>
+                        <ImageIcon size={16} />
+                        Fotografías del Producto
                       </div>
-                    )}
-                    {mainImagePreview && (
-                      <div style={{ marginBottom: '6px' }}>
-                        <img src={mainImagePreview} width={48} height={48} style={{ objectFit: 'contain', background: 'var(--admin-header-bg)', borderRadius: '6px', border: '1px solid var(--admin-card-border)' }} />
-                      </div>
-                    )}
-                    <input required={!editId} type="file" accept="image/*" className={styles.adminInput} style={{ padding: '6px' }} onChange={e=>{
-                      const file = e.target.files?.[0];
-                      if(file){
-                        setMainImageFile(file);
-                        setMainImagePreview(URL.createObjectURL(file));
-                      }
-                    }} />
-                  </div>
+                    </div>
 
-                  <div style={{ marginTop: '6px' }}>
-                    <label style={{ fontSize: '0.82rem', color: 'var(--admin-text-muted)', display: 'block', marginBottom: '6px' }}>
-                      Galería (Imágenes Extra)
-                    </label>
-                    {existingExtraImages.length > 0 && extraPreviews.length === 0 && (
-                      <div style={{ display: 'flex', gap: '6px', marginBottom: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
+                    {/* Foto Principal */}
+                    <div className={styles.photoUploadBox}>
+                      <div className={styles.photoUploadLabel}>
+                        <span>Foto Principal</span>
+                        {!editId && <span className={styles.photoBadgeRequired}>Obligatoria</span>}
+                        {editId && <span className={styles.photoBadgeOptional}>Requerida</span>}
+                      </div>
+
+                      {(mainImagePreview || existingMainImage) ? (
+                        <div className={styles.mainPreviewCard}>
+                          <div className={styles.mainPreviewImgWrapper}>
+                            <img
+                              src={mainImagePreview || existingMainImage}
+                              alt="Foto Principal"
+                              className={styles.mainPreviewImg}
+                            />
+                          </div>
+                          <div className={styles.mainPreviewInfo}>
+                            <span className={styles.mainPreviewBadge}>
+                              <Check size={14} /> {mainImagePreview ? "Foto nueva seleccionada" : "Foto guardada"}
+                            </span>
+                            <div className={styles.mainPreviewActions}>
+                              <label htmlFor="main-image-upload" className={styles.photoActionBtn}>
+                                <RefreshCcw size={13} />
+                                Cambiar
+                              </label>
+                              {mainImagePreview && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setMainImageFile(null);
+                                    setMainImagePreview("");
+                                  }}
+                                  className={`${styles.photoActionBtn} ${styles.photoActionBtnDanger}`}
+                                >
+                                  <X size={13} />
+                                  Deshacer
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                          <input
+                            id="main-image-upload"
+                            type="file"
+                            accept="image/*"
+                            style={{ display: 'none' }}
+                            onChange={e => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                setMainImageFile(file);
+                                setMainImagePreview(URL.createObjectURL(file));
+                              }
+                            }}
+                          />
+                        </div>
+                      ) : (
+                        <div>
+                          <label htmlFor="main-image-upload" className={styles.dropzoneCard}>
+                            <div className={styles.dropzoneIconWrapper}>
+                              <UploadCloud size={22} />
+                            </div>
+                            <span className={styles.dropzonePrompt}>Subir Foto Principal</span>
+                            <span className={styles.dropzoneHint}>Haz clic aquí para seleccionar imagen</span>
+                          </label>
+                          <input
+                            id="main-image-upload"
+                            required={!editId}
+                            type="file"
+                            accept="image/*"
+                            style={{ display: 'none' }}
+                            onChange={e => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                setMainImageFile(file);
+                                setMainImagePreview(URL.createObjectURL(file));
+                              }
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Galería Secundaria */}
+                    <div className={styles.photoUploadBox}>
+                      <div className={styles.photoUploadLabel}>
+                        <span>Galería Secundaria</span>
+                        <span className={styles.photoBadgeOptional}>
+                          {existingExtraImages.length + extraPreviews.length} foto(s)
+                        </span>
+                      </div>
+
+                      <div className={styles.galleryGrid}>
+                        {/* Fotos existentes guardadas */}
                         {existingExtraImages.map((url, i) => (
-                          <img key={i} src={url} width={40} height={40} style={{ objectFit: 'contain', background: 'var(--admin-header-bg)', borderRadius: '4px', border: '1px solid var(--admin-card-border)' }} />
+                          <div key={`existing-${i}`} className={styles.galleryItem} title="Foto guardada en galería">
+                            <img src={url} alt={`Galería guardada ${i + 1}`} />
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveExistingExtra(i)}
+                              className={styles.galleryRemoveBtn}
+                              title="Eliminar esta foto"
+                              aria-label="Eliminar foto"
+                            >
+                              <X size={12} />
+                            </button>
+                          </div>
                         ))}
-                        <span style={{ fontSize: '0.72rem', color: '#ef4444', cursor: 'pointer', fontWeight: 600 }} onClick={() => setExistingExtraImages([])}>[Borrar Todas]</span>
-                      </div>
-                    )}
-                    {extraPreviews.length > 0 && (
-                      <div style={{ display: 'flex', gap: '6px', marginBottom: '6px', flexWrap: 'wrap' }}>
+
+                        {/* Fotos nuevas seleccionadas */}
                         {extraPreviews.map((url, i) => (
-                          <img key={i} src={url} width={40} height={40} style={{ objectFit: 'contain', background: 'var(--admin-header-bg)', borderRadius: '4px', border: '1px solid var(--admin-card-border)' }} />
+                          <div key={`new-${i}`} className={styles.galleryItem} title="Foto nueva por subir">
+                            <img src={url} alt={`Galería nueva ${i + 1}`} />
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveNewExtra(i)}
+                              className={styles.galleryRemoveBtn}
+                              title="Quitar esta foto"
+                              aria-label="Quitar foto"
+                            >
+                              <X size={12} />
+                            </button>
+                          </div>
                         ))}
+
+                        {/* Botón para añadir fotos */}
+                        <label htmlFor="gallery-images-upload" className={styles.galleryAddBtn} title="Añadir más fotos a la galería">
+                          <ImagePlus size={20} />
+                          <span style={{ fontSize: '0.68rem', fontWeight: 600 }}>Añadir</span>
+                        </label>
                       </div>
-                    )}
-                    <input type="file" accept="image/*" multiple className={styles.adminInput} style={{ padding: '6px' }} onChange={e=>{
-                      const files = e.target.files;
-                      if(files){
-                        setExtraFiles(files);
-                        setExtraPreviews(Array.from(files).map(f => URL.createObjectURL(f)));
-                      }
-                    }} />
+
+                      <input
+                        id="gallery-images-upload"
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        style={{ display: 'none' }}
+                        onChange={handleExtraFilesChange}
+                      />
+                    </div>
                   </div>
 
                   <button 

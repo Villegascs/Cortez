@@ -301,6 +301,280 @@
   opacity: 0.8;
 }
 
+/* ==========================================================================
+   PHOTO UPLOAD APARTMENT / SECTION STYLES
+   ========================================================================== */
+.productManagerLayout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 32px;
+  align-items: start;
+  margin-bottom: 60px;
+}
+
+@media (max-width: 900px) {
+  .productManagerLayout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+}
+
+.photoUploadSection {
+  background: var(--admin-header-bg);
+  border: 1px solid var(--admin-card-border);
+  border-radius: 12px;
+  padding: 18px;
+  margin: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.photoSectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--admin-card-border);
+  padding-bottom: 10px;
+}
+
+.photoSectionTitle {
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--admin-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.photoUploadBox {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.photoUploadLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--admin-text);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.photoBadgeRequired {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.photoBadgeOptional {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--admin-text-muted);
+}
+
+.dropzoneCard {
+  border: 2px dashed var(--admin-card-border);
+  border-radius: 10px;
+  padding: 22px 16px;
+  text-align: center;
+  cursor: pointer;
+  background: var(--admin-card-bg);
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.dropzoneCard:hover {
+  border-color: var(--admin-text);
+  background: var(--admin-row-hover);
+  transform: translateY(-1px);
+}
+
+.dropzoneIconWrapper {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--admin-header-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--admin-text);
+}
+
+.dropzonePrompt {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--admin-text);
+}
+
+.dropzoneHint {
+  font-size: 0.74rem;
+  color: var(--admin-text-muted);
+}
+
+/* Main Image Preview Card */
+.mainPreviewCard {
+  position: relative;
+  border-radius: 10px;
+  border: 1px solid var(--admin-card-border);
+  background: var(--admin-card-bg);
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.mainPreviewImgWrapper {
+  width: 76px;
+  height: 76px;
+  border-radius: 8px;
+  background: var(--admin-header-bg);
+  border: 1px solid var(--admin-card-border);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mainPreviewImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.mainPreviewInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.mainPreviewBadge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #10b981;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mainPreviewActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.photoActionBtn {
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--admin-card-border);
+  background: var(--admin-header-bg);
+  color: var(--admin-text);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+}
+
+.photoActionBtn:hover {
+  background: var(--admin-row-hover);
+  border-color: var(--admin-text);
+}
+
+.photoActionBtnDanger {
+  color: #ef4444;
+}
+
+.photoActionBtnDanger:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+}
+
+/* Gallery Grid & Items */
+.galleryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 10px;
+}
+
+.galleryItem {
+  position: relative;
+  width: 70px;
+  height: 70px;
+  border-radius: 8px;
+  border: 1px solid var(--admin-card-border);
+  background: var(--admin-card-bg);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.galleryItem img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.galleryRemoveBtn {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.75);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s ease;
+}
+
+.galleryRemoveBtn:hover {
+  background: #ef4444;
+  transform: scale(1.1);
+}
+
+.galleryAddBtn {
+  width: 70px;
+  height: 70px;
+  border-radius: 8px;
+  border: 2px dashed var(--admin-card-border);
+  background: var(--admin-card-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  color: var(--admin-text-muted);
+  transition: all 0.2s ease;
+}
+
+.galleryAddBtn:hover {
+  border-color: var(--admin-text);
+  color: var(--admin-text);
+  background: var(--admin-row-hover);
+}
+
 .spin {
   animation: spin 1s linear infinite;
 }
