@@ -21,6 +21,64 @@ const VENEZUELAN_BANKS = [
   "Bancamiga"
 ];
 
+// Función para convertir imágenes a WebP en el navegador y reducir 95% el peso
+async function convertToWebP(file: File): Promise<File> {
+  if (typeof window === 'undefined') return file;
+  
+  return new Promise((resolve) => {
+    const img = new window.Image();
+    const url = URL.createObjectURL(file);
+    
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const canvas = document.createElement('canvas');
+      const maxDim = 1200;
+      let { width, height } = img;
+      
+      if (width > height && width > maxDim) {
+        height = Math.round((height * maxDim) / width);
+        width = maxDim;
+      } else if (height > maxDim) {
+        width = Math.round((width * maxDim) / height);
+        height = maxDim;
+      }
+      
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        resolve(file);
+        return;
+      }
+      ctx.drawImage(img, 0, 0, width, height);
+      
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            const cleanName = file.name.replace(/\.[^.]+$/, '') + '.webp';
+            const webpFile = new File([blob], cleanName, {
+              type: 'image/webp',
+              lastModified: Date.now()
+            });
+            resolve(webpFile);
+          } else {
+            resolve(file);
+          }
+        },
+        'image/webp',
+        0.8
+      );
+    };
+    
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(file);
+    };
+    
+    img.src = url;
+  });
+}
+
 export default function CartPage() {
   const { items, removeItem, clearCart } = useCartStore();
   const [usdtRate, setUsdtRate] = useState<number>(1004.95);
@@ -36,6 +94,40 @@ export default function CartPage() {
   const [paymentPhone, setPaymentPhone] = useState("");
   const [paymentRef, setPaymentRef] = useState("");
   const [paymentFile, setPaymentFile] = useState<File | null>(null);
+  const [uploadedScreenshotUrl, setUploadedScreenshotUrl] = useState<string>("");
+  const [uploadingImage, setUploadingImage] = useState<boolean>(false);
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || !e.target.files[0]) return;
+    const rawFile = e.target.files[0];
+    
+    setUploadingImage(true);
+    try {
+      // 1. Conversión ultra rápida a WebP (reduce hasta un 95% el peso)
+      const webpFile = await convertToWebP(rawFile);
+      setPaymentFile(webpFile);
+
+      // 2. Pre-subida inmediata en segundo plano para que al presionar 'Realizar Pedido' sea instantáneo
+      const keyRes = await fetch('/api/upload');
+      const keyData = await keyRes.json();
+      if (keyData.key) {
+        const fd = new FormData();
+        fd.append("image", webpFile);
+        const uploadRes = await fetch(`https://api.imgbb.com/1/upload?key=${keyData.key}`, {
+          method: 'POST',
+          body: fd
+        });
+        const uploadData = await uploadRes.json();
+        if (uploadRes.ok && uploadData.success) {
+          setUploadedScreenshotUrl(uploadData.data.url);
+        }
+      }
+    } catch (err) {
+      console.warn("Error en pre-subida de comprobante:", err);
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   const [shippingMethod, setShippingMethod] = useState("PICKUP");
   const [shippingZone, setShippingZone] = useState("");
@@ -182,8 +274,9 @@ export default function CartPage() {
       formData.append("paymentPhone", paymentPhone);
     }
 
-    let screenshotUrl = "";
-    if (paymentFile) {
+    let screenshotUrl = uploadedScreenshotUrl;
+    // Si aún no ha terminado de subir en segundo plano pero hay archivo, subirlo de inmediato
+    if (!screenshotUrl && paymentFile) {
       try {
         const keyRes = await fetch('/api/upload');
         const keyData = await keyRes.json();
@@ -197,7 +290,7 @@ export default function CartPage() {
           }
         }
       } catch (err) {
-        console.error("Error subiendo captura", err);
+        console.warn("Error subiendo captura en checkout", err);
       }
     }
 
@@ -824,19 +917,22 @@ export default function CartPage() {
                       </div>
 
                       <div className={styles.formGroup}>
-                        <label>Captura de Pago (Opcional)</label>
+                        <label>Captura de Pago (Opcional - Se optimiza a WebP automáticamente)</label>
                         <input 
                           type="file" 
                           accept="image/*" 
                           className="input-field" 
                           style={{ padding: '8px' }} 
-                          onChange={e => {
-                            if (e.target.files && e.target.files[0]) setPaymentFile(e.target.files[0]);
-                          }} 
+                          onChange={handleFileSelect} 
                         />
-                        {paymentFile && (
-                          <p style={{ fontSize: '0.75rem', color: '#16a34a', marginTop: '4px' }}>
-                            ✓ Archivo seleccionado: {paymentFile.name}
+                        {uploadingImage && (
+                          <p style={{ fontSize: '0.78rem', color: '#0284c7', marginTop: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            ⚡ Convirtiendo a WebP y precargando comprobante...
+                          </p>
+                        )}
+                        {!uploadingImage && paymentFile && (
+                          <p style={{ fontSize: '0.78rem', color: '#16a34a', marginTop: '6px', fontWeight: 500 }}>
+                            ✓ {paymentFile.name} ({Math.round(paymentFile.size / 1024)} KB) - Listo para envío ultrarrápido
                           </p>
                         )}
                       </div>
@@ -889,19 +985,22 @@ export default function CartPage() {
                       </div>
 
                       <div className={styles.formGroup}>
-                        <label>Captura de Pago (Opcional)</label>
+                        <label>Captura de Pago (Opcional - Se optimiza a WebP automáticamente)</label>
                         <input 
                           type="file" 
                           accept="image/*" 
                           className="input-field" 
                           style={{ padding: '8px' }} 
-                          onChange={e => {
-                            if (e.target.files && e.target.files[0]) setPaymentFile(e.target.files[0]);
-                          }} 
+                          onChange={handleFileSelect} 
                         />
-                        {paymentFile && (
-                          <p style={{ fontSize: '0.75rem', color: '#16a34a', marginTop: '4px' }}>
-                            ✓ Archivo seleccionado: {paymentFile.name}
+                        {uploadingImage && (
+                          <p style={{ fontSize: '0.78rem', color: '#0284c7', marginTop: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            ⚡ Convirtiendo a WebP y precargando comprobante...
+                          </p>
+                        )}
+                        {!uploadingImage && paymentFile && (
+                          <p style={{ fontSize: '0.78rem', color: '#16a34a', marginTop: '6px', fontWeight: 500 }}>
+                            ✓ {paymentFile.name} ({Math.round(paymentFile.size / 1024)} KB) - Listo para envío ultrarrápido
                           </p>
                         )}
                       </div>
