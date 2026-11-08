@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import styles from "./page.module.css";
 import Link from "next/link";
-import { ArrowLeft, Save, ExternalLink, Plus, Trash2, LogOut, ChevronsUpDown, Check, Search } from "lucide-react";
+import { ArrowLeft, Save, ExternalLink, Plus, Trash2, LogOut, ChevronsUpDown, Check, Search, RefreshCw } from "lucide-react";
 
 export default function AdminPanel() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -82,6 +82,24 @@ export default function AdminPanel() {
     setShowLogoutModal(false);
     setLoginUser("");
     setLoginPass("");
+  };
+
+  const [syncingRate, setSyncingRate] = useState(false);
+
+  const handleSyncBcv = async () => {
+    setSyncingRate(true);
+    try {
+      const res = await fetch('/api/settings?refresh=true');
+      const data = await res.json();
+      if (data.rate) {
+        setUsdtRate(data.rate);
+        alert(`Tasa oficial del BCV (Euro) sincronizada: ${data.rate} Bs`);
+      }
+    } catch (e) {
+      alert("Error al sincronizar con el BCV");
+    } finally {
+      setSyncingRate(false);
+    }
   };
 
   const handleUpdateRate = async () => {
@@ -309,15 +327,23 @@ export default function AdminPanel() {
         
         <div className={styles.settingsPanel}>
           <div>
-            <div className={styles.sectionTitle}>Tasa USDT (Bs)</div>
+            <div className={styles.sectionTitle}>Tasa Euro BCV (Bs)</div>
             <input 
               type="number" step="0.01" className="input-field" 
               value={usdtRate} onChange={(e) => setUsdtRate(Number(e.target.value))} 
-              style={{ width: '120px', padding: '10px' }}
+              style={{ width: '130px', padding: '10px' }}
             />
           </div>
-          <button className="btn-primary" onClick={handleUpdateRate} style={{ marginTop: '20px', padding: '12px' }} title="Guardar Tasa">
+          <button className="btn-primary" onClick={handleUpdateRate} style={{ marginTop: '20px', padding: '12px' }} title="Guardar Tasa Manual">
             <Save size={20} />
+          </button>
+          <button 
+            onClick={handleSyncBcv} 
+            disabled={syncingRate}
+            style={{ marginTop: '20px', padding: '12px', background: '#e0f2fe', color: '#0284c7', border: 'none', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
+            title="Sincronizar ahora con BCV (Euro)"
+          >
+            <RefreshCw size={20} className={syncingRate ? styles.spin : ""} />
           </button>
           <button 
             onClick={() => setShowLogoutModal(true)} 

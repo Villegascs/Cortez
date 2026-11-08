@@ -46,8 +46,8 @@
 
 .cartWrapper {
   display: grid;
-  grid-template-columns: 1fr 400px;
-  gap: 60px;
+  grid-template-columns: 1fr 480px;
+  gap: 50px;
   max-width: 1200px;
   margin: 40px auto;
   padding: 0 40px;
