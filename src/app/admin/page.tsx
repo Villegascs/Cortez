@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import styles from "./page.module.css";
 import Link from "next/link";
-import { ArrowLeft, Save, ExternalLink, Plus, Trash2, LogOut, ChevronsUpDown, Check, Search, RefreshCw } from "lucide-react";
+import { ArrowLeft, Save, ExternalLink, Plus, Trash2, LogOut, ChevronsUpDown, Check, Search, RefreshCw, Eye, EyeOff, Edit3 } from "lucide-react";
 
 export default function AdminPanel() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -13,6 +13,7 @@ export default function AdminPanel() {
   const [productToDelete, setProductToDelete] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<'INVENTARIO' | 'PRODUCTOS' | 'PEDIDOS'>('PEDIDOS');
   const [showArchived, setShowArchived] = useState(false);
+  
   // Login state
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loginUser, setLoginUser] = useState("");
@@ -31,7 +32,6 @@ export default function AdminPanel() {
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [categorySearch, setCategorySearch] = useState("");
   const CATEGORIES = ["LENTES", "ACCESORIOS"];
-  const [newProductImage, setNewProductImage] = useState("");
 
   const fetchData = async () => {
     try {
@@ -158,7 +158,6 @@ export default function AdminPanel() {
     
     setUploadingFiles(true);
     try {
-      // Get API Key from server
       const keyRes = await fetch('/api/upload');
       const keyData = await keyRes.json();
       if (!keyData.key) throw new Error("API Key de ImgBB no encontrada en Vercel.");
@@ -173,13 +172,11 @@ export default function AdminPanel() {
         return data.data.url;
       };
 
-      // 1. Upload main image
       let mainImageUrl = existingMainImage;
       if (mainImageFile) {
         mainImageUrl = await uploadToImgBB(mainImageFile);
       }
 
-      // 2. Upload extra images
       const extraUrls: string[] = [...existingExtraImages];
       if (extraFiles) {
         for (let i = 0; i < extraFiles.length; i++) {
@@ -187,7 +184,6 @@ export default function AdminPanel() {
         }
       }
 
-      // 3. Create or update product
       const productRes = await fetch(editId ? `/api/products/${editId}` : '/api/products', {
         method: editId ? 'PATCH' : 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -270,42 +266,81 @@ export default function AdminPanel() {
     }
   };
 
-  if (loading) return <div>Cargando panel...</div>;
+  if (loading) {
+    return (
+      <div className={styles.adminRoot} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+        <div style={{ fontSize: '1.1rem', fontWeight: 600 }}>Cargando panel de administración...</div>
+      </div>
+    );
+  }
 
+  // LOGIN SCREEN
   if (!isLoggedIn) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', background: '#f8f9fa' }}>
-        <div style={{ width: '380px', background: '#fff', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: '1px solid #eaeaea', overflow: 'hidden' }}>
-          <div style={{ padding: '24px', borderBottom: '1px solid #eaeaea' }}>
-            <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 600 }}>Iniciar Sesión</h2>
-            <p style={{ margin: '8px 0 0 0', fontSize: '0.875rem', color: '#666' }}>Ingresa tus credenciales para administrar Cortez.</p>
+      <div className={styles.adminRoot} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', padding: '20px' }}>
+        <div style={{
+          width: '100%',
+          maxWidth: '400px',
+          background: 'var(--admin-card-bg)',
+          borderRadius: '16px',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+          border: '1px solid var(--admin-card-border)',
+          overflow: 'hidden',
+          color: 'var(--admin-text)'
+        }}>
+          <div style={{ padding: '28px 24px 20px', borderBottom: '1px solid var(--admin-card-border)' }}>
+            <h2 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 700, color: 'var(--admin-text)' }}>Iniciar Sesión</h2>
+            <p style={{ margin: '8px 0 0 0', fontSize: '0.88rem', color: 'var(--admin-text-muted)' }}>
+              Ingresa tus credenciales para administrar Cortez.
+            </p>
           </div>
           <form onSubmit={handleLogin}>
             <div style={{ padding: '24px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, marginBottom: '8px' }}>Usuario</label>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '8px', color: 'var(--admin-text)' }}>Usuario</label>
                   <input 
                     type="text" 
                     value={loginUser}
                     onChange={(e) => setLoginUser(e.target.value)}
-                    style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #eaeaea', outline: 'none' }} 
+                    className={styles.adminInput}
+                    style={{ width: '100%' }}
+                    placeholder="Usuario administrador"
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, marginBottom: '8px' }}>Contraseña</label>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '8px', color: 'var(--admin-text)' }}>Contraseña</label>
                   <input 
                     type="password" 
                     value={loginPass}
                     onChange={(e) => setLoginPass(e.target.value)}
-                    style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #eaeaea', outline: 'none' }} 
+                    className={styles.adminInput}
+                    style={{ width: '100%' }}
+                    placeholder="Contraseña"
                   />
                 </div>
-                {loginError && <div style={{ color: 'red', fontSize: '0.8rem', fontWeight: 600 }}>Usuario o contraseña incorrectos.</div>}
+                {loginError && (
+                  <div style={{ color: '#ef4444', fontSize: '0.82rem', fontWeight: 600 }}>
+                    Usuario o contraseña incorrectos.
+                  </div>
+                )}
               </div>
             </div>
-            <div style={{ padding: '16px 24px', background: '#fafafa', borderTop: '1px solid #eaeaea', display: 'flex', justifyContent: 'flex-end' }}>
-              <button type="submit" style={{ padding: '10px 16px', background: '#000', color: '#fff', borderRadius: '6px', border: 'none', fontWeight: 500, cursor: 'pointer' }}>
+            <div style={{ padding: '16px 24px', background: 'var(--admin-header-bg)', borderTop: '1px solid var(--admin-card-border)', display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                type="submit"
+                style={{
+                  padding: '10px 20px',
+                  background: 'var(--admin-text)',
+                  color: 'var(--admin-bg)',
+                  borderRadius: '8px',
+                  border: 'none',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                  letterSpacing: '0.5px'
+                }}
+              >
                 Entrar
               </button>
             </div>
@@ -315,462 +350,608 @@ export default function AdminPanel() {
     );
   }
 
+  // MAIN ADMIN PANEL
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <div>
-          <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', marginBottom: '10px' }}>
-            <ArrowLeft size={20} /> Volver a la tienda
-          </Link>
-          <h1 className={styles.title}>Panel de Administración</h1>
-        </div>
-        
-        <div className={styles.settingsPanel}>
+    <div className={styles.adminRoot}>
+      <div className={styles.container}>
+        {/* Header */}
+        <div className={styles.header}>
           <div>
-            <div className={styles.sectionTitle}>Tasa Euro BCV (Bs)</div>
-            <input 
-              type="number" step="0.01" className="input-field" 
-              value={usdtRate} onChange={(e) => setUsdtRate(Number(e.target.value))} 
-              style={{ width: '130px', padding: '10px' }}
-            />
+            <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'var(--admin-text-muted)', marginBottom: '12px', fontSize: '0.9rem', fontWeight: 500 }}>
+              <ArrowLeft size={18} /> Volver a la tienda
+            </Link>
+            <h1 className={styles.title}>Panel de Administración</h1>
           </div>
-          <button className="btn-primary" onClick={handleUpdateRate} style={{ marginTop: '20px', padding: '12px' }} title="Guardar Tasa Manual">
-            <Save size={20} />
+          
+          <div className={styles.settingsPanel}>
+            <div>
+              <div className={styles.sectionTitle}>Tasa Euro BCV (Bs)</div>
+              <input 
+                type="number" 
+                step="0.01" 
+                className={styles.adminInput} 
+                value={usdtRate} 
+                onChange={(e) => setUsdtRate(Number(e.target.value))} 
+                style={{ width: '130px', fontWeight: 700 }}
+              />
+            </div>
+            <button
+              onClick={handleUpdateRate}
+              style={{
+                marginTop: '18px',
+                padding: '10px',
+                background: 'var(--admin-text)',
+                color: 'var(--admin-bg)',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+              title="Guardar Tasa Manual"
+            >
+              <Save size={18} />
+            </button>
+            <button 
+              onClick={handleSyncBcv} 
+              disabled={syncingRate}
+              style={{
+                marginTop: '18px',
+                padding: '10px',
+                background: '#e0f2fe',
+                color: '#0284c7',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }} 
+              title="Sincronizar ahora con BCV (Euro)"
+            >
+              <RefreshCw size={18} className={syncingRate ? styles.spin : ""} />
+            </button>
+            <button 
+              onClick={() => setShowLogoutModal(true)} 
+              style={{
+                marginTop: '18px',
+                padding: '10px',
+                background: '#fee2e2',
+                color: '#ef4444',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+              title="Cerrar Sesión"
+            >
+              <LogOut size={18} />
+            </button>
+          </div>
+        </div>
+
+        {/* Navigation Tabs */}
+        <div className={styles.tabsContainer}>
+          <button 
+            type="button"
+            onClick={() => setActiveTab('PEDIDOS')}
+            className={`${styles.tabButton} ${activeTab === 'PEDIDOS' ? styles.tabButtonActive : ''}`}
+          >
+            Pedidos ({orders.filter(o => o.status !== 'ARCHIVED').length})
           </button>
           <button 
-            onClick={handleSyncBcv} 
-            disabled={syncingRate}
-            style={{ marginTop: '20px', padding: '12px', background: '#e0f2fe', color: '#0284c7', border: 'none', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
-            title="Sincronizar ahora con BCV (Euro)"
+            type="button"
+            onClick={() => setActiveTab('INVENTARIO')}
+            className={`${styles.tabButton} ${activeTab === 'INVENTARIO' ? styles.tabButtonActive : ''}`}
           >
-            <RefreshCw size={20} className={syncingRate ? styles.spin : ""} />
+            Inventario
           </button>
           <button 
-            onClick={() => setShowLogoutModal(true)} 
-            style={{ marginTop: '20px', padding: '12px', background: '#fee2e2', color: '#ef4444', border: 'none', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            title="Cerrar Sesión"
+            type="button"
+            onClick={() => setActiveTab('PRODUCTOS')}
+            className={`${styles.tabButton} ${activeTab === 'PRODUCTOS' ? styles.tabButtonActive : ''}`}
           >
-            <LogOut size={20} />
+            Productos ({products.length})
           </button>
         </div>
-      </div>
 
-      {/* Navigation Tabs */}
-      <div style={{ display: 'flex', gap: '20px', borderBottom: '2px solid #eaeaea', marginBottom: '30px' }}>
-        <button 
-          onClick={() => setActiveTab('INVENTARIO')}
-          style={{ padding: '10px 20px', fontSize: '1.1rem', background: 'none', border: 'none', borderBottom: activeTab === 'INVENTARIO' ? '2px solid #000' : '2px solid transparent', fontWeight: activeTab === 'INVENTARIO' ? 700 : 500, cursor: 'pointer', marginBottom: '-2px' }}>
-          Inventario
-        </button>
-        <button 
-          onClick={() => setActiveTab('PRODUCTOS')}
-          style={{ padding: '10px 20px', fontSize: '1.1rem', background: 'none', border: 'none', borderBottom: activeTab === 'PRODUCTOS' ? '2px solid #000' : '2px solid transparent', fontWeight: activeTab === 'PRODUCTOS' ? 700 : 500, cursor: 'pointer', marginBottom: '-2px' }}>
-          Productos
-        </button>
-        <button 
-          onClick={() => setActiveTab('PEDIDOS')}
-          style={{ padding: '10px 20px', fontSize: '1.1rem', background: 'none', border: 'none', borderBottom: activeTab === 'PEDIDOS' ? '2px solid #000' : '2px solid transparent', fontWeight: activeTab === 'PEDIDOS' ? 700 : 500, cursor: 'pointer', marginBottom: '-2px' }}>
-          Pedidos
-        </button>
-      </div>
-
-      {activeTab === 'INVENTARIO' && (
-        <div>
-          <h2 style={{ marginBottom: '20px', textTransform:'uppercase', fontSize: '1.5rem' }}>Gestión de Stock</h2>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', background: '#fff', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-            <thead style={{ background: '#f8fafc' }}>
-              <tr style={{ borderBottom: '2px solid #eaeaea' }}>
-                <th style={{ padding: '15px' }}>Lente</th>
-                <th style={{ padding: '15px', textAlign: 'center' }}>Stock Actual</th>
-                <th style={{ padding: '15px' }}>Visibilidad</th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.map(p => (
-                <tr key={p.id} style={{ borderBottom: '1px solid #eaeaea', opacity: p.isVisible ? 1 : 0.6 }}>
-                  <td style={{ padding: '15px', display: 'flex', alignItems: 'center', gap: '15px' }}>
-                    <img src={p.image} alt={p.name} style={{ width: '50px', height: '50px', objectFit: 'contain', borderRadius: '4px', background: '#f8f9fa' }} />
-                    <div>
-                      <strong style={{ fontSize: '1rem' }}>{p.name}</strong> {!p.isVisible && <span style={{color:'red', fontSize:'0.7rem', marginLeft:'5px'}}>(OCULTO)</span>}<br/>
-                      <span style={{ fontSize: '0.85rem', color: '#64748b' }}>{p.color} - {p.category}</span>
-                    </div>
-                  </td>
-                  <td style={{ padding: '15px', textAlign: 'center' }}>
-                    <input 
-                      type="number" 
-                      value={p.stock} 
-                      className="input-field" 
-                      style={{ width: '80px', padding: '8px', textAlign: 'center', fontWeight: 600 }}
-                      onChange={(e) => handleUpdateStock(p.id, Number(e.target.value))}
-                    />
-                  </td>
-                  <td style={{ padding: '15px' }}>
-                    <button onClick={() => handleToggleVisibility(p.id, p.isVisible)} style={{ color: p.isVisible ? '#10b981' : '#64748b', cursor: 'pointer', border: '1px solid #eaeaea', padding: '8px 12px', borderRadius: '6px', background: '#fff', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 500 }}>
-                      {p.isVisible ? <><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg> Visible</> : <><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg> Oculto</>}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {activeTab === 'PRODUCTOS' && (
-        <div>
-          <h2 style={{ marginBottom: '20px', textTransform:'uppercase', fontSize: '1.5rem' }}>Base de Datos de Lentes</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '40px', marginBottom: '60px' }}>
-        
-        {/* ADD / EDIT PRODUCT */}
-        <div style={{ background: 'var(--surface-color)', padding: '20px', height: 'fit-content' }}>
-          <h3 style={{ marginBottom: '15px', textTransform:'uppercase', fontSize: '1rem' }}>{editId ? "Editar Lente" : "Añadir Lente"}</h3>
-          <form onSubmit={handleAddProduct} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <input required placeholder="Nombre (ej. cortez aviator)" className="input-field" value={newProductName} onChange={e=>setNewProductName(e.target.value)} />
-            <input placeholder="Color (Opcional, ej. Gold & Dark)" className="input-field" value={newProductColor} onChange={e=>setNewProductColor(e.target.value)} />
-            <input placeholder="Colección (Opcional, ej. Weird & Cool)" className="input-field" value={newProductCollection} onChange={e=>setNewProductCollection(e.target.value)} />
-            <input required type="number" placeholder="Precio (€)" className="input-field" value={newProductPrice} onChange={e=>setNewProductPrice(e.target.value)} />
-            <input required type="number" placeholder="Stock" className="input-field" value={newProductStock} onChange={e=>setNewProductStock(e.target.value)} />
-            <div style={{ position: 'relative' }}>
-              <button
-                type="button"
-                onClick={() => setCategoryOpen(!categoryOpen)}
-                className="input-field"
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  width: '100%', cursor: 'pointer', textAlign: 'left',
-                  background: '#fff'
-                }}
-              >
-                {newProductCategory ? newProductCategory : "Seleccionar categoría..."}
-                <ChevronsUpDown size={16} opacity={0.5} />
-              </button>
-              {categoryOpen && (
-                <div style={{
-                  position: 'absolute', top: '100%', left: 0, width: '100%', marginTop: '4px',
-                  background: '#fff', border: '1px solid #e2e8f0', borderRadius: '6px',
-                  boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)',
-                  zIndex: 50, overflow: 'hidden'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', padding: '8px 12px', borderBottom: '1px solid #e2e8f0' }}>
-                    <Search size={16} opacity={0.5} style={{ marginRight: '8px' }} />
-                    <input 
-                      placeholder="Buscar categoría..." 
-                      value={categorySearch}
-                      onChange={(e) => setCategorySearch(e.target.value)}
-                      style={{ border: 'none', outline: 'none', width: '100%', fontSize: '0.875rem' }}
-                    />
-                  </div>
-                  <div style={{ padding: '4px', maxHeight: '150px', overflowY: 'auto' }}>
-                    {CATEGORIES.filter(c => c.toLowerCase().includes(categorySearch.toLowerCase())).length === 0 ? (
-                      <div style={{ padding: '6px 8px', fontSize: '0.875rem', color: '#64748b', textAlign: 'center' }}>No se encontró categoría.</div>
-                    ) : (
-                      CATEGORIES.filter(c => c.toLowerCase().includes(categorySearch.toLowerCase())).map(cat => (
-                        <div 
-                          key={cat}
-                          onClick={() => { setNewProductCategory(cat); setCategoryOpen(false); setCategorySearch(""); }}
+        {/* TAB 1: INVENTARIO */}
+        {activeTab === 'INVENTARIO' && (
+          <div>
+            <h2 style={{ marginBottom: '20px', textTransform:'uppercase', fontSize: '1.4rem', fontWeight: 700, color: 'var(--admin-text)' }}>
+              Gestión de Stock
+            </h2>
+            <div style={{ overflowX: 'auto' }}>
+              <table className={styles.adminTable}>
+                <thead>
+                  <tr>
+                    <th>Lente</th>
+                    <th style={{ textAlign: 'center' }}>Stock Actual</th>
+                    <th>Visibilidad</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {products.map(p => (
+                    <tr key={p.id} style={{ opacity: p.isVisible ? 1 : 0.6 }}>
+                      <td style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                        <img 
+                          src={p.image} 
+                          alt={p.name} 
+                          style={{ width: '48px', height: '48px', objectFit: 'contain', borderRadius: '6px', background: 'var(--admin-header-bg)', border: '1px solid var(--admin-card-border)' }} 
+                        />
+                        <div>
+                          <strong style={{ fontSize: '0.98rem', color: 'var(--admin-text)' }}>{p.name}</strong> 
+                          {!p.isVisible && <span style={{ color: '#ef4444', fontSize: '0.72rem', fontWeight: 700, marginLeft: '6px' }}>(OCULTO)</span>}
+                          <br/>
+                          <span style={{ fontSize: '0.82rem', color: 'var(--admin-text-muted)' }}>{p.color} - {p.category}</span>
+                        </div>
+                      </td>
+                      <td style={{ textAlign: 'center' }}>
+                        <input 
+                          type="number" 
+                          value={p.stock} 
+                          className={styles.adminInput} 
+                          style={{ width: '80px', padding: '6px', textAlign: 'center', fontWeight: 700 }}
+                          onChange={(e) => handleUpdateStock(p.id, Number(e.target.value))}
+                        />
+                      </td>
+                      <td>
+                        <button 
+                          onClick={() => handleToggleVisibility(p.id, p.isVisible)} 
                           style={{
-                            display: 'flex', alignItems: 'center', padding: '6px 8px',
-                            borderRadius: '4px', cursor: 'pointer', fontSize: '0.875rem',
-                            background: newProductCategory === cat ? '#f1f5f9' : 'transparent'
+                            color: p.isVisible ? '#10b981' : 'var(--admin-text-muted)',
+                            cursor: 'pointer',
+                            border: '1px solid var(--admin-card-border)',
+                            padding: '8px 12px',
+                            borderRadius: '6px',
+                            background: 'var(--admin-card-bg)',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            fontWeight: 600,
+                            fontSize: '0.85rem'
                           }}
                         >
-                          <Check size={16} style={{ marginRight: '8px', opacity: newProductCategory === cat ? 1 : 0 }} />
-                          {cat}
+                          {p.isVisible ? (
+                            <><Eye size={16} /> Visible</>
+                          ) : (
+                            <><EyeOff size={16} /> Oculto</>
+                          )}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 2: PRODUCTOS */}
+        {activeTab === 'PRODUCTOS' && (
+          <div>
+            <h2 style={{ marginBottom: '20px', textTransform:'uppercase', fontSize: '1.4rem', fontWeight: 700, color: 'var(--admin-text)' }}>
+              Base de Datos de Lentes
+            </h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 340px) 1fr', gap: '30px', marginBottom: '60px' }}>
+          
+              {/* Form Add / Edit */}
+              <div style={{
+                background: 'var(--admin-card-bg)',
+                padding: '24px',
+                borderRadius: '12px',
+                border: '1px solid var(--admin-card-border)',
+                height: 'fit-content'
+              }}>
+                <h3 style={{ marginBottom: '16px', textTransform:'uppercase', fontSize: '0.95rem', fontWeight: 700, color: 'var(--admin-text)' }}>
+                  {editId ? "Editar Lente" : "Añadir Lente"}
+                </h3>
+                <form onSubmit={handleAddProduct} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <input required placeholder="Nombre (ej. cortez aviator)" className={styles.adminInput} value={newProductName} onChange={e=>setNewProductName(e.target.value)} />
+                  <input placeholder="Color (Opcional, ej. Gold & Dark)" className={styles.adminInput} value={newProductColor} onChange={e=>setNewProductColor(e.target.value)} />
+                  <input placeholder="Colección (Opcional, ej. Weird & Cool)" className={styles.adminInput} value={newProductCollection} onChange={e=>setNewProductCollection(e.target.value)} />
+                  <input required type="number" placeholder="Precio (€)" className={styles.adminInput} value={newProductPrice} onChange={e=>setNewProductPrice(e.target.value)} />
+                  <input required type="number" placeholder="Stock" className={styles.adminInput} value={newProductStock} onChange={e=>setNewProductStock(e.target.value)} />
+                  
+                  {/* Category dropdown */}
+                  <div style={{ position: 'relative' }}>
+                    <button
+                      type="button"
+                      onClick={() => setCategoryOpen(!categoryOpen)}
+                      className={styles.adminInput}
+                      style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                        width: '100%', cursor: 'pointer', textAlign: 'left',
+                        fontWeight: 500
+                      }}
+                    >
+                      <span>{newProductCategory ? newProductCategory : "Seleccionar categoría..."}</span>
+                      <ChevronsUpDown size={16} opacity={0.6} />
+                    </button>
+                    {categoryOpen && (
+                      <div style={{
+                        position: 'absolute', top: '100%', left: 0, width: '100%', marginTop: '4px',
+                        background: 'var(--admin-card-bg)',
+                        border: '1px solid var(--admin-card-border)',
+                        borderRadius: '8px',
+                        boxShadow: '0 10px 25px rgba(0,0,0,0.25)',
+                        zIndex: 50, overflow: 'hidden'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', padding: '8px 12px', borderBottom: '1px solid var(--admin-card-border)' }}>
+                          <Search size={16} opacity={0.5} style={{ marginRight: '8px' }} />
+                          <input 
+                            placeholder="Buscar categoría..." 
+                            value={categorySearch}
+                            onChange={(e) => setCategorySearch(e.target.value)}
+                            style={{
+                              border: 'none',
+                              outline: 'none',
+                              width: '100%',
+                              fontSize: '0.875rem',
+                              background: 'transparent',
+                              color: 'var(--admin-input-text)'
+                            }}
+                          />
                         </div>
-                      ))
+                        <div style={{ padding: '4px', maxHeight: '150px', overflowY: 'auto' }}>
+                          {CATEGORIES.filter(c => c.toLowerCase().includes(categorySearch.toLowerCase())).map(cat => (
+                            <div 
+                              key={cat}
+                              onClick={() => { setNewProductCategory(cat); setCategoryOpen(false); setCategorySearch(""); }}
+                              style={{
+                                display: 'flex', alignItems: 'center', padding: '8px 10px',
+                                borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem',
+                                color: 'var(--admin-text)',
+                                background: newProductCategory === cat ? 'var(--admin-header-bg)' : 'transparent'
+                              }}
+                            >
+                              <Check size={16} style={{ marginRight: '8px', opacity: newProductCategory === cat ? 1 : 0 }} />
+                              {cat}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     )}
                   </div>
-                </div>
-              )}
-            </div>
-            <textarea placeholder="Descripción (Opcional)" className="input-field" value={newProductDesc} onChange={e=>setNewProductDesc(e.target.value)} />
-            
-            <div style={{marginTop: '10px'}}>
-              <label style={{fontSize: '0.85rem', color: 'var(--text-secondary)'}}>Imagen Principal {!editId && "(Obligatoria)"}</label>
-              {existingMainImage && !mainImagePreview && <div style={{marginBottom: '5px'}}><img src={existingMainImage} width={50} height={50} style={{objectFit:'cover'}} /></div>}
-              {mainImagePreview && <div style={{marginBottom: '5px'}}><img src={mainImagePreview} width={50} height={50} style={{objectFit:'cover'}} /></div>}
-              <input required={!editId} type="file" accept="image/*" className="input-field" style={{padding:'5px'}} onChange={e=>{
-                const file = e.target.files?.[0];
-                if(file){
-                  setMainImageFile(file);
-                  setMainImagePreview(URL.createObjectURL(file));
-                }
-              }} />
-            </div>
 
-            <div style={{marginTop: '5px'}}>
-              <label style={{fontSize: '0.85rem', color: 'var(--text-secondary)'}}>Galería (Imágenes Extra)</label>
-              {existingExtraImages.length > 0 && extraPreviews.length === 0 && (
-                <div style={{display:'flex', gap:'5px', marginBottom:'5px', flexWrap:'wrap'}}>
-                  {existingExtraImages.map((url, i) => <img key={i} src={url} width={40} height={40} style={{objectFit:'cover'}} />)}
-                  <span style={{fontSize:'0.7rem', color:'red', cursor:'pointer'}} onClick={() => setExistingExtraImages([])}>[Borrar Todas]</span>
-                </div>
-              )}
-              {extraPreviews.length > 0 && (
-                <div style={{display:'flex', gap:'5px', marginBottom:'5px', flexWrap:'wrap'}}>
-                  {extraPreviews.map((url, i) => <img key={i} src={url} width={40} height={40} style={{objectFit:'cover'}} />)}
-                </div>
-              )}
-              <input type="file" accept="image/*" multiple className="input-field" style={{padding:'5px'}} onChange={e=>{
-                const files = e.target.files;
-                if(files){
-                  setExtraFiles(files);
-                  setExtraPreviews(Array.from(files).map(f => URL.createObjectURL(f)));
-                }
-              }} />
-            </div>
+                  <textarea placeholder="Descripción (Opcional)" className={styles.adminInput} style={{ minHeight: '80px', resize: 'vertical' }} value={newProductDesc} onChange={e=>setNewProductDesc(e.target.value)} />
+                  
+                  {/* Images upload */}
+                  <div style={{ marginTop: '8px' }}>
+                    <label style={{ fontSize: '0.82rem', color: 'var(--admin-text-muted)', display: 'block', marginBottom: '6px' }}>
+                      Imagen Principal {!editId && "(Obligatoria)"}
+                    </label>
+                    {existingMainImage && !mainImagePreview && (
+                      <div style={{ marginBottom: '6px' }}>
+                        <img src={existingMainImage} width={48} height={48} style={{ objectFit: 'contain', background: 'var(--admin-header-bg)', borderRadius: '6px', border: '1px solid var(--admin-card-border)' }} />
+                      </div>
+                    )}
+                    {mainImagePreview && (
+                      <div style={{ marginBottom: '6px' }}>
+                        <img src={mainImagePreview} width={48} height={48} style={{ objectFit: 'contain', background: 'var(--admin-header-bg)', borderRadius: '6px', border: '1px solid var(--admin-card-border)' }} />
+                      </div>
+                    )}
+                    <input required={!editId} type="file" accept="image/*" className={styles.adminInput} style={{ padding: '6px' }} onChange={e=>{
+                      const file = e.target.files?.[0];
+                      if(file){
+                        setMainImageFile(file);
+                        setMainImagePreview(URL.createObjectURL(file));
+                      }
+                    }} />
+                  </div>
 
-            <button type="submit" className="btn-primary" style={{marginTop:'10px'}} disabled={uploadingFiles}>
-              {uploadingFiles ? "GUARDANDO..." : <><Save size={18}/> {editId ? "Guardar Cambios" : "Agregar"}</>}
-            </button>
-            {editId && (
-              <button type="button" className="btn-secondary" onClick={handleCancelEdit}>
-                Cancelar
-              </button>
-            )}
-          </form>
-        </div>
+                  <div style={{ marginTop: '6px' }}>
+                    <label style={{ fontSize: '0.82rem', color: 'var(--admin-text-muted)', display: 'block', marginBottom: '6px' }}>
+                      Galería (Imágenes Extra)
+                    </label>
+                    {existingExtraImages.length > 0 && extraPreviews.length === 0 && (
+                      <div style={{ display: 'flex', gap: '6px', marginBottom: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
+                        {existingExtraImages.map((url, i) => (
+                          <img key={i} src={url} width={40} height={40} style={{ objectFit: 'contain', background: 'var(--admin-header-bg)', borderRadius: '4px', border: '1px solid var(--admin-card-border)' }} />
+                        ))}
+                        <span style={{ fontSize: '0.72rem', color: '#ef4444', cursor: 'pointer', fontWeight: 600 }} onClick={() => setExistingExtraImages([])}>[Borrar Todas]</span>
+                      </div>
+                    )}
+                    {extraPreviews.length > 0 && (
+                      <div style={{ display: 'flex', gap: '6px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                        {extraPreviews.map((url, i) => (
+                          <img key={i} src={url} width={40} height={40} style={{ objectFit: 'contain', background: 'var(--admin-header-bg)', borderRadius: '4px', border: '1px solid var(--admin-card-border)' }} />
+                        ))}
+                      </div>
+                    )}
+                    <input type="file" accept="image/*" multiple className={styles.adminInput} style={{ padding: '6px' }} onChange={e=>{
+                      const files = e.target.files;
+                      if(files){
+                        setExtraFiles(files);
+                        setExtraPreviews(Array.from(files).map(f => URL.createObjectURL(f)));
+                      }
+                    }} />
+                  </div>
 
-        {/* LIST PRODUCTS */}
-        <div>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-            <thead>
-              <tr style={{ borderBottom: '2px solid #000' }}>
-                <th style={{ padding: '10px' }}>Producto</th>
-                <th style={{ padding: '10px' }}>Precio</th>
-                <th style={{ padding: '10px' }}>Stock</th>
-                <th style={{ padding: '10px' }}>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.map(p => (
-                <tr key={p.id} style={{ borderBottom: '1px solid #ddd', opacity: p.isVisible ? 1 : 0.5 }}>
-                  <td style={{ padding: '15px 10px' }}>
-                    <strong>{p.name}</strong> {!p.isVisible && <span style={{color:'red', fontSize:'0.7rem', marginLeft:'5px'}}>(OCULTO)</span>}<br/>
-                    <span style={{ fontSize: '0.85rem', color: '#666' }}>{p.color} - {p.category}</span>
-                  </td>
-                  <td style={{ padding: '15px 10px' }}>{p.price} €</td>
-                  <td style={{ padding: '15px 10px' }}>
-                    <input 
-                      type="number" 
-                      value={p.stock} 
-                      className="input-field" 
-                      style={{ width: '70px', padding: '5px' }}
-                      onChange={(e) => handleUpdateStock(p.id, Number(e.target.value))}
-                    />
-                  </td>
-                  <td style={{ padding: '15px 10px', display: 'flex', gap: '10px', alignItems: 'center' }}>
-                    <button onClick={() => handleEdit(p)} style={{ color: '#000', cursor: 'pointer' }} title="Editar Lente">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-                    </button>
-                    <button onClick={() => handleToggleVisibility(p.id, p.isVisible)} style={{ color: p.isVisible ? '#000' : '#888', cursor: 'pointer' }} title={p.isVisible ? "Ocultar Lente" : "Mostrar Lente"}>
-                      {p.isVisible ? <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg> : <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>}
-                    </button>
-                    <button onClick={() => handleDeleteProduct(p.id)} style={{ color: 'red', cursor: 'pointer' }} title="Eliminar Lente"><Trash2 size={20}/></button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-      </div>
-      )}
-
-      {activeTab === 'PEDIDOS' && (
-      <div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h2 style={{ textTransform:'uppercase', fontSize: '1.5rem', margin: 0 }}>Historial de Pedidos</h2>
-          <button 
-            onClick={() => setShowArchived(!showArchived)}
-            style={{ padding: '8px 16px', background: showArchived ? '#000' : '#fff', color: showArchived ? '#fff' : '#000', border: '1px solid #000', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}>
-            {showArchived ? "Ocultar Archivados" : "Ver Archivados"}
-          </button>
-        </div>
-        
-        {orders.filter(o => showArchived ? o.status === 'ARCHIVED' : o.status !== 'ARCHIVED').length === 0 ? (
-          <div style={{ padding: '40px', textAlign: 'center', background: '#f8fafc', borderRadius: '8px', color: '#64748b' }}>
-            No hay pedidos {showArchived ? "archivados" : "activos"}.
-          </div>
-        ) : (
-          <div className={styles.ordersGrid}>
-            {orders.filter(o => showArchived ? o.status === 'ARCHIVED' : o.status !== 'ARCHIVED').map(order => (
-              <div key={order.id} className={styles.orderCard} style={{ opacity: order.status === 'ARCHIVED' ? 0.6 : 1 }}>
-                <div className={styles.orderHeader}>
-                  <span className={styles.orderId}>Orden #{order.id}</span>
-                  <select 
-                    value={order.status} 
-                    onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}
+                  <button 
+                    type="submit" 
                     style={{
-                      padding: '6px 10px', borderRadius: '6px', border: '1px solid #ccc',
-                      background: order.status === 'PENDING' ? '#fef3c7' : order.status === 'ACCEPTED' ? '#e0f2fe' : order.status === 'SHIPPING' ? '#e0e7ff' : order.status === 'DELIVERED' ? '#dcfce3' : order.status === 'ARCHIVED' ? '#f1f5f9' : '#fee2e2',
-                      color: order.status === 'PENDING' ? '#d97706' : order.status === 'ACCEPTED' ? '#0369a1' : order.status === 'SHIPPING' ? '#4338ca' : order.status === 'DELIVERED' ? '#15803d' : order.status === 'ARCHIVED' ? '#475569' : '#b91c1c',
-                      fontWeight: 700, fontSize: '0.75rem', outline: 'none', cursor: 'pointer', textTransform: 'uppercase'
-                    }}
+                      marginTop: '10px',
+                      padding: '12px',
+                      background: 'var(--admin-text)',
+                      color: 'var(--admin-bg)',
+                      border: 'none',
+                      borderRadius: '8px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px'
+                    }} 
+                    disabled={uploadingFiles}
                   >
-                    <option value="PENDING">Pendiente</option>
-                    <option value="ACCEPTED">Aceptado</option>
-                    <option value="SHIPPING">Envío en proceso</option>
-                    <option value="DELIVERED">Recibido por el cliente</option>
-                    <option value="REJECTED">Rechazado</option>
-                    <option value="ARCHIVED">Archivado</option>
-                  </select>
-                </div>
-              
-              <div className={styles.orderSection}>
-                <div className={styles.sectionTitle}>Cliente</div>
-                <div className={styles.clientInfo}>
-                  {order.firstName} {order.lastName} <br/>
-                  <span style={{color: 'var(--text-secondary)', fontSize: '0.9rem'}}>{order.documentType}-{order.documentNumber}</span>
-                </div>
+                    {uploadingFiles ? "GUARDANDO..." : <><Save size={18}/> {editId ? "Guardar Cambios" : "Agregar Lente"}</>}
+                  </button>
+                  {editId && (
+                    <button 
+                      type="button" 
+                      onClick={handleCancelEdit}
+                      style={{
+                        padding: '10px',
+                        background: 'transparent',
+                        color: 'var(--admin-text)',
+                        border: '1px solid var(--admin-card-border)',
+                        borderRadius: '8px',
+                        fontWeight: 600,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Cancelar Edición
+                    </button>
+                  )}
+                </form>
               </div>
 
-              <div className={styles.orderSection}>
-                <div className={styles.sectionTitle}>Pago</div>
-                <div className={styles.paymentInfo}>
-                  <strong>Monto:</strong> {order.totalUsd} € / {order.totalBs} Bs <br/>
-                  <strong>Método:</strong> {order.paymentMethod} <br/>
-                  {order.paymentMethod === 'PAGO_MOVIL' && (
-                    <>
-                      <strong>Banco:</strong> {order.paymentBank} <br/>
-                      <strong>Teléfono:</strong> {order.paymentPhone} <br/>
-                    </>
-                  )}
-                  <strong>Ref:</strong> {order.paymentReference}
-                  <br/>
-                  {order.paymentScreenshot && (
-                    <a href={order.paymentScreenshot} target="_blank" rel="noreferrer" className={styles.screenshotLink}>
-                      <ExternalLink size={16} /> Ver Captura
-                    </a>
-                  )}
-                </div>
+              {/* Products Table */}
+              <div style={{ overflowX: 'auto' }}>
+                <table className={styles.adminTable}>
+                  <thead>
+                    <tr>
+                      <th>Producto</th>
+                      <th>Precio</th>
+                      <th>Stock</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {products.map(p => (
+                      <tr key={p.id} style={{ opacity: p.isVisible ? 1 : 0.6 }}>
+                        <td style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <img src={p.image} alt={p.name} style={{ width: '40px', height: '40px', objectFit: 'contain', borderRadius: '4px', background: 'var(--admin-header-bg)', border: '1px solid var(--admin-card-border)' }} />
+                          <div>
+                            <strong style={{ fontSize: '0.95rem', color: 'var(--admin-text)' }}>{p.name}</strong> 
+                            {!p.isVisible && <span style={{ color: '#ef4444', fontSize: '0.72rem', fontWeight: 700, marginLeft: '6px' }}>(OCULTO)</span>}
+                            <br/>
+                            <span style={{ fontSize: '0.8rem', color: 'var(--admin-text-muted)' }}>{p.color} - {p.category}</span>
+                          </div>
+                        </td>
+                        <td style={{ fontWeight: 600 }}>{p.price} €</td>
+                        <td>
+                          <input 
+                            type="number" 
+                            value={p.stock} 
+                            className={styles.adminInput} 
+                            style={{ width: '70px', padding: '6px', textAlign: 'center', fontWeight: 700 }}
+                            onChange={(e) => handleUpdateStock(p.id, Number(e.target.value))}
+                          />
+                        </td>
+                        <td>
+                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                            <button 
+                              onClick={() => handleEdit(p)} 
+                              style={{ color: 'var(--admin-text)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '6px', borderRadius: '4px' }} 
+                              title="Editar Lente"
+                            >
+                              <Edit3 size={18} />
+                            </button>
+                            <button 
+                              onClick={() => handleToggleVisibility(p.id, p.isVisible)} 
+                              style={{ color: p.isVisible ? '#10b981' : 'var(--admin-text-muted)', background: 'transparent', border: 'none', cursor: 'pointer', padding: '6px', borderRadius: '4px' }} 
+                              title={p.isVisible ? "Ocultar Lente" : "Mostrar Lente"}
+                            >
+                              {p.isVisible ? <Eye size={18} /> : <EyeOff size={18} />}
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteProduct(p.id)} 
+                              style={{ color: '#ef4444', background: 'transparent', border: 'none', cursor: 'pointer', padding: '6px', borderRadius: '4px' }} 
+                              title="Eliminar Lente"
+                            >
+                              <Trash2 size={18}/>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-
-
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        )}
+
+        {/* TAB 3: PEDIDOS */}
+        {activeTab === 'PEDIDOS' && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h2 style={{ textTransform:'uppercase', fontSize: '1.4rem', fontWeight: 700, margin: 0, color: 'var(--admin-text)' }}>
+                Historial de Pedidos
+              </h2>
+              <button 
+                type="button"
+                onClick={() => setShowArchived(!showArchived)}
+                style={{
+                  padding: '8px 16px',
+                  background: showArchived ? 'var(--admin-text)' : 'var(--admin-card-bg)',
+                  color: showArchived ? 'var(--admin-bg)' : 'var(--admin-text)',
+                  border: '1px solid var(--admin-card-border)',
+                  borderRadius: '8px',
+                  fontWeight: 600,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer'
+                }}
+              >
+                {showArchived ? "Ocultar Archivados" : "Ver Archivados"}
+              </button>
+            </div>
+            
+            {orders.filter(o => showArchived ? o.status === 'ARCHIVED' : o.status !== 'ARCHIVED').length === 0 ? (
+              <div style={{ padding: '60px 20px', textAlign: 'center', background: 'var(--admin-card-bg)', borderRadius: '12px', border: '1px solid var(--admin-card-border)', color: 'var(--admin-text-muted)' }}>
+                No hay pedidos {showArchived ? "archivados" : "activos"}.
+              </div>
+            ) : (
+              <div className={styles.ordersGrid}>
+                {orders.filter(o => showArchived ? o.status === 'ARCHIVED' : o.status !== 'ARCHIVED').map(order => (
+                  <div key={order.id} className={styles.orderCard} style={{ opacity: order.status === 'ARCHIVED' ? 0.6 : 1 }}>
+                    <div className={styles.orderHeader}>
+                      <span className={styles.orderId}>Orden #{order.id}</span>
+                      <select 
+                        value={order.status} 
+                        onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}
+                        className={styles.orderStatusSelect}
+                        style={{
+                          background: order.status === 'PENDING' ? '#fef3c7' : order.status === 'ACCEPTED' ? '#e0f2fe' : order.status === 'SHIPPING' ? '#e0e7ff' : order.status === 'DELIVERED' ? '#dcfce3' : order.status === 'ARCHIVED' ? 'var(--admin-header-bg)' : '#fee2e2',
+                          color: order.status === 'PENDING' ? '#b45309' : order.status === 'ACCEPTED' ? '#0369a1' : order.status === 'SHIPPING' ? '#4338ca' : order.status === 'DELIVERED' ? '#15803d' : order.status === 'ARCHIVED' ? 'var(--admin-text-muted)' : '#b91c1c',
+                        }}
+                      >
+                        <option value="PENDING">Pendiente</option>
+                        <option value="ACCEPTED">Aceptado</option>
+                        <option value="SHIPPING">Envío en proceso</option>
+                        <option value="DELIVERED">Recibido por el cliente</option>
+                        <option value="REJECTED">Rechazado</option>
+                        <option value="ARCHIVED">Archivado</option>
+                      </select>
+                    </div>
+                  
+                    <div className={styles.orderSection}>
+                      <div className={styles.sectionTitle}>Cliente</div>
+                      <div className={styles.clientInfo}>
+                        {order.firstName} {order.lastName} <br/>
+                        <span style={{ color: 'var(--admin-text-muted)', fontSize: '0.88rem', fontWeight: 400 }}>
+                          {order.documentType}-{order.documentNumber}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className={styles.orderSection}>
+                      <div className={styles.sectionTitle}>Entrega</div>
+                      <div style={{ fontSize: '0.9rem', color: 'var(--admin-text)' }}>
+                        <strong>{order.shippingMethod}</strong>
+                        {order.shippingZone && ` - Zona: ${order.shippingZone}`}
+                        {order.shippingAgency && ` - Agencia: ${order.shippingAgency}`}
+                      </div>
+                    </div>
+
+                    <div className={styles.orderSection}>
+                      <div className={styles.sectionTitle}>Pago</div>
+                      <div className={styles.paymentInfo}>
+                        <div><strong>Monto:</strong> {order.totalUsd} € / {order.totalBs} Bs</div>
+                        <div><strong>Método:</strong> {order.paymentMethod}</div>
+                        {order.paymentMethod === 'PAGO_MOVIL' && (
+                          <>
+                            <div><strong>Banco:</strong> {order.paymentBank}</div>
+                            <div><strong>Teléfono:</strong> {order.paymentPhone}</div>
+                          </>
+                        )}
+                        <div><strong>Ref:</strong> {order.paymentReference}</div>
+                        {order.paymentScreenshot && (
+                          <a href={order.paymentScreenshot} target="_blank" rel="noreferrer" className={styles.screenshotLink}>
+                            <ExternalLink size={15} /> Ver Comprobante
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {productToDelete !== null && (
+          <div className={styles.modalBackdrop}>
+            <div className={styles.modalCard}>
+              <Trash2 size={44} color="#ef4444" style={{ margin: '0 auto 16px' }} />
+              <h3 className={styles.modalTitle}>¿Eliminar Producto?</h3>
+              <p className={styles.modalText}>
+                Esta acción no se puede deshacer. El producto será borrado permanentemente de la base de datos.
+              </p>
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+                <button 
+                  type="button"
+                  onClick={() => setProductToDelete(null)}
+                  className={styles.modalCancelBtn}
+                >
+                  Cancelar
+                </button>
+                <button 
+                  type="button"
+                  onClick={confirmDeleteProduct}
+                  style={{
+                    padding: '10px 20px',
+                    background: '#ef4444',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Sí, Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Logout Confirmation Modal */}
+        {showLogoutModal && (
+          <div className={styles.modalBackdrop}>
+            <div className={styles.modalCard}>
+              <LogOut size={44} style={{ margin: '0 auto 16px', color: 'var(--admin-text)' }} />
+              <h3 className={styles.modalTitle}>¿Cerrar Sesión?</h3>
+              <p className={styles.modalText}>
+                Tendrás que volver a ingresar tus credenciales para administrar la tienda.
+              </p>
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+                <button 
+                  type="button"
+                  onClick={() => setShowLogoutModal(false)}
+                  className={styles.modalCancelBtn}
+                >
+                  Cancelar
+                </button>
+                <button 
+                  type="button"
+                  onClick={handleLogout}
+                  style={{
+                    padding: '10px 20px',
+                    background: 'var(--admin-text)',
+                    color: 'var(--admin-bg)',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Sí, Salir
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-      )}
-
-      {/* Delete Confirmation Modal */}
-      {productToDelete !== null && (
-        <div style={{
-          position: 'fixed',
-          top: 0, left: 0, width: '100vw', height: '100vh',
-          background: 'rgba(0,0,0,0.5)',
-          backdropFilter: 'blur(5px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 9999
-        }}>
-          <div style={{
-            background: '#fff',
-            padding: '30px',
-            borderRadius: '12px',
-            boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
-            textAlign: 'center',
-            maxWidth: '400px',
-            width: '90%'
-          }}>
-            <Trash2 size={40} color="red" style={{ marginBottom: '15px' }} />
-            <h3 style={{ fontSize: '1.2rem', marginBottom: '10px' }}>¿Eliminar Producto?</h3>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '25px', fontSize: '0.95rem' }}>
-              Esta acción no se puede deshacer. El producto será borrado permanentemente de la base de datos.
-            </p>
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-              <button 
-                onClick={() => setProductToDelete(null)}
-                style={{
-                  padding: '10px 20px',
-                  background: '#eee',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontWeight: 600,
-                  cursor: 'pointer'
-                }}
-              >
-                Cancelar
-              </button>
-              <button 
-                onClick={confirmDeleteProduct}
-                style={{
-                  padding: '10px 20px',
-                  background: 'red',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontWeight: 600,
-                  cursor: 'pointer'
-                }}
-              >
-                Sí, Eliminar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Logout Confirmation Modal */}
-      {showLogoutModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0, left: 0, width: '100vw', height: '100vh',
-          background: 'rgba(0,0,0,0.5)',
-          backdropFilter: 'blur(5px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 9999
-        }}>
-          <div style={{
-            background: '#fff',
-            padding: '30px',
-            borderRadius: '12px',
-            boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
-            textAlign: 'center',
-            maxWidth: '400px',
-            width: '90%'
-          }}>
-            <LogOut size={40} color="#000" style={{ marginBottom: '15px' }} />
-            <h3 style={{ fontSize: '1.2rem', marginBottom: '10px' }}>¿Cerrar Sesión?</h3>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '25px', fontSize: '0.95rem' }}>
-              Tendrás que volver a ingresar tus credenciales para administrar la tienda.
-            </p>
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-              <button 
-                onClick={() => setShowLogoutModal(false)}
-                style={{
-                  padding: '10px 20px',
-                  background: '#eee',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontWeight: 600,
-                  cursor: 'pointer'
-                }}
-              >
-                Cancelar
-              </button>
-              <button 
-                onClick={handleLogout}
-                style={{
-                  padding: '10px 20px',
-                  background: '#000',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontWeight: 600,
-                  cursor: 'pointer'
-                }}
-              >
-                Sí, Salir
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
