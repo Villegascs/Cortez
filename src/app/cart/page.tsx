@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCartStore } from "@/store/cart";
 import styles from "./page.module.css";
-import { ChevronDown, MessageCircle } from "lucide-react";
+import { ChevronDown, MessageCircle, ShoppingBag, Trash2, CheckCircle2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Combobox from "@/components/Combobox";
 import Stepper, { Step } from "@/components/Stepper";
@@ -17,12 +17,13 @@ const VENEZUELAN_BANKS = [
   "Venezuela",
   "BNC",
   "Bancaribe",
-  "Exterior"
+  "Exterior",
+  "Bancamiga"
 ];
 
 export default function CartPage() {
   const { items, removeItem, clearCart } = useCartStore();
-  const [usdtRate, setUsdtRate] = useState<number>(40.5);
+  const [usdtRate, setUsdtRate] = useState<number>(1004.95);
   const [currentStep, setCurrentStep] = useState<number>(1);
   
   // Form State
@@ -55,11 +56,13 @@ export default function CartPage() {
       .catch(e => console.error(e));
   }, []);
 
-  const subtotalUsd = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-  const totalUsd = subtotalUsd + (shippingMethod === "DELIVERY_VALENCIA" ? 3 : 0);
-  const totalBs = totalUsd * usdtRate;
+  const subtotalEur = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+  const shippingCostEur = shippingMethod === "DELIVERY_VALENCIA" ? 3 : 0;
+  const totalEur = subtotalEur + shippingCostEur;
+  const totalBs = totalEur * usdtRate;
 
-  const validateStep1 = () => {
+  // Validaciones
+  const validateStep2Billing = () => {
     if (!firstName.trim()) {
       alert("Por favor ingresa tu nombre");
       return false;
@@ -73,17 +76,17 @@ export default function CartPage() {
       return false;
     }
     if (shippingMethod === "DELIVERY_VALENCIA" && !shippingZone) {
-      alert("Selecciona una zona de delivery");
+      alert("Selecciona una zona de delivery en Valencia");
       return false;
     }
     if (shippingMethod === "ENVIOS_NACIONALES" && !shippingAgency) {
-      alert("Selecciona una agencia de envío");
+      alert("Selecciona una agencia de envío nacional");
       return false;
     }
     return true;
   };
 
-  const validateStep2 = () => {
+  const validateStep3Payment = () => {
     if (paymentMethod === "PAGO_MOVIL") {
       if (!paymentBank) {
         alert("Selecciona tu banco de origen");
@@ -103,8 +106,12 @@ export default function CartPage() {
 
   const handleStepChange = (targetStep: number) => {
     if (targetStep > currentStep) {
-      if (currentStep === 1 && !validateStep1()) return;
-      if (currentStep === 2 && !validateStep2()) return;
+      if (currentStep === 1 && items.length === 0) {
+        alert("Tu cesta está vacía. Añade productos antes de continuar.");
+        return;
+      }
+      if (currentStep === 2 && !validateStep2Billing()) return;
+      if (currentStep === 3 && !validateStep3Payment()) return;
     }
     setCurrentStep(targetStep);
   };
@@ -112,12 +119,16 @@ export default function CartPage() {
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
 
-    if (!validateStep1()) {
-      setCurrentStep(1);
+    if (items.length === 0) {
+      alert("Tu cesta está vacía");
       return;
     }
-    if (!validateStep2()) {
+    if (!validateStep2Billing()) {
       setCurrentStep(2);
+      return;
+    }
+    if (!validateStep3Payment()) {
+      setCurrentStep(3);
       return;
     }
 
@@ -129,8 +140,8 @@ export default function CartPage() {
     formData.append("documentType", docType);
     formData.append("documentNumber", docNumber);
     formData.append("paymentMethod", paymentMethod);
-    formData.append("paymentReference", paymentRef);
-    formData.append("totalUsd", totalUsd.toString());
+    formData.append("paymentReference", paymentRef || "EFECTIVO_ENTREGA");
+    formData.append("totalUsd", totalEur.toString());
     formData.append("totalBs", totalBs.toString());
     
     formData.append("shippingMethod", shippingMethod);
@@ -156,8 +167,8 @@ export default function CartPage() {
             screenshotUrl = uploadData.data.url;
           }
         }
-      } catch (e) {
-        console.error("Error subiendo captura", e);
+      } catch (err) {
+        console.error("Error subiendo captura", err);
       }
     }
 
@@ -180,16 +191,16 @@ export default function CartPage() {
         setOrderDetails({
           id: data.orderId,
           items: [...items],
-          total: totalUsd,
+          total: totalEur,
           customerName: `${firstName} ${lastName}`,
           shippingMethod: shippingMethod
         });
         clearCart();
       } else {
-        alert("Hubo un error al procesar el pago");
+        alert("Hubo un error al procesar el pedido. Intenta nuevamente.");
       }
-    } catch (error) {
-      alert("Error de conexión");
+    } catch (err) {
+      alert("Error de conexión al procesar el pedido");
     }
 
     setLoading(false);
@@ -210,10 +221,11 @@ export default function CartPage() {
       <div className={styles.container}>
         <Navbar isSuccessPage={true} />
         <div style={{ paddingTop: '75px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div className={styles.successMessage} style={{ width: '100%', maxWidth: '500px', margin: '0 auto', textAlign: 'center' }}>
-            <h2 style={{ marginBottom: '15px' }}>¡Pedido Completado!</h2>
-            <p style={{ color: 'var(--text-secondary)' }}>Hemos recibido tu pedido y el comprobante de pago.</p>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '25px' }}>Pronto nos pondremos en contacto contigo.</p>
+          <div className={styles.successMessage} style={{ width: '100%', maxWidth: '520px', margin: '0 auto', textAlign: 'center', background: '#fff', padding: '40px 24px', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+            <CheckCircle2 size={56} color="#16a34a" style={{ margin: '0 auto 16px' }} />
+            <h2 style={{ marginBottom: '10px', fontSize: '1.6rem', color: '#0f172a' }}>¡Pedido Completado!</h2>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '8px' }}>Hemos recibido tu orden y registrado los datos.</p>
+            <p style={{ color: 'var(--text-secondary)', marginBottom: '25px', fontSize: '0.9rem' }}>Pulsa el botón a continuación para notificar el pago a nuestro WhatsApp oficial.</p>
             
             {/* WhatsApp Button */}
             <a 
@@ -223,7 +235,7 @@ export default function CartPage() {
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                 background: '#25D366', color: '#fff', padding: '14px 20px', borderRadius: '8px',
-                textDecoration: 'none', fontWeight: 600, marginBottom: '30px',
+                textDecoration: 'none', fontWeight: 600, marginBottom: '25px',
                 boxShadow: '0 4px 12px rgba(37, 211, 102, 0.3)'
               }}
             >
@@ -233,36 +245,36 @@ export default function CartPage() {
 
             {/* Collapsible Order Summary */}
             {orderDetails && (
-              <div style={{ border: '1px solid #e2e8f0', borderRadius: '8px', background: '#fff', textAlign: 'left', marginBottom: '30px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+              <div style={{ border: '1px solid #e2e8f0', borderRadius: '8px', background: '#fafafa', textAlign: 'left', marginBottom: '25px' }}>
                 <div 
                   onClick={() => setIsOrderOpen(!isOrderOpen)}
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', cursor: 'pointer', background: '#fafafa', borderRadius: '8px 8px 0 0' }}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', cursor: 'pointer' }}
                 >
-                  <span style={{ fontWeight: 600, fontSize: '0.95rem' }}>Resumen de Orden</span>
-                  <ChevronDown size={20} style={{ color: '#64748b', transform: isOrderOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                  <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Detalle de la Orden</span>
+                  <ChevronDown size={18} style={{ color: '#64748b', transform: isOrderOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
                 </div>
                 {isOrderOpen && (
-                  <div style={{ padding: '20px', borderTop: '1px solid #e2e8f0' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-                      <span style={{ color: '#64748b', fontSize: '0.9rem' }}>Estatus</span>
-                      <span style={{ background: '#fef3c7', color: '#d97706', padding: '2px 10px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase' }}>Pendiente</span>
+                  <div style={{ padding: '16px', borderTop: '1px solid #e2e8f0', background: '#fff' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '0.85rem' }}>
+                      <span style={{ color: '#64748b' }}>Estatus</span>
+                      <span style={{ background: '#fef3c7', color: '#d97706', padding: '2px 8px', borderRadius: '10px', fontSize: '0.75rem', fontWeight: 700 }}>PENDIENTE</span>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-                      <span style={{ color: '#64748b', fontSize: '0.9rem' }}>Cliente</span>
-                      <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{orderDetails.customerName}</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '0.85rem' }}>
+                      <span style={{ color: '#64748b' }}>Cliente</span>
+                      <span style={{ fontWeight: 500 }}>{orderDetails.customerName}</span>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-                      <span style={{ color: '#64748b', fontSize: '0.9rem' }}>Entrega</span>
-                      <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{orderDetails.shippingMethod}</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px', fontSize: '0.85rem' }}>
+                      <span style={{ color: '#64748b' }}>Entrega</span>
+                      <span style={{ fontWeight: 500 }}>{orderDetails.shippingMethod}</span>
                     </div>
-                    <div style={{ paddingTop: '15px', borderTop: '1px dashed #e2e8f0' }}>
+                    <div style={{ paddingTop: '12px', borderTop: '1px dashed #e2e8f0' }}>
                       {orderDetails.items.map((i: any, idx: number) => (
-                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '0.9rem' }}>
+                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.85rem' }}>
                           <span style={{ color: '#334155' }}>{i.quantity}x {i.name}</span>
                           <span style={{ fontWeight: 500 }}>{i.price * i.quantity} €</span>
                         </div>
                       ))}
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '15px', fontWeight: 700, fontSize: '1.1rem', color: '#0f172a' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px', fontWeight: 700, fontSize: '1.05rem', color: '#0f172a' }}>
                         <span>Total</span>
                         <span>{orderDetails.total} €</span>
                       </div>
@@ -283,360 +295,533 @@ export default function CartPage() {
     <div className={styles.container}>
       <Navbar />
 
-      <div style={{ paddingTop: '100px' }}>
-        <div className={styles.cartWrapper}>
-          <div>
-            <h1 className={styles.title}>Tu Cesta</h1>
-            
-            {items.length === 0 ? (
-              <div className={styles.emptyCart}>
-                <p>Tu cesta está vacía</p>
-                <br/>
-                <Link href="/" className="btn-primary">Descubrir colección</Link>
-              </div>
-            ) : (
-              <div className={styles.cartItems}>
-                {items.map(item => (
-                  <div key={item.id} className={styles.cartItem}>
-                    <Link href={`/product/${item.id}`} style={{ display: 'flex', alignItems: 'center' }}>
-                      <Image src={item.image} alt={item.name} width={100} height={120} className={styles.itemImage} style={{objectFit: 'contain', cursor: 'pointer'}}/>
-                    </Link>
-                    <div className={styles.itemInfo}>
-                      <div className={styles.itemHeader}>
-                        <Link href={`/product/${item.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                          <span className={styles.itemName} style={{ cursor: 'pointer' }}>{item.name}</span>
-                        </Link>
-                        <span className={styles.itemPrice}>{item.price} €</span>
+      <div style={{ paddingTop: '90px' }}>
+        <div className={styles.centeredWrapper}>
+          <h1 className={styles.title}>Proceso de Compra</h1>
+
+          <div className={styles.checkoutPanel}>
+            <Stepper
+              step={currentStep}
+              onStepChange={handleStepChange}
+              onFinalStepCompleted={() => handleSubmit()}
+              backButtonText="Atrás"
+              nextButtonText="Continuar"
+              completeButtonText={loading ? "Procesando..." : "Realizar Pedido"}
+              theme="light"
+              accentColor="#000000"
+              frame={false}
+              linear={true}
+              transition="slide"
+              width="100%"
+              nextButtonProps={{
+                disabled: loading || (currentStep === 1 && items.length === 0)
+              }}
+            >
+              {/* ========================================================= */}
+              {/* PASO 1: PEDIDO (Los productos que estén en el carrito) */}
+              {/* ========================================================= */}
+              <Step title="Pedido" description="Artículos en cesta">
+                <div style={{ marginTop: '12px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                    <h3 style={{ textTransform: 'uppercase', fontSize: '0.95rem', fontWeight: 700, letterSpacing: '0.5px' }}>
+                      1. Tu Pedido ({items.length} {items.length === 1 ? 'artículo' : 'artículos'})
+                    </h3>
+                  </div>
+
+                  {items.length === 0 ? (
+                    <div className={styles.emptyCart}>
+                      <ShoppingBag size={48} color="#94a3b8" style={{ margin: '0 auto 12px' }} />
+                      <p style={{ fontWeight: 500, fontSize: '1rem', color: '#0f172a' }}>Tu cesta está vacía</p>
+                      <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '4px', marginBottom: '20px' }}>
+                        Agrega los lentes que desees comprar para continuar con el pedido.
+                      </p>
+                      <Link href="/" className="btn-primary" style={{ display: 'inline-block', padding: '10px 24px' }}>
+                        Descubrir colección
+                      </Link>
+                    </div>
+                  ) : (
+                    <>
+                      <div className={styles.cartItems}>
+                        {items.map(item => (
+                          <div key={item.id} className={styles.cartItem}>
+                            <Link href={`/product/${item.id}`} style={{ display: 'flex', alignItems: 'center' }}>
+                              <Image 
+                                src={item.image} 
+                                alt={item.name} 
+                                width={80} 
+                                height={80} 
+                                className={styles.itemImage} 
+                                style={{ objectFit: 'contain', cursor: 'pointer' }}
+                              />
+                            </Link>
+                            <div className={styles.itemInfo}>
+                              <div className={styles.itemHeader}>
+                                <Link href={`/product/${item.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                                  <span className={styles.itemName}>{item.name}</span>
+                                </Link>
+                                <span className={styles.itemPrice}>{item.price} €</span>
+                              </div>
+                              <div className={styles.itemActions}>
+                                <span>Cantidad: <strong>{item.quantity}</strong></span>
+                                <button 
+                                  type="button"
+                                  className={styles.removeBtn} 
+                                  onClick={() => removeItem(item.id)}
+                                  title="Quitar producto"
+                                >
+                                  <Trash2 size={15} style={{ verticalAlign: 'middle', marginRight: '4px' }} />
+                                  Quitar
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                      <div className={styles.itemActions}>
-                        <span>Cant: {item.quantity}</span>
-                        <button className={styles.removeBtn} onClick={() => removeItem(item.id)}>
-                          Quitar
-                        </button>
+
+                      {/* Resumen de costos del paso 1 */}
+                      <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '10px', padding: '16px', marginTop: '20px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '0.9rem' }}>
+                          <span style={{ color: '#64748b' }}>Subtotal productos:</span>
+                          <span style={{ fontWeight: 600 }}>{subtotalEur} €</span>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '0.9rem' }}>
+                          <span style={{ color: '#64748b' }}>Envío estimado:</span>
+                          <span style={{ fontWeight: 600 }}>
+                            {shippingMethod === "DELIVERY_VALENCIA" ? "3 €" : "Gratis"}
+                          </span>
+                        </div>
+                        <div style={{ borderTop: '1px dashed #cbd5e1', paddingTop: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                          <span style={{ fontWeight: 700, fontSize: '1rem', color: '#0f172a' }}>Total estimado:</span>
+                          <div style={{ textAlign: 'right' }}>
+                            <div style={{ fontWeight: 800, fontSize: '1.25rem', color: '#0f172a' }}>{totalEur} €</div>
+                            <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '2px' }}>
+                              ~ {totalBs.toFixed(2)} Bs
+                            </div>
+                            <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '3px' }}>
+                              Tasa oficial BCV (Euro): {usdtRate.toFixed(2)} Bs/€
+                            </div>
+                          </div>
+                        </div>
                       </div>
+                    </>
+                  )}
+                </div>
+              </Step>
+
+              {/* ========================================================= */}
+              {/* PASO 2: DATOS PARA LA FACTURACIÓN (Y ENTREGA) */}
+              {/* ========================================================= */}
+              <Step title="Facturación" description="Nombre y Cédula">
+                <div style={{ marginTop: '12px' }}>
+                  <h3 style={{ textTransform: 'uppercase', fontSize: '0.95rem', fontWeight: 700, marginBottom: '16px', letterSpacing: '0.5px' }}>
+                    2. Datos para la Facturación y Entrega
+                  </h3>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div className={styles.formGroup}>
+                      <label>Nombre *</label>
+                      <input 
+                        required 
+                        type="text" 
+                        className="input-field" 
+                        placeholder="Tu nombre"
+                        value={firstName} 
+                        onChange={e => setFirstName(e.target.value)} 
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label>Apellido *</label>
+                      <input 
+                        required 
+                        type="text" 
+                        className="input-field" 
+                        placeholder="Tu apellido"
+                        value={lastName} 
+                        onChange={e => setLastName(e.target.value)} 
+                      />
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
+                  
+                  <div className={styles.formGroup}>
+                    <label>Cédula de Identidad *</label>
+                    <div className={styles.documentGroup}>
+                      <select className="input-field" style={{ width: '80px', flexShrink: 0 }} value={docType} onChange={e => setDocType(e.target.value)}>
+                        <option value="V">V</option>
+                        <option value="E">E</option>
+                        <option value="P">P</option>
+                        <option value="J">J</option>
+                      </select>
+                      <input 
+                        required 
+                        type="text" 
+                        className="input-field" 
+                        placeholder="Número de cédula"
+                        value={docNumber} 
+                        onChange={e => setDocNumber(e.target.value)} 
+                      />
+                    </div>
+                  </div>
 
-          {items.length > 0 && (
-            <div className={styles.checkoutPanel}>
-              <h2 style={{textTransform:'uppercase', fontSize: '1.2rem', marginBottom: '20px'}}>Resumen</h2>
-              <div className={styles.summaryRow}>
-                <span>Subtotal</span>
-                <span>{subtotalUsd} €</span>
-              </div>
-              <div className={styles.summaryRow}>
-                <span>Envío</span>
-                <span>{shippingMethod === "DELIVERY_VALENCIA" ? "3 €" : "Gratis"}</span>
-              </div>
-              <div className={styles.totalRow}>
-                <span>Total</span>
-                <div style={{textAlign: 'right'}}>
-                  <span>{totalUsd} €</span>
-                  <span className={styles.bsAmount}>~ {totalBs.toFixed(2)} Bs</span>
-                  <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-                    Tasa oficial BCV (Euro): {usdtRate.toFixed(2)} Bs/€
-                  </span>
+                  <div className={styles.formGroup}>
+                    <label>Método de Entrega *</label>
+                    <Combobox
+                      value={shippingMethod}
+                      onChange={setShippingMethod}
+                      options={[
+                        { value: "PICKUP", label: "Pick Up (Retiro en oficina - Gratis)" },
+                        { value: "DELIVERY_VALENCIA", label: "Delivery (Valencia) +3 €" },
+                        { value: "ENVIOS_NACIONALES", label: "Envío Nacional (MRW/Zoom/Tealca/Domesa)" }
+                      ]}
+                      placeholder="Selecciona método"
+                      searchPlaceholder="Buscar método..."
+                    />
+                  </div>
+
+                  {shippingMethod === "DELIVERY_VALENCIA" && (
+                    <div className={styles.formGroup}>
+                      <label>Zona de Delivery (Valencia) *</label>
+                      <Combobox
+                        value={shippingZone}
+                        onChange={setShippingZone}
+                        options={[
+                          { value: "El Bosque", label: "El Bosque" },
+                          { value: "Naguanagua", label: "Naguanagua" },
+                          { value: "La Viña", label: "La Viña" },
+                          { value: "El Viñedo", label: "El Viñedo" },
+                          { value: "Prebo", label: "Prebo" },
+                          { value: "San Diego", label: "San Diego" },
+                          { value: "Centro", label: "Centro" }
+                        ]}
+                        placeholder="Selecciona una zona"
+                        searchPlaceholder="Buscar zona..."
+                      />
+                    </div>
+                  )}
+
+                  {shippingMethod === "ENVIOS_NACIONALES" && (
+                    <div className={styles.formGroup}>
+                      <label>Agencia de Envío *</label>
+                      <Combobox
+                        value={shippingAgency}
+                        onChange={setShippingAgency}
+                        options={[
+                          { value: "MRW", label: "MRW" },
+                          { value: "Zoom", label: "Zoom" },
+                          { value: "Tealca", label: "Tealca" },
+                          { value: "Domesa", label: "Domesa" }
+                        ]}
+                        placeholder="Selecciona una agencia"
+                        searchPlaceholder="Buscar agencia..."
+                      />
+                    </div>
+                  )}
                 </div>
-              </div>
+              </Step>
 
-              {/* Multi-Step Checkout with React Bits Stepper */}
-              <div style={{ marginTop: '28px' }}>
-                <Stepper
-                  step={currentStep}
-                  onStepChange={handleStepChange}
-                  onFinalStepCompleted={() => handleSubmit()}
-                  backButtonText="Atrás"
-                  nextButtonText="Continuar"
-                  completeButtonText={loading ? "Procesando..." : "Realizar Pedido"}
-                  theme="light"
-                  accentColor="#000000"
-                  frame={false}
-                  linear={true}
-                  transition="fade"
-                  width="100%"
-                  nextButtonProps={{
-                    disabled: loading
-                  }}
-                >
-                  {/* STEP 1: ENVÍO */}
-                  <Step title="Envío">
-                    <div style={{ marginTop: '8px' }}>
-                      <h3 style={{ textTransform: 'uppercase', fontSize: '0.9rem', fontWeight: 600, marginBottom: '16px', letterSpacing: '0.5px' }}>
-                        Datos de Entrega
-                      </h3>
+              {/* ========================================================= */}
+              {/* PASO 3: MÉTODO DE PAGO (Seleccionable: Pago Móvil, Efectivo, Binance) */}
+              {/* ========================================================= */}
+              <Step title="Pago" description="Método de pago">
+                <div style={{ marginTop: '12px' }}>
+                  <h3 style={{ textTransform: 'uppercase', fontSize: '0.95rem', fontWeight: 700, marginBottom: '14px', letterSpacing: '0.5px' }}>
+                    3. Selecciona tu Método de Pago
+                  </h3>
 
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                        <div className={styles.formGroup}>
-                          <label>Nombre *</label>
-                          <input 
-                            required 
-                            type="text" 
-                            className="input-field" 
-                            placeholder="Tu nombre"
-                            value={firstName} 
-                            onChange={e => setFirstName(e.target.value)} 
-                          />
+                  {/* Selector visual de método de pago */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '10px', marginBottom: '20px' }}>
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod('PAGO_MOVIL')}
+                      style={{
+                        padding: '14px 10px',
+                        border: paymentMethod === 'PAGO_MOVIL' ? '2px solid #000' : '1px solid #e2e8f0',
+                        background: paymentMethod === 'PAGO_MOVIL' ? '#0f172a' : '#fff',
+                        color: paymentMethod === 'PAGO_MOVIL' ? '#fff' : '#0f172a',
+                        borderRadius: '10px',
+                        fontWeight: 600,
+                        fontSize: '0.85rem',
+                        cursor: 'pointer',
+                        textAlign: 'center',
+                        transition: 'all 0.2s',
+                        boxShadow: paymentMethod === 'PAGO_MOVIL' ? '0 4px 12px rgba(0,0,0,0.15)' : 'none'
+                      }}
+                    >
+                      <div style={{ fontSize: '1.2rem', marginBottom: '4px' }}>📱</div>
+                      Pago Móvil
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod('EFECTIVO')}
+                      style={{
+                        padding: '14px 10px',
+                        border: paymentMethod === 'EFECTIVO' ? '2px solid #000' : '1px solid #e2e8f0',
+                        background: paymentMethod === 'EFECTIVO' ? '#0f172a' : '#fff',
+                        color: paymentMethod === 'EFECTIVO' ? '#fff' : '#0f172a',
+                        borderRadius: '10px',
+                        fontWeight: 600,
+                        fontSize: '0.85rem',
+                        cursor: 'pointer',
+                        textAlign: 'center',
+                        transition: 'all 0.2s',
+                        boxShadow: paymentMethod === 'EFECTIVO' ? '0 4px 12px rgba(0,0,0,0.15)' : 'none'
+                      }}
+                    >
+                      <div style={{ fontSize: '1.2rem', marginBottom: '4px' }}>💵</div>
+                      Efectivo
+                      <span style={{ display: 'block', fontSize: '0.68rem', opacity: 0.8, marginTop: '2px' }}>
+                        (Solo Valencia)
+                      </span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod('BINANCE')}
+                      style={{
+                        padding: '14px 10px',
+                        border: paymentMethod === 'BINANCE' ? '2px solid #000' : '1px solid #e2e8f0',
+                        background: paymentMethod === 'BINANCE' ? '#0f172a' : '#fff',
+                        color: paymentMethod === 'BINANCE' ? '#fff' : '#0f172a',
+                        borderRadius: '10px',
+                        fontWeight: 600,
+                        fontSize: '0.85rem',
+                        cursor: 'pointer',
+                        textAlign: 'center',
+                        transition: 'all 0.2s',
+                        boxShadow: paymentMethod === 'BINANCE' ? '0 4px 12px rgba(0,0,0,0.15)' : 'none'
+                      }}
+                    >
+                      <div style={{ fontSize: '1.2rem', marginBottom: '4px' }}>🟡</div>
+                      Binance Pay
+                    </button>
+                  </div>
+
+                  {/* CASO 1: PAGO MÓVIL */}
+                  {paymentMethod === "PAGO_MOVIL" && (
+                    <div style={{ animation: 'fadeIn 0.3s ease' }}>
+                      <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '10px', marginBottom: '18px', fontSize: '0.85rem', border: '1px solid #e2e8f0', color: '#0f172a' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                          <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>Datos para transferir Pago Móvil:</span>
+                          <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Toca para copiar</span>
                         </div>
-                        <div className={styles.formGroup}>
-                          <label>Apellido *</label>
-                          <input 
-                            required 
-                            type="text" 
-                            className="input-field" 
-                            placeholder="Tu apellido"
-                            value={lastName} 
-                            onChange={e => setLastName(e.target.value)} 
-                          />
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          <p style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ color: '#64748b' }}>Banco destino:</span>
+                            <strong onClick={() => { navigator.clipboard.writeText('Bancamiga'); alert('Banco copiado: Bancamiga'); }} style={{ cursor: 'pointer', background: '#fff', padding: '3px 10px', borderRadius: '6px', border: '1px solid #e2e8f0' }} title="Copiar">Bancamiga 📋</strong>
+                          </p>
+                          <p style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ color: '#64748b' }}>Cédula:</span>
+                            <strong onClick={() => { navigator.clipboard.writeText('27241528'); alert('Cédula copiada: 27241528'); }} style={{ cursor: 'pointer', background: '#fff', padding: '3px 10px', borderRadius: '6px', border: '1px solid #e2e8f0' }} title="Copiar">27241528 📋</strong>
+                          </p>
+                          <p style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span style={{ color: '#64748b' }}>Teléfono:</span>
+                            <strong onClick={() => { navigator.clipboard.writeText('04247283924'); alert('Teléfono copiado: 04247283924'); }} style={{ cursor: 'pointer', background: '#fff', padding: '3px 10px', borderRadius: '6px', border: '1px solid #e2e8f0' }} title="Copiar">04247283924 📋</strong>
+                          </p>
+                          <p style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px dashed #e2e8f0', paddingTop: '8px', marginTop: '4px' }}>
+                            <span style={{ color: '#64748b' }}>Monto exacto en Bs:</span>
+                            <strong style={{ color: '#0f172a', fontSize: '0.95rem' }}>{totalBs.toFixed(2)} Bs</strong>
+                          </p>
                         </div>
                       </div>
                       
                       <div className={styles.formGroup}>
-                        <label>Cédula de Identidad *</label>
-                        <div className={styles.documentGroup}>
-                          <select className="input-field" style={{width: '80px', flexShrink: 0}} value={docType} onChange={e => setDocType(e.target.value)}>
-                            <option value="V">V</option>
-                            <option value="E">E</option>
-                            <option value="P">P</option>
-                            <option value="J">J</option>
-                          </select>
-                          <input 
-                            required 
-                            type="text" 
-                            className="input-field" 
-                            placeholder="Número de cédula"
-                            value={docNumber} 
-                            onChange={e => setDocNumber(e.target.value)} 
-                          />
-                        </div>
-                      </div>
-
-                      <div className={styles.formGroup}>
-                        <label>Método de Entrega *</label>
+                        <label>Banco Origen *</label>
                         <Combobox
-                          value={shippingMethod}
-                          onChange={setShippingMethod}
-                          options={[
-                            { value: "PICKUP", label: "Pick Up (Retiro en oficina)" },
-                            { value: "DELIVERY_VALENCIA", label: "Delivery (Valencia) +3 €" },
-                            { value: "ENVIOS_NACIONALES", label: "Envío Nacional (MRW/Zoom/Tealca)" }
-                          ]}
-                          placeholder="Selecciona método"
-                          searchPlaceholder="Buscar método..."
+                          value={paymentBank}
+                          onChange={setPaymentBank}
+                          options={VENEZUELAN_BANKS.map(b => ({ value: b, label: b }))}
+                          placeholder="Selecciona el banco desde donde pagas"
+                          searchPlaceholder="Buscar banco..."
                         />
                       </div>
 
-                      {shippingMethod === "DELIVERY_VALENCIA" && (
-                        <div className={styles.formGroup}>
-                          <label>Zona de Delivery (Valencia) *</label>
-                          <Combobox
-                            value={shippingZone}
-                            onChange={setShippingZone}
-                            options={[
-                              { value: "El Bosque", label: "El Bosque" },
-                              { value: "Naguanagua", label: "Naguanagua" },
-                              { value: "La Viña", label: "La Viña" },
-                              { value: "El Viñedo", label: "El Viñedo" },
-                              { value: "Prebo", label: "Prebo" },
-                              { value: "San Diego", label: "San Diego" },
-                              { value: "Centro", label: "Centro" }
-                            ]}
-                            placeholder="Selecciona una zona"
-                            searchPlaceholder="Buscar zona..."
-                          />
-                        </div>
-                      )}
-
-                      {shippingMethod === "ENVIOS_NACIONALES" && (
-                        <div className={styles.formGroup}>
-                          <label>Agencia de Envío *</label>
-                          <Combobox
-                            value={shippingAgency}
-                            onChange={setShippingAgency}
-                            options={[
-                              { value: "MRW", label: "MRW" },
-                              { value: "Zoom", label: "Zoom" },
-                              { value: "Tealca", label: "Tealca" },
-                              { value: "Domesa", label: "Domesa" }
-                            ]}
-                            placeholder="Selecciona una agencia"
-                            searchPlaceholder="Buscar agencia..."
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </Step>
-
-                  {/* STEP 2: PAGO */}
-                  <Step title="Pago">
-                    <div style={{ marginTop: '8px' }}>
-                      <h3 style={{ textTransform: 'uppercase', fontSize: '0.9rem', fontWeight: 600, marginBottom: '16px', letterSpacing: '0.5px' }}>
-                        Método de Pago
-                      </h3>
-
                       <div className={styles.formGroup}>
-                        <label>Selecciona cómo deseas pagar</label>
-                        <Combobox
-                          value={paymentMethod}
-                          onChange={setPaymentMethod}
-                          options={[
-                            { value: "PAGO_MOVIL", label: "Pago Móvil" },
-                            { value: "EFECTIVO", label: "Efectivo (SOLO VALENCIA)" },
-                            { value: "BINANCE", label: "Binance Pay" }
-                          ]}
-                          placeholder="Selecciona método de pago"
-                          searchPlaceholder="Buscar método..."
+                        <label>Teléfono Origen *</label>
+                        <input 
+                          required 
+                          type="text" 
+                          className="input-field" 
+                          placeholder="Ej: 04141234567" 
+                          value={paymentPhone} 
+                          onChange={e => setPaymentPhone(e.target.value)} 
                         />
                       </div>
 
-                      {paymentMethod === "PAGO_MOVIL" && (
-                        <>
-                          <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '8px', marginBottom: '18px', fontSize: '0.85rem', border: '1px solid #e2e8f0', color: '#0f172a' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                              <span style={{ fontWeight: 600 }}>Datos para Pago Móvil:</span>
-                              <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Toca para copiar</span>
-                            </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                              <p style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <span style={{ color: '#64748b' }}>Banco:</span>
-                                <strong onClick={() => { navigator.clipboard.writeText('Bancamiga'); alert('Banco copiado: Bancamiga'); }} style={{ cursor: 'pointer', background: '#fff', padding: '2px 8px', borderRadius: '4px', border: '1px solid #e2e8f0' }} title="Copiar">Bancamiga 📋</strong>
-                              </p>
-                              <p style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <span style={{ color: '#64748b' }}>Cédula:</span>
-                                <strong onClick={() => { navigator.clipboard.writeText('27241528'); alert('Cédula copiada: 27241528'); }} style={{ cursor: 'pointer', background: '#fff', padding: '2px 8px', borderRadius: '4px', border: '1px solid #e2e8f0' }} title="Copiar">27241528 📋</strong>
-                              </p>
-                              <p style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <span style={{ color: '#64748b' }}>Teléfono:</span>
-                                <strong onClick={() => { navigator.clipboard.writeText('04247283924'); alert('Teléfono copiado: 04247283924'); }} style={{ cursor: 'pointer', background: '#fff', padding: '2px 8px', borderRadius: '4px', border: '1px solid #e2e8f0' }} title="Copiar">04247283924 📋</strong>
-                              </p>
-                            </div>
-                          </div>
-                          
-                          <div className={styles.formGroup}>
-                            <label>Banco Origen *</label>
-                            <Combobox
-                              value={paymentBank}
-                              onChange={setPaymentBank}
-                              options={VENEZUELAN_BANKS.map(b => ({ value: b, label: b }))}
-                              placeholder="Selecciona un banco"
-                              searchPlaceholder="Buscar banco..."
-                            />
-                          </div>
-                          <div className={styles.formGroup}>
-                            <label>Teléfono Origen *</label>
-                            <input 
-                              required 
-                              type="text" 
-                              className="input-field" 
-                              placeholder="Ej: 04141234567" 
-                              value={paymentPhone} 
-                              onChange={e => setPaymentPhone(e.target.value)} 
-                            />
-                          </div>
-                        </>
-                      )}
+                      <div className={styles.formGroup}>
+                        <label>Número de Referencia * (Últimos 4-6 dígitos)</label>
+                        <input 
+                          required 
+                          type="text" 
+                          className="input-field" 
+                          placeholder="Ej: 849201"
+                          value={paymentRef} 
+                          onChange={e => setPaymentRef(e.target.value)} 
+                        />
+                      </div>
 
-                      {paymentMethod === "BINANCE" && (
-                        <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '8px', marginBottom: '18px', fontSize: '0.85rem', border: '1px solid #e2e8f0', color: '#0f172a' }}>
-                          <p style={{ fontWeight: 600, marginBottom: '8px' }}>Datos para Binance Pay:</p>
-                          <p style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span style={{ color: '#64748b' }}>Binance ID:</span>
-                            <strong onClick={() => { navigator.clipboard.writeText('201174382'); alert('Binance ID copiado: 201174382'); }} style={{ cursor: 'pointer', background: '#fff', padding: '2px 8px', borderRadius: '4px', border: '1px solid #e2e8f0' }} title="Copiar">201174382 📋</strong>
+                      <div className={styles.formGroup}>
+                        <label>Captura de Pago (Opcional)</label>
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          className="input-field" 
+                          style={{ padding: '8px' }} 
+                          onChange={e => {
+                            if (e.target.files && e.target.files[0]) setPaymentFile(e.target.files[0]);
+                          }} 
+                        />
+                        {paymentFile && (
+                          <p style={{ fontSize: '0.75rem', color: '#16a34a', marginTop: '4px' }}>
+                            ✓ Archivo seleccionado: {paymentFile.name}
                           </p>
-                        </div>
-                      )}
-
-                      {paymentMethod !== "EFECTIVO" && (
-                        <>
-                          <div className={styles.formGroup}>
-                            <label>Referencia de Pago * (Últimos 4-6 dígitos)</label>
-                            <input 
-                              required 
-                              type="text" 
-                              className="input-field" 
-                              placeholder="Ej: 948210"
-                              value={paymentRef} 
-                              onChange={e => setPaymentRef(e.target.value)} 
-                            />
-                          </div>
-
-                          <div className={styles.formGroup}>
-                            <label>Captura de Pago (Opcional)</label>
-                            <input 
-                              type="file" 
-                              accept="image/*" 
-                              className="input-field" 
-                              style={{ padding: '8px' }} 
-                              onChange={e => {
-                                if (e.target.files && e.target.files[0]) setPaymentFile(e.target.files[0]);
-                              }} 
-                            />
-                            {paymentFile && (
-                              <p style={{ fontSize: '0.75rem', color: '#16a34a', marginTop: '4px' }}>
-                                ✓ {paymentFile.name}
-                              </p>
-                            )}
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </Step>
-
-                  {/* STEP 3: REVISAR & CONFIRMAR */}
-                  <Step title="Revisar">
-                    <div style={{ marginTop: '8px' }}>
-                      <h3 style={{ textTransform: 'uppercase', fontSize: '0.9rem', fontWeight: 600, marginBottom: '16px', letterSpacing: '0.5px' }}>
-                        Resumen del Pedido
-                      </h3>
-
-                      <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px', fontSize: '0.85rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                          <span style={{ color: '#64748b' }}>Cliente:</span>
-                          <strong style={{ color: '#0f172a' }}>{firstName} {lastName} ({docType}-{docNumber})</strong>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                          <span style={{ color: '#64748b' }}>Entrega:</span>
-                          <strong style={{ color: '#0f172a' }}>
-                            {shippingMethod === "PICKUP" && "Pick Up (Oficina)"}
-                            {shippingMethod === "DELIVERY_VALENCIA" && `Delivery (${shippingZone || 'Valencia'})`}
-                            {shippingMethod === "ENVIOS_NACIONALES" && `Envío Nal (${shippingAgency})`}
-                          </strong>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                          <span style={{ color: '#64748b' }}>Pago:</span>
-                          <strong style={{ color: '#0f172a' }}>
-                            {paymentMethod === "PAGO_MOVIL" && "Pago Móvil"}
-                            {paymentMethod === "BINANCE" && "Binance Pay"}
-                            {paymentMethod === "EFECTIVO" && "Efectivo"}
-                          </strong>
-                        </div>
-                        {paymentRef && (
-                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-                            <span style={{ color: '#64748b' }}>Referencia:</span>
-                            <strong style={{ color: '#0f172a' }}>{paymentRef}</strong>
-                          </div>
                         )}
-                        <div style={{ borderTop: '1px dashed #cbd5e1', paddingTop: '12px', marginTop: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                          <span style={{ fontWeight: 600, color: '#0f172a' }}>Monto a Transferir:</span>
-                          <div style={{ textAlign: 'right' }}>
-                            <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#0f172a' }}>{totalUsd} €</div>
-                            <div style={{ fontSize: '0.8rem', color: '#64748b' }}>~ {totalBs.toFixed(2)} Bs</div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div style={{ marginTop: '16px', padding: '12px', background: '#eff6ff', borderRadius: '6px', border: '1px solid #bfdbfe', fontSize: '0.8rem', color: '#1e40af' }}>
-                        ℹ Al pulsar <strong>"Realizar Pedido"</strong>, procesaremos tu orden y podrás confirmar el pago directamente vía WhatsApp.
                       </div>
                     </div>
-                  </Step>
-                </Stepper>
-              </div>
-            </div>
-          )}
+                  )}
+
+                  {/* CASO 2: EFECTIVO */}
+                  {paymentMethod === "EFECTIVO" && (
+                    <div style={{ animation: 'fadeIn 0.3s ease', background: '#f0fdf4', padding: '20px', borderRadius: '10px', border: '1px solid #bbf7d0', color: '#166534', fontSize: '0.9rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', fontWeight: 700, fontSize: '1rem' }}>
+                        <span>💵 Pago en Efectivo (Solo Valencia)</span>
+                      </div>
+                      <p style={{ lineHeight: 1.5, marginBottom: '12px' }}>
+                        Pagarás el monto exacto de <strong>{totalEur} €</strong> (o su equivalente en divisas/Bs) al momento de retirar en oficina o al recibir tu pedido vía delivery en Valencia.
+                      </p>
+                      <p style={{ fontSize: '0.8rem', opacity: 0.9 }}>
+                        ✓ No necesitas comprobante bancario para este método.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* CASO 3: BINANCE PAY */}
+                  {paymentMethod === "BINANCE" && (
+                    <div style={{ animation: 'fadeIn 0.3s ease' }}>
+                      <div style={{ background: '#fefce8', padding: '16px', borderRadius: '10px', marginBottom: '18px', fontSize: '0.85rem', border: '1px solid #fef08a', color: '#854d0e' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                          <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>Datos para Binance Pay:</span>
+                          <span style={{ fontSize: '0.72rem' }}>Toca para copiar</span>
+                        </div>
+                        <p style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span>Binance ID (Pay):</span>
+                          <strong onClick={() => { navigator.clipboard.writeText('201174382'); alert('Binance ID copiado: 201174382'); }} style={{ cursor: 'pointer', background: '#fff', padding: '3px 10px', borderRadius: '6px', border: '1px solid #fef08a' }} title="Copiar">201174382 📋</strong>
+                        </p>
+                        <p style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', borderTop: '1px dashed #fef08a', paddingTop: '8px' }}>
+                          <span>Monto exacto:</span>
+                          <strong style={{ fontSize: '0.95rem' }}>{totalEur} USDT / €</strong>
+                        </p>
+                      </div>
+
+                      <div className={styles.formGroup}>
+                        <label>ID de Transacción / Referencia Binance *</label>
+                        <input 
+                          required 
+                          type="text" 
+                          className="input-field" 
+                          placeholder="Ej: 39482019482"
+                          value={paymentRef} 
+                          onChange={e => setPaymentRef(e.target.value)} 
+                        />
+                      </div>
+
+                      <div className={styles.formGroup}>
+                        <label>Captura de Pago (Opcional)</label>
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          className="input-field" 
+                          style={{ padding: '8px' }} 
+                          onChange={e => {
+                            if (e.target.files && e.target.files[0]) setPaymentFile(e.target.files[0]);
+                          }} 
+                        />
+                        {paymentFile && (
+                          <p style={{ fontSize: '0.75rem', color: '#16a34a', marginTop: '4px' }}>
+                            ✓ Archivo seleccionado: {paymentFile.name}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </Step>
+
+              {/* ========================================================= */}
+              {/* PASO 4: REVISAR TODOS LOS DATOS DE LA ORDEN */}
+              {/* ========================================================= */}
+              <Step title="Revisar" description="Confirmar pedido">
+                <div style={{ marginTop: '12px' }}>
+                  <h3 style={{ textTransform: 'uppercase', fontSize: '0.95rem', fontWeight: 700, marginBottom: '16px', letterSpacing: '0.5px' }}>
+                    4. Revisar Todos los Datos de la Orden
+                  </h3>
+
+                  <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '20px', fontSize: '0.88rem' }}>
+                    {/* Artículos */}
+                    <div style={{ marginBottom: '14px' }}>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.5px' }}>
+                        Artículos en la orden:
+                      </span>
+                      <div style={{ marginTop: '6px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        {items.map((it, idx) => (
+                          <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+                            <span style={{ color: '#0f172a' }}>{it.quantity}x {it.name}</span>
+                            <span style={{ fontWeight: 600 }}>{it.price * it.quantity} €</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div style={{ borderTop: '1px dashed #e2e8f0', paddingTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: '#64748b' }}>Cliente / Facturación:</span>
+                        <strong style={{ color: '#0f172a' }}>{firstName} {lastName} ({docType}-{docNumber})</strong>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: '#64748b' }}>Método de entrega:</span>
+                        <strong style={{ color: '#0f172a' }}>
+                          {shippingMethod === "PICKUP" && "Pick Up (Retiro en oficina)"}
+                          {shippingMethod === "DELIVERY_VALENCIA" && `Delivery (${shippingZone || 'Valencia'})`}
+                          {shippingMethod === "ENVIOS_NACIONALES" && `Envío Nacional (${shippingAgency})`}
+                        </strong>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <span style={{ color: '#64748b' }}>Método de pago:</span>
+                        <strong style={{ color: '#0f172a' }}>
+                          {paymentMethod === "PAGO_MOVIL" && "Pago Móvil"}
+                          {paymentMethod === "BINANCE" && "Binance Pay"}
+                          {paymentMethod === "EFECTIVO" && "Efectivo (Entrega en Valencia)"}
+                        </strong>
+                      </div>
+                      {paymentRef && paymentMethod !== "EFECTIVO" && (
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span style={{ color: '#64748b' }}>Referencia registrada:</span>
+                          <strong style={{ color: '#0f172a' }}>{paymentRef}</strong>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Total a pagar */}
+                    <div style={{ borderTop: '1px solid #cbd5e1', paddingTop: '14px', marginTop: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                      <span style={{ fontWeight: 700, color: '#0f172a', fontSize: '1rem' }}>Monto Total a Pagar:</span>
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ fontWeight: 800, fontSize: '1.35rem', color: '#0f172a' }}>{totalEur} €</div>
+                        <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '2px' }}>
+                          ~ {totalBs.toFixed(2)} Bs
+                        </div>
+                        <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '3px' }}>
+                          Tasa oficial BCV (Euro): {usdtRate.toFixed(2)} Bs/€
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{ marginTop: '16px', padding: '14px', background: '#eff6ff', borderRadius: '8px', border: '1px solid #bfdbfe', fontSize: '0.82rem', color: '#1e40af', lineHeight: 1.4 }}>
+                    ℹ Al pulsar <strong>"Realizar Pedido"</strong>, registraremos tu orden y podrás enviar el comprobante o consultar tu pedido directamente vía WhatsApp.
+                  </div>
+                </div>
+              </Step>
+            </Stepper>
+          </div>
         </div>
       </div>
     </div>
