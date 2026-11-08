@@ -59,15 +59,26 @@ export default function Footer() {
 
         @media (max-width: 768px) {
           .footer-logo-img {
-            width: 110px;
-            transform: scale(1.3);
+            width: 86px;
+            max-width: 86px;
+            height: auto;
+            transform: none;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .footer-logo-img {
+            width: 76px;
+            max-width: 76px;
           }
         }
 
         @media (min-width: 769px) {
           .footer-logo-img {
-            width: 140px;
-            transform: scale(1.7);
+            width: 130px;
+            max-width: 130px;
+            height: auto;
+            transform: none;
           }
         }
       `}</style>
@@ -81,8 +92,8 @@ export default function Footer() {
               <Image 
                 src="/logo.png" 
                 alt="Cortez Logo" 
-                width={140} 
-                height={35} 
+                width={130} 
+                height={30} 
                 className="footer-logo-img"
               />
             </Link>
