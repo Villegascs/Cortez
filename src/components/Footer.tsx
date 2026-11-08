@@ -74,9 +74,9 @@ export default function Footer() {
 
         @media (min-width: 769px) {
           .footer-logo-img {
-            width: 180px;
-            height: 42px;
-            transform: scale(2.3);
+            width: 150px;
+            height: 35px;
+            transform: scale(1.6);
           }
         }
       `}</style>
@@ -90,8 +90,8 @@ export default function Footer() {
               <Image 
                 src="/logo.png" 
                 alt="Cortez Logo" 
-                width={180} 
-                height={42} 
+                width={150} 
+                height={35} 
                 className="footer-logo-img"
               />
             </Link>

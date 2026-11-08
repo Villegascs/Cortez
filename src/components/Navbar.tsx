@@ -124,9 +124,9 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
           .desktop-nav-content { display: flex !important; }
           .mobile-nav-toggle { display: none !important; }
           .navbar-logo-img {
-            width: 180px;
-            height: 42px;
-            transform: scale(2.3);
+            width: 150px;
+            height: 35px;
+            transform: scale(1.6);
           }
         }
 
@@ -214,8 +214,8 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
               <Image
                 src="/logo.png"
                 alt="Cortez"
-                width={180}
-                height={42}
+                width={150}
+                height={35}
                 className="navbar-logo-img"
                 priority
               />
