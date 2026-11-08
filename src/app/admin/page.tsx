@@ -382,74 +382,25 @@ export default function AdminPanel() {
             <h1 className={styles.title}>Panel de Administración</h1>
           </div>
           
-          <div className={styles.settingsPanel}>
-            <div>
-              <div className={styles.sectionTitle}>Tasa Euro BCV (Bs)</div>
-              <input 
-                type="number" 
-                step="0.01" 
-                className={styles.adminInput} 
-                value={usdtRate} 
-                onChange={(e) => setUsdtRate(Number(e.target.value))} 
-                style={{ width: '130px', fontWeight: 700 }}
-              />
-            </div>
-            <button
-              onClick={handleUpdateRate}
-              style={{
-                marginTop: '18px',
-                padding: '10px',
-                background: 'var(--admin-text)',
-                color: 'var(--admin-bg)',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-              title="Guardar Tasa Manual"
-            >
-              <Save size={18} />
-            </button>
-            <button 
-              onClick={handleSyncBcv} 
-              disabled={syncingRate}
-              style={{
-                marginTop: '18px',
-                padding: '10px',
-                background: '#e0f2fe',
-                color: '#0284c7',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }} 
-              title="Sincronizar ahora con BCV (Euro)"
-            >
-              <RefreshCw size={18} className={syncingRate ? styles.spin : ""} />
-            </button>
-            <button 
-              onClick={() => setShowLogoutModal(true)} 
-              style={{
-                marginTop: '18px',
-                padding: '10px',
-                background: '#fee2e2',
-                color: '#ef4444',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-              title="Cerrar Sesión"
-            >
-              <LogOut size={18} />
-            </button>
-          </div>
+          <button 
+            onClick={() => setShowLogoutModal(true)} 
+            style={{
+              padding: '10px 18px',
+              background: '#fee2e2',
+              color: '#ef4444',
+              border: '1px solid #fecaca',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              fontWeight: 600,
+              fontSize: '0.88rem'
+            }}
+            title="Cerrar Sesión"
+          >
+            <LogOut size={16} /> Cerrar Sesión
+          </button>
         </div>
 
         {/* Navigation Tabs */}
