@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCartStore } from "@/store/cart";
 import styles from "./page.module.css";
-import { ChevronDown, MessageCircle, ShoppingBag, Trash2, CheckCircle2 } from "lucide-react";
+import { ChevronDown, MessageCircle, ShoppingBag, Trash2, CheckCircle2, AlertTriangle, AlertCircle } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Combobox from "@/components/Combobox";
 import Stepper, { Step } from "@/components/Stepper";
@@ -46,6 +46,35 @@ export default function CartPage() {
   const [orderDetails, setOrderDetails] = useState<any>(null);
   const [isOrderOpen, setIsOrderOpen] = useState(false);
 
+  // Custom Modal with Blur Backdrop
+  const [modal, setModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    type: 'warning' | 'info' | 'success' | 'error';
+  }>({
+    isOpen: false,
+    title: "",
+    message: "",
+    type: "warning"
+  });
+
+  const showAlert = (message: string, title = "Aviso", type: 'warning' | 'info' | 'success' | 'error' = 'warning') => {
+    setModal({
+      isOpen: true,
+      title,
+      message,
+      type
+    });
+  };
+
+  const copyToClipboard = (text: string, label: string) => {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+    }
+    showAlert(`${label} copiado al portapapeles: ${text}`, "Copiado con Éxito", "success");
+  };
+
   useEffect(() => {
     // Fetch live BCV rate from settings API
     fetch('/api/settings')
@@ -64,23 +93,23 @@ export default function CartPage() {
   // Validaciones
   const validateStep2Billing = () => {
     if (!firstName.trim()) {
-      alert("Por favor ingresa tu nombre");
+      showAlert("Por favor ingresa tu nombre para continuar con la facturación y entrega.", "Nombre Requerido", "warning");
       return false;
     }
     if (!lastName.trim()) {
-      alert("Por favor ingresa tu apellido");
+      showAlert("Por favor ingresa tu apellido para continuar con la facturación y entrega.", "Apellido Requerido", "warning");
       return false;
     }
     if (!docNumber.trim()) {
-      alert("Por favor ingresa tu número de cédula");
+      showAlert("Por favor ingresa tu número de cédula de identidad.", "Cédula Requerida", "warning");
       return false;
     }
     if (shippingMethod === "DELIVERY_VALENCIA" && !shippingZone) {
-      alert("Selecciona una zona de delivery en Valencia");
+      showAlert("Selecciona tu zona de delivery en Valencia para poder llevarte el pedido.", "Zona Requerida", "warning");
       return false;
     }
     if (shippingMethod === "ENVIOS_NACIONALES" && !shippingAgency) {
-      alert("Selecciona una agencia de envío nacional");
+      showAlert("Selecciona la agencia de envío nacional por la cual deseas recibir (MRW, Zoom, Tealca o Domesa).", "Agencia Requerida", "warning");
       return false;
     }
     return true;
@@ -89,16 +118,16 @@ export default function CartPage() {
   const validateStep3Payment = () => {
     if (paymentMethod === "PAGO_MOVIL") {
       if (!paymentBank) {
-        alert("Selecciona tu banco de origen");
+        showAlert("Por favor selecciona tu banco de origen para validar la transferencia.", "Banco Requerido", "warning");
         return false;
       }
       if (!paymentPhone.trim()) {
-        alert("Ingresa tu teléfono de origen");
+        showAlert("Ingresa el número de teléfono desde donde realizaste el Pago Móvil.", "Teléfono Requerido", "warning");
         return false;
       }
     }
     if (paymentMethod !== "EFECTIVO" && !paymentRef.trim()) {
-      alert("Por favor ingresa la referencia de pago (últimos 4-6 dígitos)");
+      showAlert("Por favor ingresa los últimos 4-6 dígitos del número de referencia de tu pago.", "Referencia Requerida", "warning");
       return false;
     }
     return true;
@@ -107,7 +136,7 @@ export default function CartPage() {
   const handleStepChange = (targetStep: number) => {
     if (targetStep > currentStep) {
       if (currentStep === 1 && items.length === 0) {
-        alert("Tu cesta está vacía. Añade productos antes de continuar.");
+        showAlert("Tu cesta está vacía. Añade productos antes de continuar.", "Cesta Vacía", "warning");
         return;
       }
       if (currentStep === 2 && !validateStep2Billing()) return;
@@ -120,7 +149,7 @@ export default function CartPage() {
     if (e) e.preventDefault();
 
     if (items.length === 0) {
-      alert("Tu cesta está vacía");
+      showAlert("Tu cesta está vacía. Añade productos antes de procesar el pedido.", "Cesta Vacía", "warning");
       return;
     }
     if (!validateStep2Billing()) {
@@ -197,10 +226,10 @@ export default function CartPage() {
         });
         clearCart();
       } else {
-        alert("Hubo un error al procesar el pedido. Intenta nuevamente.");
+        showAlert("Hubo un error al procesar el pedido. Intenta nuevamente.", "Error al Procesar", "error");
       }
     } catch (err) {
-      alert("Error de conexión al procesar el pedido");
+      showAlert("Error de conexión al procesar el pedido. Verifica tu conexión a internet.", "Error de Conexión", "error");
     }
 
     setLoading(false);
@@ -733,15 +762,15 @@ export default function CartPage() {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                           <p style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <span style={{ color: '#64748b' }}>Banco destino:</span>
-                            <strong onClick={() => { navigator.clipboard.writeText('Bancamiga'); alert('Banco copiado: Bancamiga'); }} style={{ cursor: 'pointer', background: '#fff', padding: '3px 10px', borderRadius: '6px', border: '1px solid #e2e8f0' }} title="Copiar">Bancamiga 📋</strong>
+                            <strong onClick={() => copyToClipboard('Bancamiga', 'Banco')} style={{ cursor: 'pointer', background: '#fff', padding: '3px 10px', borderRadius: '6px', border: '1px solid #e2e8f0' }} title="Copiar">Bancamiga 📋</strong>
                           </p>
                           <p style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <span style={{ color: '#64748b' }}>Cédula:</span>
-                            <strong onClick={() => { navigator.clipboard.writeText('27241528'); alert('Cédula copiada: 27241528'); }} style={{ cursor: 'pointer', background: '#fff', padding: '3px 10px', borderRadius: '6px', border: '1px solid #e2e8f0' }} title="Copiar">27241528 📋</strong>
+                            <strong onClick={() => copyToClipboard('27241528', 'Cédula')} style={{ cursor: 'pointer', background: '#fff', padding: '3px 10px', borderRadius: '6px', border: '1px solid #e2e8f0' }} title="Copiar">27241528 📋</strong>
                           </p>
                           <p style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <span style={{ color: '#64748b' }}>Teléfono:</span>
-                            <strong onClick={() => { navigator.clipboard.writeText('04247283924'); alert('Teléfono copiado: 04247283924'); }} style={{ cursor: 'pointer', background: '#fff', padding: '3px 10px', borderRadius: '6px', border: '1px solid #e2e8f0' }} title="Copiar">04247283924 📋</strong>
+                            <strong onClick={() => copyToClipboard('04247283924', 'Teléfono')} style={{ cursor: 'pointer', background: '#fff', padding: '3px 10px', borderRadius: '6px', border: '1px solid #e2e8f0' }} title="Copiar">04247283924 📋</strong>
                           </p>
                           <p style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px dashed #e2e8f0', paddingTop: '8px', marginTop: '4px' }}>
                             <span style={{ color: '#64748b' }}>Monto exacto en Bs:</span>
@@ -839,7 +868,7 @@ export default function CartPage() {
                         </div>
                         <p style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <span>Binance ID (Pay):</span>
-                          <strong onClick={() => { navigator.clipboard.writeText('201174382'); alert('Binance ID copiado: 201174382'); }} style={{ cursor: 'pointer', background: '#fff', padding: '3px 10px', borderRadius: '6px', border: '1px solid #fef08a' }} title="Copiar">201174382 📋</strong>
+                          <strong onClick={() => copyToClipboard('201174382', 'Binance ID')} style={{ cursor: 'pointer', background: '#fff', padding: '3px 10px', borderRadius: '6px', border: '1px solid #fef08a' }} title="Copiar">201174382 📋</strong>
                         </p>
                         <p style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', borderTop: '1px dashed #fef08a', paddingTop: '8px' }}>
                           <span>Monto exacto:</span>
@@ -959,6 +988,74 @@ export default function CartPage() {
           </div>
         </div>
       </div>
+
+      {/* Modal elegante con fondo borroso blur */}
+      {modal.isOpen && (
+        <div 
+          className={styles.modalBackdrop}
+          onClick={() => setModal(prev => ({ ...prev, isOpen: false }))}
+        >
+          <div 
+            className={styles.modalCard}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{
+              width: '56px',
+              height: '56px',
+              borderRadius: '50%',
+              backgroundColor: modal.type === 'success' ? '#dcfce7' : (modal.type === 'error' ? '#fee2e2' : '#fef3c7'),
+              color: modal.type === 'success' ? '#16a34a' : (modal.type === 'error' ? '#ef4444' : '#d97706'),
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 16px'
+            }}>
+              {modal.type === 'success' ? (
+                <CheckCircle2 size={30} strokeWidth={2.2} />
+              ) : modal.type === 'error' ? (
+                <AlertCircle size={30} strokeWidth={2.2} />
+              ) : (
+                <AlertTriangle size={30} strokeWidth={2.2} />
+              )}
+            </div>
+
+            <h3 style={{
+              fontSize: '1.25rem',
+              fontWeight: 700,
+              color: '#0f172a',
+              marginBottom: '8px',
+              letterSpacing: '-0.3px'
+            }}>
+              {modal.title}
+            </h3>
+
+            <p style={{
+              fontSize: '0.92rem',
+              color: '#64748b',
+              lineHeight: 1.5,
+              marginBottom: '24px'
+            }}>
+              {modal.message}
+            </p>
+
+            <button
+              type="button"
+              onClick={() => setModal(prev => ({ ...prev, isOpen: false }))}
+              className="btn-primary"
+              style={{
+                width: '100%',
+                padding: '13px 20px',
+                borderRadius: '10px',
+                fontWeight: 600,
+                fontSize: '0.95rem',
+                cursor: 'pointer'
+              }}
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
