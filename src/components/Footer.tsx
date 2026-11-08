@@ -79,9 +79,9 @@ export default function Footer() {
           filter: var(--logo-invert);
           object-fit: contain;
           transform-origin: center;
-          width: 120px;
-          height: 30px;
-          transform: scale(1.2);
+          width: 145px;
+          height: 35px;
+          transform: scale(1.5);
         }
 
         @media (max-width: 768px) {
@@ -91,9 +91,9 @@ export default function Footer() {
 
         @media (max-width: 480px) {
           .footer-logo-img-mobile {
-            width: 110px;
-            height: 28px;
-            transform: scale(1.1);
+            width: 135px;
+            height: 32px;
+            transform: scale(1.4);
           }
         }
 
@@ -126,8 +126,8 @@ export default function Footer() {
                 <Image 
                   src="/logo.png" 
                   alt="Cortez Logo" 
-                  width={120} 
-                  height={30} 
+                  width={145} 
+                  height={35} 
                   className="footer-logo-img-mobile"
                 />
               </Link>

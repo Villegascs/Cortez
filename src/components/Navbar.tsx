@@ -117,9 +117,9 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
           filter: var(--logo-invert);
           object-fit: contain;
           transform-origin: center;
-          width: 120px;
-          height: 30px;
-          transform: scale(1.2);
+          width: 145px;
+          height: 35px;
+          transform: scale(1.5);
         }
 
         /* Mobile specific media queries */
@@ -132,9 +132,9 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
 
         @media (max-width: 480px) {
           .logo-img-mobile {
-            width: 110px;
-            height: 28px;
-            transform: scale(1.1);
+            width: 135px;
+            height: 32px;
+            transform: scale(1.4);
           }
         }
 
@@ -258,8 +258,8 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
               <Image
                 src="/logo.png"
                 alt="Cortez"
-                width={120}
-                height={30}
+                width={145}
+                height={35}
                 className="logo-img-mobile"
                 priority
               />
