@@ -235,9 +235,9 @@
   }
 
   .heroOverlayText {
-    bottom: 60px;
-    width: 85%;
-    maxWidth: 720px;
+    bottom: 50px;
+    width: 60%;
+    max-width: 460px;
   }
 
   .catalogSection {
@@ -302,9 +302,9 @@
   }
 
   .heroOverlayText {
-    bottom: 48px;
-    width: 90%;
-    max-width: 440px;
+    bottom: 40px;
+    width: 75%;
+    max-width: 280px;
   }
 
   .catalogSection {
@@ -358,6 +358,12 @@
 
 /* Extra small mobile screens (<= 380px) */
 @media (max-width: 380px) {
+  .heroOverlayText {
+    bottom: 36px;
+    width: 80%;
+    max-width: 230px;
+  }
+
   .grid {
     gap: 8px;
   }
