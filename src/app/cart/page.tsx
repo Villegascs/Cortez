@@ -424,9 +424,12 @@ export default function CartPage() {
                         required 
                         type="text" 
                         className="input-field" 
-                        placeholder="Tu nombre"
+                        placeholder="Solo letras"
                         value={firstName} 
-                        onChange={e => setFirstName(e.target.value)} 
+                        onChange={e => {
+                          const val = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
+                          setFirstName(val);
+                        }} 
                       />
                     </div>
                     <div className={styles.formGroup}>
@@ -435,9 +438,12 @@ export default function CartPage() {
                         required 
                         type="text" 
                         className="input-field" 
-                        placeholder="Tu apellido"
+                        placeholder="Solo letras"
                         value={lastName} 
-                        onChange={e => setLastName(e.target.value)} 
+                        onChange={e => {
+                          const val = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
+                          setLastName(val);
+                        }} 
                       />
                     </div>
                   </div>
@@ -454,67 +460,187 @@ export default function CartPage() {
                       <input 
                         required 
                         type="text" 
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                         className="input-field" 
-                        placeholder="Número de cédula"
+                        placeholder="Solo números (ej. 28419502)"
                         value={docNumber} 
-                        onChange={e => setDocNumber(e.target.value)} 
+                        onChange={e => {
+                          const val = e.target.value.replace(/\D/g, "");
+                          setDocNumber(val);
+                        }} 
                       />
                     </div>
                   </div>
 
                   <div className={styles.formGroup}>
-                    <label>Método de Entrega *</label>
-                    <Combobox
-                      value={shippingMethod}
-                      onChange={setShippingMethod}
-                      options={[
-                        { value: "PICKUP", label: "Pick Up (Retiro en oficina - Gratis)" },
-                        { value: "DELIVERY_VALENCIA", label: "Delivery (Valencia) +3 €" },
-                        { value: "ENVIOS_NACIONALES", label: "Envío Nacional (MRW/Zoom/Tealca/Domesa)" }
-                      ]}
-                      placeholder="Selecciona método"
-                      searchPlaceholder="Buscar método..."
-                    />
+                    <label style={{ marginBottom: '10px' }}>Selecciona tu Método de Entrega *</label>
+                    
+                    {/* Tarjetas interactivas de método de entrega */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '10px', marginBottom: '14px' }}>
+                      {/* Opción 1: Pick Up */}
+                      <div 
+                        onClick={() => setShippingMethod('PICKUP')}
+                        style={{
+                          padding: '14px',
+                          borderRadius: '10px',
+                          border: shippingMethod === 'PICKUP' ? '2px solid #000' : '1px solid #e2e8f0',
+                          background: shippingMethod === 'PICKUP' ? '#0f172a' : '#fff',
+                          color: shippingMethod === 'PICKUP' ? '#fff' : '#0f172a',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '6px',
+                          boxShadow: shippingMethod === 'PICKUP' ? '0 4px 12px rgba(0,0,0,0.12)' : 'none'
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontWeight: 700, fontSize: '0.92rem' }}>🏢 Pick Up</span>
+                          <span style={{ 
+                            fontSize: '0.72rem', 
+                            fontWeight: 700, 
+                            background: shippingMethod === 'PICKUP' ? '#22c55e' : '#f1f5f9', 
+                            color: shippingMethod === 'PICKUP' ? '#fff' : '#166534', 
+                            padding: '2px 8px', 
+                            borderRadius: '10px' 
+                          }}>
+                            Gratis
+                          </span>
+                        </div>
+                        <span style={{ fontSize: '0.76rem', opacity: 0.85 }}>Retiro en oficina (Valencia)</span>
+                      </div>
+
+                      {/* Opción 2: Delivery Valencia */}
+                      <div 
+                        onClick={() => setShippingMethod('DELIVERY_VALENCIA')}
+                        style={{
+                          padding: '14px',
+                          borderRadius: '10px',
+                          border: shippingMethod === 'DELIVERY_VALENCIA' ? '2px solid #000' : '1px solid #e2e8f0',
+                          background: shippingMethod === 'DELIVERY_VALENCIA' ? '#0f172a' : '#fff',
+                          color: shippingMethod === 'DELIVERY_VALENCIA' ? '#fff' : '#0f172a',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '6px',
+                          boxShadow: shippingMethod === 'DELIVERY_VALENCIA' ? '0 4px 12px rgba(0,0,0,0.12)' : 'none'
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontWeight: 700, fontSize: '0.92rem' }}>🛵 Delivery</span>
+                          <span style={{ 
+                            fontSize: '0.72rem', 
+                            fontWeight: 700, 
+                            background: shippingMethod === 'DELIVERY_VALENCIA' ? '#38bdf8' : '#f1f5f9', 
+                            color: shippingMethod === 'DELIVERY_VALENCIA' ? '#0f172a' : '#0369a1', 
+                            padding: '2px 8px', 
+                            borderRadius: '10px' 
+                          }}>
+                            +3 €
+                          </span>
+                        </div>
+                        <span style={{ fontSize: '0.76rem', opacity: 0.85 }}>En zonas de Valencia</span>
+                      </div>
+
+                      {/* Opción 3: Envío Nacional */}
+                      <div 
+                        onClick={() => setShippingMethod('ENVIOS_NACIONALES')}
+                        style={{
+                          padding: '14px',
+                          borderRadius: '10px',
+                          border: shippingMethod === 'ENVIOS_NACIONALES' ? '2px solid #000' : '1px solid #e2e8f0',
+                          background: shippingMethod === 'ENVIOS_NACIONALES' ? '#0f172a' : '#fff',
+                          color: shippingMethod === 'ENVIOS_NACIONALES' ? '#fff' : '#0f172a',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '6px',
+                          boxShadow: shippingMethod === 'ENVIOS_NACIONALES' ? '0 4px 12px rgba(0,0,0,0.12)' : 'none'
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontWeight: 700, fontSize: '0.92rem' }}>📦 Envío Nacional</span>
+                          <span style={{ 
+                            fontSize: '0.72rem', 
+                            fontWeight: 700, 
+                            background: shippingMethod === 'ENVIOS_NACIONALES' ? '#f59e0b' : '#f1f5f9', 
+                            color: shippingMethod === 'ENVIOS_NACIONALES' ? '#fff' : '#b45309', 
+                            padding: '2px 8px', 
+                            borderRadius: '10px' 
+                          }}>
+                            C.O.D.
+                          </span>
+                        </div>
+                        <span style={{ fontSize: '0.76rem', opacity: 0.85 }}>Cobro a destino en agencia</span>
+                      </div>
+                    </div>
+
+                    {/* Sub-opción Pick Up: información de oficina */}
+                    {shippingMethod === "PICKUP" && (
+                      <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '0.82rem', color: '#334155', animation: 'fadeIn 0.25s ease' }}>
+                        📍 <strong>Punto de Retiro:</strong> Oficina Cortez en Valencia. Coordinaremos el horario contigo directamente por WhatsApp tras confirmar el pedido.
+                      </div>
+                    )}
+
+                    {/* Sub-opción Delivery Valencia: selector de zona nativo sin cortes */}
+                    {shippingMethod === "DELIVERY_VALENCIA" && (
+                      <div style={{ marginTop: '14px', animation: 'fadeIn 0.25s ease' }}>
+                        <label style={{ fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '6px' }}>
+                          Zona de Delivery en Valencia *
+                        </label>
+                        <select
+                          required
+                          className="input-field"
+                          value={shippingZone}
+                          onChange={e => setShippingZone(e.target.value)}
+                          style={{ width: '100%', cursor: 'pointer', height: '42px' }}
+                        >
+                          <option value="">-- Selecciona tu zona de entrega --</option>
+                          <option value="El Bosque">El Bosque</option>
+                          <option value="Naguanagua">Naguanagua</option>
+                          <option value="La Viña">La Viña</option>
+                          <option value="El Viñedo">El Viñedo</option>
+                          <option value="Prebo">Prebo</option>
+                          <option value="San Diego">San Diego</option>
+                          <option value="Centro">Centro de Valencia</option>
+                        </select>
+                      </div>
+                    )}
+
+                    {/* Sub-opción Envío Nacional: selector de agencias */}
+                    {shippingMethod === "ENVIOS_NACIONALES" && (
+                      <div style={{ marginTop: '14px', animation: 'fadeIn 0.25s ease' }}>
+                        <label style={{ fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '8px' }}>
+                          Selecciona la Agencia de Envío *
+                        </label>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+                          {["MRW", "Zoom", "Tealca", "Domesa"].map(agency => (
+                            <button
+                              key={agency}
+                              type="button"
+                              onClick={() => setShippingAgency(agency)}
+                              style={{
+                                padding: '10px 4px',
+                                borderRadius: '8px',
+                                border: shippingAgency === agency ? '2px solid #000' : '1px solid #cbd5e1',
+                                background: shippingAgency === agency ? '#0f172a' : '#fff',
+                                color: shippingAgency === agency ? '#fff' : '#0f172a',
+                                fontWeight: 700,
+                                fontSize: '0.85rem',
+                                cursor: 'pointer',
+                                transition: 'all 0.15s'
+                              }}
+                            >
+                              {agency}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
-
-                  {shippingMethod === "DELIVERY_VALENCIA" && (
-                    <div className={styles.formGroup}>
-                      <label>Zona de Delivery (Valencia) *</label>
-                      <Combobox
-                        value={shippingZone}
-                        onChange={setShippingZone}
-                        options={[
-                          { value: "El Bosque", label: "El Bosque" },
-                          { value: "Naguanagua", label: "Naguanagua" },
-                          { value: "La Viña", label: "La Viña" },
-                          { value: "El Viñedo", label: "El Viñedo" },
-                          { value: "Prebo", label: "Prebo" },
-                          { value: "San Diego", label: "San Diego" },
-                          { value: "Centro", label: "Centro" }
-                        ]}
-                        placeholder="Selecciona una zona"
-                        searchPlaceholder="Buscar zona..."
-                      />
-                    </div>
-                  )}
-
-                  {shippingMethod === "ENVIOS_NACIONALES" && (
-                    <div className={styles.formGroup}>
-                      <label>Agencia de Envío *</label>
-                      <Combobox
-                        value={shippingAgency}
-                        onChange={setShippingAgency}
-                        options={[
-                          { value: "MRW", label: "MRW" },
-                          { value: "Zoom", label: "Zoom" },
-                          { value: "Tealca", label: "Tealca" },
-                          { value: "Domesa", label: "Domesa" }
-                        ]}
-                        placeholder="Selecciona una agencia"
-                        searchPlaceholder="Buscar agencia..."
-                      />
-                    </div>
-                  )}
                 </div>
               </Step>
 
@@ -626,13 +752,18 @@ export default function CartPage() {
                       
                       <div className={styles.formGroup}>
                         <label>Banco Origen *</label>
-                        <Combobox
+                        <select
+                          required
+                          className="input-field"
                           value={paymentBank}
-                          onChange={setPaymentBank}
-                          options={VENEZUELAN_BANKS.map(b => ({ value: b, label: b }))}
-                          placeholder="Selecciona el banco desde donde pagas"
-                          searchPlaceholder="Buscar banco..."
-                        />
+                          onChange={e => setPaymentBank(e.target.value)}
+                          style={{ width: '100%', cursor: 'pointer', height: '42px' }}
+                        >
+                          <option value="">-- Selecciona el banco desde donde pagas --</option>
+                          {VENEZUELAN_BANKS.map(b => (
+                            <option key={b} value={b}>{b}</option>
+                          ))}
+                        </select>
                       </div>
 
                       <div className={styles.formGroup}>
@@ -640,10 +771,14 @@ export default function CartPage() {
                         <input 
                           required 
                           type="text" 
+                          inputMode="tel"
                           className="input-field" 
                           placeholder="Ej: 04141234567" 
                           value={paymentPhone} 
-                          onChange={e => setPaymentPhone(e.target.value)} 
+                          onChange={e => {
+                            const val = e.target.value.replace(/[^\d+]/g, "");
+                            setPaymentPhone(val);
+                          }} 
                         />
                       </div>
 
