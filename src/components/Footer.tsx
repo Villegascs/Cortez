@@ -31,12 +31,6 @@ export default function Footer() {
           width: 100%;
         }
 
-        .footer-logo-img {
-          filter: var(--logo-invert);
-          object-fit: contain;
-          transform-origin: center;
-        }
-
         .footer-instagram-link {
           position: absolute;
           right: 0;
@@ -56,28 +50,56 @@ export default function Footer() {
           transform: scale(1.1);
         }
 
+        /* ========================================================= */
+        /* SECCIÓN LOGO FOOTER: WEB / LAPTOPS (>= 769px)             */
+        /* ========================================================= */
+        .footer-logo-desktop {
+          display: none;
+        }
+
+        .footer-logo-img-desktop {
+          filter: var(--logo-invert);
+          object-fit: contain;
+          transform-origin: center;
+          width: 170px;
+          height: 40px;
+          transform: scale(1.95);
+        }
+
+        /* ========================================================= */
+        /* SECCIÓN LOGO FOOTER: MÓVILES (<= 768px)                   */
+        /* ========================================================= */
+        .footer-logo-mobile {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .footer-logo-img-mobile {
+          filter: var(--logo-invert);
+          object-fit: contain;
+          transform-origin: center;
+          width: 120px;
+          height: 30px;
+          transform: scale(1.2);
+        }
+
         @media (max-width: 768px) {
-          .footer-logo-img {
-            width: 115px;
-            height: 28px;
-            transform: scale(1.15);
-          }
+          .footer-logo-desktop { display: none !important; }
+          .footer-logo-mobile { display: flex !important; }
         }
 
         @media (max-width: 480px) {
-          .footer-logo-img {
-            width: 105px;
-            height: 26px;
-            transform: scale(1.05);
+          .footer-logo-img-mobile {
+            width: 110px;
+            height: 28px;
+            transform: scale(1.1);
           }
         }
 
         @media (min-width: 769px) {
-          .footer-logo-img {
-            width: 150px;
-            height: 35px;
-            transform: scale(1.6);
-          }
+          .footer-logo-mobile { display: none !important; }
+          .footer-logo-desktop { display: flex !important; }
         }
       `}</style>
 
@@ -85,16 +107,31 @@ export default function Footer() {
         <div className="footer-inner">
           {/* Top Row: Logo & Instagram */}
           <div className="footer-top-row">
-            {/* Logo Cortez Center */}
-            <Link href="/" style={{ display: 'inline-flex', alignItems: 'center' }}>
-              <Image 
-                src="/logo.png" 
-                alt="Cortez Logo" 
-                width={150} 
-                height={35} 
-                className="footer-logo-img"
-              />
-            </Link>
+            {/* SECCIÓN 1: Logo Cortez Web / Laptops */}
+            <div className="footer-logo-desktop">
+              <Link href="/" style={{ display: 'inline-flex', alignItems: 'center' }}>
+                <Image 
+                  src="/logo.png" 
+                  alt="Cortez Logo" 
+                  width={170} 
+                  height={40} 
+                  className="footer-logo-img-desktop"
+                />
+              </Link>
+            </div>
+
+            {/* SECCIÓN 2: Logo Cortez Móviles */}
+            <div className="footer-logo-mobile">
+              <Link href="/" style={{ display: 'inline-flex', alignItems: 'center' }}>
+                <Image 
+                  src="/logo.png" 
+                  alt="Cortez Logo" 
+                  width={120} 
+                  height={30} 
+                  className="footer-logo-img-mobile"
+                />
+              </Link>
+            </div>
             
             {/* Instagram Right */}
             <a 

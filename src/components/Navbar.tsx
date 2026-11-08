@@ -82,7 +82,26 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
           background: rgba(0, 0, 0, 0.05);
         }
 
-        .navbar-logo-container {
+        /* ========================================================= */
+        /* SECCIÓN LOGO: DISPOSITIVOS WEB / LAPTOPS (>= 769px)       */
+        /* ========================================================= */
+        .navbar-logo-desktop {
+          display: none;
+        }
+
+        .logo-img-desktop {
+          filter: var(--logo-invert);
+          object-fit: contain;
+          transform-origin: center;
+          width: 170px;
+          height: 40px;
+          transform: scale(1.95);
+        }
+
+        /* ========================================================= */
+        /* SECCIÓN LOGO: DISPOSITIVOS MÓVILES (<= 768px)             */
+        /* ========================================================= */
+        .navbar-logo-mobile {
           position: absolute;
           left: 50%;
           top: 50%;
@@ -94,39 +113,46 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
           z-index: 1;
         }
 
-        .navbar-logo-img {
+        .logo-img-mobile {
           filter: var(--logo-invert);
           object-fit: contain;
           transform-origin: center;
+          width: 120px;
+          height: 30px;
+          transform: scale(1.2);
         }
 
-        /* Mobile specific */
+        /* Mobile specific media queries */
         @media (max-width: 768px) {
           .desktop-nav-content { display: none !important; }
           .mobile-nav-toggle { display: flex !important; }
-          .navbar-logo-img {
-            width: 115px;
-            height: 28px;
-            transform: scale(1.15);
-          }
+          .navbar-logo-desktop { display: none !important; }
+          .navbar-logo-mobile { display: flex !important; }
         }
 
         @media (max-width: 480px) {
-          .navbar-logo-img {
-            width: 105px;
-            height: 26px;
-            transform: scale(1.05);
+          .logo-img-mobile {
+            width: 110px;
+            height: 28px;
+            transform: scale(1.1);
           }
         }
 
-        /* Desktop specific */
+        /* Desktop specific media queries */
         @media (min-width: 769px) {
           .desktop-nav-content { display: flex !important; }
           .mobile-nav-toggle { display: none !important; }
-          .navbar-logo-img {
-            width: 150px;
-            height: 35px;
-            transform: scale(1.6);
+          .navbar-logo-mobile { display: none !important; }
+          .navbar-logo-desktop {
+            display: flex !important;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+            z-index: 1;
           }
         }
 
@@ -208,15 +234,33 @@ export default function Navbar({ isSuccessPage = false }: { isSuccessPage?: bool
             </button>
           </div>
 
-          {/* CENTER SLOT: Cortez Logo */}
-          <div className="navbar-logo-container">
+          {/* ========================================================= */}
+          {/* SECCIÓN 1: LOGO PARA DISPOSITIVOS WEB / LAPTOPS (>= 769px) */}
+          {/* ========================================================= */}
+          <div className="navbar-logo-desktop">
+            <Link href="/" style={{ display: "inline-flex", alignItems: "center" }}>
+              <Image
+                src="/logo.png"
+                alt="Cortez"
+                width={170}
+                height={40}
+                className="logo-img-desktop"
+                priority
+              />
+            </Link>
+          </div>
+
+          {/* ========================================================= */}
+          {/* SECCIÓN 2: LOGO PARA DISPOSITIVOS MÓVILES (<= 768px)       */}
+          {/* ========================================================= */}
+          <div className="navbar-logo-mobile">
             <Link href="/" onClick={() => setMobileMenuOpen(false)} style={{ display: "inline-flex", alignItems: "center" }}>
               <Image
                 src="/logo.png"
                 alt="Cortez"
-                width={150}
-                height={35}
-                className="navbar-logo-img"
+                width={120}
+                height={30}
+                className="logo-img-mobile"
                 priority
               />
             </Link>
